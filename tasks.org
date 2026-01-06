@@ -1,0 +1,12 @@
+* tasks [0/8]
+** INBOX GitLab 向けのレポートおよびステータス一覧を生成（して .md に挿入）する機能を追加
+** INBOX 別 markdown ファイルにしちゃうか、あるいは挿入かは要検討
+** INBOX group 別のレポート生成もする？
+** INBOX ステータス一覧は full と partial（READY/PASS 除外）
+** INBOX ターゲットとして、 gitlab|turnup|raw
+** INBOX グラフの色指定を prueba.conf で可能にしたい
+** INBOX prueba.sh --track [-g GROUP] *|ID  STATUS  [DESCRIPTION]
+
+    STATUS := READY|BLOCK|PASS|FAIL|RUN
+
+** INBOX prueba.conf が存在しない場合のエラー処理を追加
