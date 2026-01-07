@@ -17,3 +17,10 @@
  prueba.sh --log RUNFILE...
 ```
 
+### --report オプション
+
+　指定された run file のログを出力します。
+
+```
+ prueba.sh --report [-c CONF_FILE]
+```

@@ -381,6 +381,9 @@ function dump-runfile-log {
     done
 }
 
+function generate-report-files {
+	returne 0
+}
 
 MODE="$1"
 shift
@@ -395,23 +398,46 @@ elif [ "$MODE" == "--log" ]; then
 fi
 
 
-# カレントディレクトリに prueba.conf がなければエラー終了
-if [ ! -e ./prueba.conf ]; then
+
+CONF_FILE="./prueba.conf"
+
+# -c オプションの回収（あれば）
+while getopts "c:" opt; do
+    case $opt in
+        c) CONF_FILE=${OPTARG} ;;
+        *) echo "ERROR : invalid option."
+           return 1;;
+    esac
+done
+shift $((OPTIND - 1))
+
+# カレントディレクトリに conf file がなければエラー終了
+if [ ! -e "$CONF_FILE" ]; then
     echo "ERROR : prueba.conf missing."
     exit 1
 fi
 
-source ./prueba.conf
+source "$CONF_FILE"
 
+
+# ToDo : 将来削除する予定
 if [ "$MODE" == "--burndown" ]; then
     mode-burndown
+    exit 0
 elif [ "$MODE" == "--summary" ]; then
     mode-summary
+    exit 0
 elif [ "$MODE" == "--status" ]; then
     mode-status "$1"
+    exit 0
 elif [ "$MODE" == "--graph" ]; then
     graph-burndown
     graph-summary
+    exit 0
+fi
+
+if [ "$MODE" == "--report" ]; then
+    generate-report-files $@
 else
     show-usage
     exit 1
