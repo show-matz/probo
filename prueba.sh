@@ -314,6 +314,58 @@ function graph-burndown {
     rm -f ${DAT_FILE}
 }
 
+function track-runfile {
+
+    # -d オプションの回収（あれば）
+    local DESCRIPTION=""
+    while getopts "d:" opt; do
+        case $opt in
+            d) DESCRIPTION=${OPTARG} ;;
+            *) echo "ERROR : invalid option."
+               return 1;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    # STATUS パラメータの回収とチェック
+    local STATUS="$1"
+    shift
+    case $STATUS in
+        READY) ;;
+        BLOCK) ;;
+        PASS)  ;;
+        FAIL)  ;;
+        RUN)   ;;
+        *) echo "ERROR : invalid status \"$STATUS\"."
+           return 1;;
+    esac
+
+    # 追加する行の生成
+    if [ ! -z "$DESCRIPTION" ]; then
+        DESCRIPTION=".$DESCRIPTION"
+    fi
+    local TIMESTAMP=$(date '+%Y-%m-%d-%H-%M')
+    local NEW_LINE="## ${TIMESTAMP}.${STATUS}${DESCRIPTION}"
+
+    # 対象ファイルの反復と処理
+    local FILE_COUNT=0
+    for RUN_FILE in $@
+    do
+        if [ ! -e "$RUN_FILE" ]; then
+            echo "ERROR : runfile $RUN_FILE is not found."
+        else
+            echo ""          >> "$RUN_FILE"
+            echo ""          >> "$RUN_FILE"
+            echo "$NEW_LINE" >> "$RUN_FILE"
+            echo ""          >> "$RUN_FILE"
+            FILE_COUNT=$((FILE_COUNT + 1))
+        fi
+    done
+    echo "$FILE_COUNT file(s) updated."
+}
+
+
+
 
 # カレントディレクトリに prueba.conf がなければエラー終了
 if [ ! -e ./prueba.conf ]; then
@@ -335,6 +387,8 @@ elif [ "$MODE" == "--status" ]; then
 elif [ "$MODE" == "--graph" ]; then
     graph-burndown
     graph-summary
+elif [ "$MODE" == "--track" ]; then
+    track-runfile $@
 else
     show-usage
     exit 1
