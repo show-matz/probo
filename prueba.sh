@@ -60,37 +60,36 @@ function mode-summary {
     done
 }
 
-function mode-status-impl {
-    local GROUP="$1"
-    pushd ${GROUP} > /dev/null
-    for RUN_FILE in $(ls *.testrun.md)
-    do
-        NUMBER=$(echo "$RUN_FILE" | cut -d. -f1)
-        TAIL=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1)
-        TIMESTAMP=$(echo ${TAIL:3} | cut -d. -f1 | perl -pe 's@^(....)-(..)-(..)-(..)-(..)@\1/\2/\3 \4:\5@')
-        STATUS=$(echo ${TAIL} | cut -d. -f2)
-        DESCRIPTION=$(echo ${TAIL} | cut -d. -f3)
-        echo "${GROUP}	${NUMBER}	${TIMESTAMP}	${STATUS}	${DESCRIPTION}"
-    done
-    popd > /dev/null
-}
 
-function mode-status {
-    local PARAM="$1"
-    if [ ! -z "${PARAM}" ]; then
-        if [ ! -d "${PARAM}" ]; then
-            echo "ERROR : group ${PARAM} is not exist."
-        else
-            echo "GROUP	CASE	TIMESTAMP	STATUS	DESRIPTION"
-            mode-status-impl "${PARAM}"
-        fi
-    else
-        echo "GROUP	CASE	TIMESTAMP	STATUS	DESRIPTION"
-        for PARAM in ${PRUEBA_GROUPS}
+
+
+
+
+
+
+#------------------------------------------------------------------------------------------------
+#
+# ここより上は「最終的に不要になる可能性がある」関数
+#
+#------------------------------------------------------------------------------------------------
+
+function generate-status-file-raw {
+	local OUT_FILE="$1"
+    echo "GROUP	CASE	TIMESTAMP	STATUS	DESRIPTION" > $OUT_FILE
+    for GROUP in ${PRUEBA_GROUPS}
+    do
+        pushd ${GROUP} > /dev/null
+        for RUN_FILE in $(ls *.testrun.md)
         do
-            mode-status-impl "${PARAM}"
+            NUMBER=$(echo "$RUN_FILE" | cut -d. -f1)
+            TAIL=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1)
+            TIMESTAMP=$(echo ${TAIL:3} | cut -d. -f1 | perl -pe 's@^(....)-(..)-(..)-(..)-(..)@\1/\2/\3 \4:\5@')
+            STATUS=$(echo ${TAIL} | cut -d. -f2)
+            DESCRIPTION=$(echo ${TAIL} | cut -d. -f3)
+            echo "${GROUP}	${NUMBER}	${TIMESTAMP}	${STATUS}	${DESCRIPTION}" >> ../$OUT_FILE
         done
-    fi
+        popd > /dev/null
+    done
 }
 
 function get-image-type-from-filename {
@@ -264,6 +263,7 @@ function make-summary-image {
 }
 
 function graph-summary {
+    local OUT_FILE="$1"
     COUNTS=(0 0 0 0 0 0)    # READY,BLOCK,FAIL,RUN,PASS,OTHER
     for GROUP in ${PRUEBA_GROUPS}
     do
@@ -282,13 +282,14 @@ function graph-summary {
         done
         popd > /dev/null
     done
-    IMG_TYPE=$(get-image-type-from-filename "$SUMGRAPH_FILENAME")
-    make-summary-image "$SUMGRAPH_FILENAME" $IMG_TYPE $SUMGRAPH_WIDTH $SUMGRAPH_HEIGHT \
+    IMG_TYPE=$(get-image-type-from-filename "$OUT_FILE")
+    make-summary-image "$OUT_FILE" $IMG_TYPE $SUMGRAPH_WIDTH $SUMGRAPH_HEIGHT \
                        ${COUNTS[0]} ${COUNTS[1]} ${COUNTS[5]} ${COUNTS[2]} ${COUNTS[3]} ${COUNTS[4]}
     rm -f ${DAT_FILE}
 }
 
 function graph-burndown {
+    OUT_FILE="$1"
     DAT_FILE="$$.burndown.dat"
     REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
     REST2=$REST1                                     # 実績用残数
@@ -309,8 +310,8 @@ function graph-burndown {
         fi
         echo "${DATE},${REST1},${REST2},${NGCNT}" >> ${DAT_FILE}
     done
-    IMG_TYPE=$(get-image-type-from-filename "$BDCHART_FILENAME")
-    make-burndown-image "$DAT_FILE" "$BDCHART_FILENAME" $IMG_TYPE $BDCHART_WIDTH $BDCHART_HEIGHT
+    IMG_TYPE=$(get-image-type-from-filename "$OUT_FILE")
+    make-burndown-image "$DAT_FILE" "$OUT_FILE" $IMG_TYPE $BDCHART_WIDTH $BDCHART_HEIGHT
     rm -f ${DAT_FILE}
 }
 
@@ -381,8 +382,60 @@ function dump-runfile-log {
     done
 }
 
-function generate-report-files {
-	returne 0
+function generate-report-files-raw {
+
+    GNUPLOT_FLAG="$1"
+
+    generate-status-file-raw "${STATUS_FULL_FILENAME}"
+    if [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
+        cat "${STATUS_FULL_FILENAME}" | grep -v '	PASS	' \
+                                      | grep -v '	READY	' >  "${STATUS_PICKUP_FILENAME}"
+    fi
+    
+	# ToDo : implement...
+
+	# gnuplot が利用可能な場合のみグラフ生成（エラーにはしない）
+    if [ $GNUPLOT_FLAG -eq 1 ]; then
+    	# さらに、グラフファイル名が指定されている場合のみ実行（つまり省略可能）
+        if [ ! -z "$BDCHART_FILENAME" ]; then
+            graph-burndown "$BDCHART_FILENAME"
+        fi
+        if [ ! -z "$SUMGRAPH_FILENAME" ]; then
+            graph-summary "$SUMGRAPH_FILENAME"
+        fi
+
+    fi
+	return 0
+}
+
+function generate-report-files-gitlab {
+
+	# gnuplot がなければエラー
+    if [ $1 -eq 0 ]; then
+        echo "ERROR : gnuplot is missing."
+        return 1
+    fi
+
+	# ToDo : implement...
+
+    graph-burndown "$BDCHART_FILENAME"
+    graph-summary  "$SUMGRAPH_FILENAME"
+	return 0
+}
+
+function generate-report-files-turnup {
+
+	# gnuplot がなければエラー
+    if [ $1 -eq 0 ]; then
+        echo "ERROR : gnuplot is missing."
+        return 1
+    fi
+
+	# ToDo : implement...
+
+    graph-burndown "$BDCHART_FILENAME"
+    graph-summary  "$SUMGRAPH_FILENAME"
+	return 0
 }
 
 MODE="$1"
@@ -427,17 +480,21 @@ if [ "$MODE" == "--burndown" ]; then
 elif [ "$MODE" == "--summary" ]; then
     mode-summary
     exit 0
-elif [ "$MODE" == "--status" ]; then
-    mode-status "$1"
-    exit 0
 elif [ "$MODE" == "--graph" ]; then
-    graph-burndown
-    graph-summary
+    graph-burndown "$BDCHART_FILENAME"
+    graph-summary  "$SUMGRAPH_FILENAME"
     exit 0
 fi
 
 if [ "$MODE" == "--report" ]; then
-    generate-report-files $@
+    case "${REPORT_TARGET}" in
+        raw)    ;;
+        gitlab) ;;
+        turnup) ;;
+        *) echo "ERROR : invalid REPORT_TARGET variable."
+           return 1;;
+    esac
+    generate-report-files-${REPORT_TARGET} $(which gnuplot | wc -l)
 else
     show-usage
     exit 1
