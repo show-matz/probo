@@ -1,9 +1,10 @@
-.PHONY: all clean
+.PHONY: raw gitlab clean
 
-all:
-	../prueba.sh --graph
-	../prueba.sh --burndown > ./prueba.burndown.txt
-	../prueba.sh --summary  > ./prueba.summary.txt
+raw:
+	../prueba.sh --report -c prueba.raw.conf
+
+gitlab:
+	../prueba.sh --report -c prueba.gitlab.conf
 
 clean:
 	rm -f *.txt *.svg *.png *.jpg *.jpeg *~

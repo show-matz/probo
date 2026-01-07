@@ -8,70 +8,54 @@ function show-usage {
     echo "    prueba.sh --report [-c CONF_FILE]"
 }
 
-function mode-burndown {
-    echo "日付	期待値	消化数	Fail数	基準線	実績"
-    REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
-    REST2=$REST1                                     # 実績用残数
-    TODAY=$(date '+%Y-%m-%d')
+function generate-burndown-data-file-raw {
+    local OUT_FILE="$1"
+    local TODAY=$(date '+%Y-%m-%d')
+    local REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
+    local REST2=$REST1                                     # 実績用残数
+    echo "日付	期待値	消化数	Fail数	基準線	実績" > "${OUT_FILE}"
     for LINE in ${PRUEBA_SCHEDULE}
     do
-        DATE=$(echo      "$LINE" | cut -d , -f 1)
-        ESTIMATED=$(echo "$LINE" | cut -d , -f 2)
+        local DATE=$(echo      "$LINE" | cut -d , -f 1)
+        local ESTIMATED=$(echo "$LINE" | cut -d , -f 2)
+        local COUNT=""
+        local NGCNT=""
         REST1=$((REST1 - ESTIMATED))
         if [ "$TODAY" "<" "$DATE" ]; then
-            COUNT=""
-            NGCNT=""
             REST2=""
         else
             COUNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.PASS" | wc -l)
             NGCNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.FAIL" | wc -l)
             REST2=$((REST2 - COUNT))
         fi
-        echo "${DATE}	${ESTIMATED}	${COUNT}	${NGCNT}	${REST1}	${REST2}"
+        echo "${DATE}	${ESTIMATED}	${COUNT}	${NGCNT}	${REST1}	${REST2}" >> "${OUT_FILE}"
     done
 }
 
-function mode-summary {
-    echo "GROUP	READY	BLOCK	RUN	OTHER	FAIL	PASS	TOTAL"
+function generate-summary-data-file-raw {
+    local OUT_FILE="$1"
+    echo "GROUP	READY	BLOCK	RUN	OTHER	FAIL	PASS	TOTAL" > "${OUT_FILE}"
     for GROUP in ${PRUEBA_GROUPS}
     do
         pushd ${GROUP} > /dev/null
-        CASE_COUNT=0
-        PASS_COUNT=0
-        FAIL_COUNT=0
-        RUN_COUNT=0
-        BLOCK_COUNT=0
-        READY_COUNT=0
-        OTHER_COUNT=0    # ToDo : OTHER_COUNT 数えてない
+        COUNTS=(0 0 0 0 0 0 0)    # READY,BLOCK,RUN,OTHER,FAIL,PASS,TOTAL
         for RUN_FILE in $(ls *.testrun.md)
         do
             RESULT=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1 | cut -d. -f2)
             case "${RESULT}" in
-                PASS )  PASS_COUNT=$((PASS_COUNT + 1));;
-                FAIL )  FAIL_COUNT=$((FAIL_COUNT + 1));;
-                RUN )   RUN_COUNT=$((RUN_COUNT + 1));;
-                BLOCK ) BLOCK_COUNT=$((BLOCK_COUNT + 1));;
-                READY ) READY_COUNT=$((READY_COUNT + 1));;
+                READY ) COUNTS[0]=$((COUNTS[0] + 1));;
+                BLOCK ) COUNTS[1]=$((COUNTS[1] + 1));;
+                RUN )   COUNTS[2]=$((COUNTS[2] + 1));;
+                FAIL )  COUNTS[4]=$((COUNTS[4] + 1));;
+                PASS )  COUNTS[5]=$((COUNTS[5] + 1));;
+                * )     COUNTS[3]=$((COUNTS[3] + 1));;
             esac
-            CASE_COUNT=$((CASE_COUNT + 1))
+            COUNTS[6]=$((COUNTS[6] + 1))
         done
-        echo "${GROUP}	${READY_COUNT}	${BLOCK_COUNT}	${RUN_COUNT}	${OTHER_COUNT}	${FAIL_COUNT}	${PASS_COUNT}	${CASE_COUNT}"
+        echo "${GROUP}	${COUNTS[0]}	${COUNTS[1]}	${COUNTS[2]}	${COUNTS[3]}	${COUNTS[4]}	${COUNTS[5]}	${COUNTS[6]}" >> ../"${OUT_FILE}"
         popd > /dev/null
     done
 }
-
-
-
-
-
-
-
-
-#------------------------------------------------------------------------------------------------
-#
-# ここより上は「最終的に不要になる可能性がある」関数
-#
-#------------------------------------------------------------------------------------------------
 
 function generate-status-file-raw {
 	local OUT_FILE="$1"
@@ -399,13 +383,21 @@ function generate-report-files-raw {
 
     GNUPLOT_FLAG="$1"
 
-    generate-status-file-raw "${STATUS_FULL_FILENAME}"
-    if [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
-        cat "${STATUS_FULL_FILENAME}" | grep -v '	PASS	' \
-                                      | grep -v '	READY	' >  "${STATUS_PICKUP_FILENAME}"
+    if [ ! -z "${STATUS_FULL_FILENAME}" ]; then
+        generate-status-file-raw "${STATUS_FULL_FILENAME}"
+        if [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
+            cat "${STATUS_FULL_FILENAME}" | grep -v '	PASS	' \
+                                          | grep -v '	READY	' >  "${STATUS_PICKUP_FILENAME}"
+        fi
     fi
-    
-	# ToDo : implement...
+
+    if [ ! -z "${BDDATA_FILENAME}" ]; then
+        generate-burndown-data-file-raw "${BDDATA_FILENAME}"
+    fi
+
+    if [ ! -z "${SUMDATA_FILENAME}" ]; then
+        generate-summary-data-file-raw "${SUMDATA_FILENAME}"
+    fi
 
 	# gnuplot が利用可能な場合のみグラフ生成（エラーにはしない）
     if [ $GNUPLOT_FLAG -eq 1 ]; then
@@ -487,20 +479,6 @@ if [ ! -e "$CONF_FILE" ]; then
 fi
 
 source "$CONF_FILE"
-
-
-# ToDo : 将来削除する予定
-if [ "$MODE" == "--burndown" ]; then
-    mode-burndown
-    exit 0
-elif [ "$MODE" == "--summary" ]; then
-    mode-summary
-    exit 0
-elif [ "$MODE" == "--graph" ]; then
-    graph-burndown "$BDCHART_FILENAME"
-    graph-summary  "$SUMGRAPH_FILENAME"
-    exit 0
-fi
 
 if [ "$MODE" == "--report" ]; then
     case "${REPORT_TARGET}" in
