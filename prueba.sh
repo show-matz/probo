@@ -382,6 +382,19 @@ function dump-runfile-log {
 }
 
 
+MODE="$1"
+shift
+
+# conf ファイルが不要な処理
+if [ "$MODE" == "--track" ]; then
+    track-runfile $@
+    exit 0
+elif [ "$MODE" == "--log" ]; then
+    dump-runfile-log $@
+    exit 0
+fi
+
+
 # カレントディレクトリに prueba.conf がなければエラー終了
 if [ ! -e ./prueba.conf ]; then
     echo "ERROR : prueba.conf missing."
@@ -389,9 +402,6 @@ if [ ! -e ./prueba.conf ]; then
 fi
 
 source ./prueba.conf
-
-MODE="$1"
-shift
 
 if [ "$MODE" == "--burndown" ]; then
     mode-burndown
@@ -402,10 +412,6 @@ elif [ "$MODE" == "--status" ]; then
 elif [ "$MODE" == "--graph" ]; then
     graph-burndown
     graph-summary
-elif [ "$MODE" == "--track" ]; then
-    track-runfile $@
-elif [ "$MODE" == "--log" ]; then
-    dump-runfile-log $@
 else
     show-usage
     exit 1
