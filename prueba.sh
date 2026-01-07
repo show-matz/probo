@@ -9,11 +9,11 @@ function show-usage {
 }
 
 function generate-burndown-data-file-raw {
-    local OUT_FILE="$1"
+    local DAT_FILE="$1"
     local TODAY=$(date '+%Y-%m-%d')
     local REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
     local REST2=$REST1                                     # 実績用残数
-    echo "日付	期待値	消化数	Fail数	基準線	実績" > "${OUT_FILE}"
+    echo "日付	期待値	消化数	Fail数	基準線	実績" > "${DAT_FILE}"
     for LINE in ${PRUEBA_SCHEDULE}
     do
         local DATE=$(echo      "$LINE" | cut -d , -f 1)
@@ -28,7 +28,7 @@ function generate-burndown-data-file-raw {
             NGCNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.FAIL" | wc -l)
             REST2=$((REST2 - COUNT))
         fi
-        echo "${DATE}	${ESTIMATED}	${COUNT}	${NGCNT}	${REST1}	${REST2}" >> "${OUT_FILE}"
+        echo "${DATE}	${ESTIMATED}	${COUNT}	${NGCNT}	${REST1}	${REST2}" >> "${DAT_FILE}"
     done
 }
 
@@ -273,19 +273,20 @@ function graph-summary {
 }
 
 function graph-burndown {
-    OUT_FILE="$1"
-    DAT_FILE="$$.burndown.dat"
-    REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
-    REST2=$REST1                                     # 実績用残数
-    TODAY=$(date '+%Y-%m-%d')
+    # ToDo : generate-burndown-data-file-raw を利用するかたちにできそう
+    local IMG_FILE="$1"
+    local DAT_FILE="$$.burndown.dat"
+    local TODAY=$(date '+%Y-%m-%d')
+    local REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
+    local REST2=$REST1                                     # 実績用残数
     for LINE in ${PRUEBA_SCHEDULE}
     do
-        DATE=$(echo      "$LINE" | cut -d , -f 1)
-        ESTIMATED=$(echo "$LINE" | cut -d , -f 2)
+        local DATE=$(echo      "$LINE" | cut -d , -f 1)
+        local ESTIMATED=$(echo "$LINE" | cut -d , -f 2)
+        local COUNT=""
+        local NGCNT=""
         REST1=$((REST1 - ESTIMATED))
         if [ "$TODAY" "<" "$DATE" ]; then
-            COUNT=""
-            NGCNT=""
             REST2=""
         else
             COUNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.PASS" | wc -l)
@@ -294,8 +295,8 @@ function graph-burndown {
         fi
         echo "${DATE},${REST1},${REST2},${NGCNT}" >> ${DAT_FILE}
     done
-    IMG_TYPE=$(get-image-type-from-filename "$OUT_FILE")
-    make-burndown-image "$DAT_FILE" "$OUT_FILE" $IMG_TYPE $BDCHART_WIDTH $BDCHART_HEIGHT
+    IMG_TYPE=$(get-image-type-from-filename "$IMG_FILE")
+    make-burndown-image "$DAT_FILE" "$IMG_FILE" $IMG_TYPE $BDCHART_WIDTH $BDCHART_HEIGHT
     rm -f ${DAT_FILE}
 }
 
