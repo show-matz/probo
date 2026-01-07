@@ -413,22 +413,7 @@ function generate-report-files-raw {
 	return 0
 }
 
-function generate-report-files-gitlab {
-
-	# gnuplot がなければエラー
-    if [ $1 -eq 0 ]; then
-        echo "ERROR : gnuplot is missing."
-        return 1
-    fi
-
-	# ToDo : implement...
-
-    graph-burndown "$BDCHART_FILENAME"
-    graph-summary  "$SUMGRAPH_FILENAME"
-	return 0
-}
-
-function generate-report-files-turnup {
+function generate-report-files-markdown {
 
 	# gnuplot がなければエラー
     if [ $1 -eq 0 ]; then
@@ -482,9 +467,8 @@ source "$CONF_FILE"
 
 if [ "$MODE" == "--report" ]; then
     case "${REPORT_TARGET}" in
-        raw)    ;;
-        gitlab) ;;
-        turnup) ;;
+        raw)      ;;
+        markdown) ;;
         *) echo "ERROR : invalid REPORT_TARGET variable."
            return 1;;
     esac
