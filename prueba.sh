@@ -77,7 +77,7 @@ function generate-status-file-raw {
 }
 
 function get-image-type-from-filename {
-    local IMG_TYPE=$(echo "$1" | cut -d. -f2)
+    local IMG_TYPE="${1##*.}"    # 最後のピリオドまでを削除
     case "$IMG_TYPE" in
         svg )   ;;
         png )   ;;

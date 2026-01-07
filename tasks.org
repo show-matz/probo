@@ -1,4 +1,4 @@
-* tasks [5/12]
+* tasks [7/12]
 ** DONE prueba.conf が存在しない場合のエラー処理を追加
 ** DONE prueba.sh --track   でケースファイルに新規情報追加
 
@@ -12,10 +12,10 @@
 
 ** DONE --track / --log では conf の存在チェックや取り込みをせずに動作させる
 ** DONE --ls でカレントディレクトリの run file のステータスを一覧する
-** TODO 画像ファイル名に２つ以上ピリオドを使うとうまく動かない問題に対処する
+** DONE ターゲットとして、 markdown|raw
+** DONE 画像ファイル名に２つ以上ピリオドを使うとうまく動かない問題に対処する
 ** TODO GitLab 向けのレポートおよびステータス一覧を生成（して .md に挿入）する機能を追加
 ** TODO 別 markdown ファイルにしちゃうか、あるいは挿入かは要検討
 ** TODO group 別のレポート生成もする？
 ** TODO ステータス一覧は full と partial（READY/PASS 除外）
-** TODO ターゲットとして、 gitlab|turnup|raw
 ** TODO グラフの色指定を prueba.conf で可能にしたい
