@@ -2,10 +2,10 @@
 
 function show-usage {
     echo "USAGE:"
-    echo "    prueba.sh --burndown"
-    echo "    prueba.sh --summary"
-    echo "    prueba.sh --status [GROUP]"
-    echo "    prueba.sh --graph"
+    echo "    prueba.sh --track [-d DESCRIPTION] STATUS RUNFILE..."
+    echo "    prueba.sh --log RUNFILE..."
+    echo "    prueba.sh --ls"
+    echo "    prueba.sh --report [-c CONF_FILE]"
 }
 
 function mode-burndown {
@@ -382,6 +382,19 @@ function dump-runfile-log {
     done
 }
 
+function dump-current-group-status {
+    echo "CASE	TIMESTAMP	STATUS	DESRIPTION"
+    for RUN_FILE in $(ls *.testrun.md)
+    do
+        NUMBER=$(echo "$RUN_FILE" | cut -d. -f1)
+        TAIL=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1)
+        TIMESTAMP=$(echo ${TAIL:3} | cut -d. -f1 | perl -pe 's@^(....)-(..)-(..)-(..)-(..)@\1/\2/\3 \4:\5@')
+        STATUS=$(     echo ${TAIL} | cut -d. -f2)
+        DESCRIPTION=$(echo ${TAIL} | cut -d. -f3)
+        echo "${NUMBER}	${TIMESTAMP}	${STATUS}	${DESCRIPTION}"
+    done
+}
+
 function generate-report-files-raw {
 
     GNUPLOT_FLAG="$1"
@@ -447,6 +460,9 @@ if [ "$MODE" == "--track" ]; then
     exit 0
 elif [ "$MODE" == "--log" ]; then
     dump-runfile-log $@
+    exit 0
+elif [ "$MODE" == "--ls" ]; then
+    dump-current-group-status
     exit 0
 fi
 

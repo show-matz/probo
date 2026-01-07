@@ -17,6 +17,14 @@
  prueba.sh --log RUNFILE...
 ```
 
+### --ls オプション
+
+　カレントディレクトリの run file の現在のステータスを一覧します。
+
+```
+ prueba.sh --ls
+```
+
 ### --report オプション
 
 　指定された run file のログを出力します。
