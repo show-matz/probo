@@ -9,3 +9,11 @@
  STATUS := READY|BLOCK|PASS|FAIL|RUN
 ```
 
+### --log オプション
+
+　指定された run file のログを出力します。
+
+```
+ prueba.sh --log RUNFILE...
+```
+

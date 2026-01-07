@@ -364,7 +364,22 @@ function track-runfile {
     echo "$FILE_COUNT file(s) updated."
 }
 
-
+function dump-runfile-log {
+    for RUN_FILE in $@
+    do
+        if [ ! -e "$RUN_FILE" ]; then
+            echo "ERROR : runfile $RUN_FILE is not found."
+        else
+            TEST_ID=$(echo "$RUN_FILE" | perl -pe 's/^(.+?)\.testrun\.md$/\1/')
+            while IFS= read -r LINE; do
+                TIMESTAMP=$(  echo "${LINE:3}" | cut -d. -f1)
+                STATUS=$(     echo "${LINE:3}" | cut -d. -f2)
+                DESCRIPTION=$(echo "${LINE:3}" | cut -d. -f3)
+                echo "${TEST_ID}	${TIMESTAMP}	${STATUS}	${DESCRIPTION}"
+            done < <(grep -E '^## ....-..-..-..-..\..+' "$RUN_FILE" )
+        fi
+    done
+}
 
 
 # カレントディレクトリに prueba.conf がなければエラー終了
@@ -389,6 +404,8 @@ elif [ "$MODE" == "--graph" ]; then
     graph-summary
 elif [ "$MODE" == "--track" ]; then
     track-runfile $@
+elif [ "$MODE" == "--log" ]; then
+    dump-runfile-log $@
 else
     show-usage
     exit 1
