@@ -382,8 +382,6 @@ function dump-current-group-status {
 
 function generate-report-files-raw {
 
-    GNUPLOT_FLAG="$1"
-
     if [ ! -z "${STATUS_FULL_FILENAME}" ]; then
         generate-status-file-raw "${STATUS_FULL_FILENAME}"
         if [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
@@ -400,32 +398,29 @@ function generate-report-files-raw {
         generate-summary-data-file-raw "${SUMDATA_FILENAME}"
     fi
 
-	# gnuplot が利用可能な場合のみグラフ生成（エラーにはしない）
-    if [ $GNUPLOT_FLAG -eq 1 ]; then
-    	# さらに、グラフファイル名が指定されている場合のみ実行（つまり省略可能）
-        if [ ! -z "$BDCHART_FILENAME" ]; then
-            graph-burndown "$BDCHART_FILENAME"
-        fi
-        if [ ! -z "$SUMGRAPH_FILENAME" ]; then
-            graph-summary "$SUMGRAPH_FILENAME"
-        fi
-
+	# ファイル名が指定されている場合のみグラフ生成
+    if [ ! -z "$BDCHART_FILENAME" ]; then
+        graph-burndown "$BDCHART_FILENAME"
     fi
+    if [ ! -z "$SUMGRAPH_FILENAME" ]; then
+        graph-summary "$SUMGRAPH_FILENAME"
+    fi
+
 	return 0
 }
 
 function generate-report-files-markdown {
 
-	# gnuplot がなければエラー
-    if [ $1 -eq 0 ]; then
-        echo "ERROR : gnuplot is missing."
-        return 1
-    fi
-
 	# ToDo : implement...
 
-    graph-burndown "$BDCHART_FILENAME"
-    graph-summary  "$SUMGRAPH_FILENAME"
+	# ファイル名が指定されている場合のみグラフ生成
+    if [ ! -z "$BDCHART_FILENAME" ]; then
+        graph-burndown "$BDCHART_FILENAME"
+    fi
+    if [ ! -z "$SUMGRAPH_FILENAME" ]; then
+        graph-summary "$SUMGRAPH_FILENAME"
+    fi
+
 	return 0
 }
 
@@ -467,13 +462,23 @@ fi
 source "$CONF_FILE"
 
 if [ "$MODE" == "--report" ]; then
+
+    # REPORT_TARGET の正当性チェック
     case "${REPORT_TARGET}" in
         raw)      ;;
         markdown) ;;
         *) echo "ERROR : invalid REPORT_TARGET variable."
            return 1;;
     esac
-    generate-report-files-${REPORT_TARGET} $(which gnuplot | wc -l)
+
+    # gnuplot 要否、および存在チェック
+    if [ ! -z "$BDCHART_FILENAME" ] || [ ! -z "$SUMGRAPH_FILENAME" ]; then
+        if [ $(which gnuplot | wc -l) -eq 0 ]; then
+            echo "ERROR : gnuplot is missing."
+            exit 1
+        fi
+    fi
+    generate-report-files-${REPORT_TARGET}
 else
     show-usage
     exit 1
