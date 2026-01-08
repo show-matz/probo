@@ -57,6 +57,29 @@ function generate-summary-data-file-raw {
     done
 }
 
+function generate-summary-data-file-markdown {
+    local OUT_FILE="$1"
+    local INS_FLAG="$2"
+    # 最初に一時ファイルとして raw 形式ファイルを作成
+    generate-summary-data-file-raw "$$.summary.raw.tmp"
+
+    # ヘッダ行は raw file を無視して固定で出しちゃう
+    echo "| GROUP | READY | BLOCK | RUN | OTHER | FAIL | PASS | TOTAL |"  > "${OUT_FILE}"
+    echo "|:-----:|------:|------:|----:|------:|-----:|-----:|------:|" >> "${OUT_FILE}"
+
+	# ToDo : ここで追加のデータ計算をする（あるいは raw 側でやる？）
+
+    # ２行目以降は markdown の表形式に変換（INS_FLAG に応じて分岐）
+    tail -n +2 "$$.summary.raw.tmp" | perl -pe 's/	/ | /g' \
+                                    | perl -pe 's/^/| /'  \
+                                    | perl -pe 's/$/ |/'       >> "${OUT_FILE}"
+
+	# ToDo : INS_FLAG の処理ができてない
+
+    rm -f  "$$.summary.raw.tmp"
+}
+
+
 function generate-status-file-raw {
 	local OUT_FILE="$1"
     echo "GROUP	CASE	TIMESTAMP	STATUS	DESRIPTION" > $OUT_FILE
@@ -470,11 +493,13 @@ function generate-report-files-markdown {
         # 一時ファイルを削除
         rm -f "$$.status.raw.tmp"
     fi
-
-    # markdown target では burn-down data file 指定は無視
-
-	# ToDo : implement...
-
+    # burn-down data file 指定は markdown target では無視
+    # ToDo : 指定されている場合、警告でも出す？
+    
+    # summary data file 指定があれば生成
+    if [ ! -z "${SUMDATA_FILENAME}" ]; then
+        generate-summary-data-file-markdown "$SUMDATA_FILENAME" "$SUMDATA_INSERSION"
+    fi
 	# ファイル名が指定されている場合のみグラフ生成
     if [ ! -z "$BDCHART_FILENAME" ]; then
         graph-burndown "$BDCHART_FILENAME"
