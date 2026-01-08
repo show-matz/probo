@@ -382,28 +382,31 @@ function dump-current-group-status {
 
 function generate-report-files-raw {
 
-    # status file 指定があれば生成
+    # status file 指定があれば生成（raw target では insersion 指定は無視）
     if [ ! -z "${STATUS_FULL_FILENAME}" ] || [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
+        # 最初に一時ファイルとして作成
         generate-status-file-raw "$$.status.tmp"
+        # pickup ファイルが指定されていれば grep -v chain で作成
         if [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
             cat "$$.status.tmp" | grep -v '	PASS	' \
                                 | grep -v '	READY	' >  "${STATUS_PICKUP_FILENAME}"
         fi
+        # full ファイルが指定されていれば mv で一時ファイルを rename
         if [ ! -z "${STATUS_FULL_FILENAME}" ]; then
             mv "$$.status.tmp" "${STATUS_FULL_FILENAME}"
         else
+            # 指定なしなら一時ファイルを削除
             rm -f "$$.status.tmp"
         fi
     fi
-
+    # burn-down data file 指定があれば生成（raw target では insersion 指定は無視）
     if [ ! -z "${BDDATA_FILENAME}" ]; then
         generate-burndown-data-file-raw "${BDDATA_FILENAME}"
     fi
-
+    # summary data file 指定があれば生成（raw target では insersion 指定は無視）
     if [ ! -z "${SUMDATA_FILENAME}" ]; then
         generate-summary-data-file-raw "${SUMDATA_FILENAME}"
     fi
-
 	# ファイル名が指定されている場合のみグラフ生成
     if [ ! -z "$BDCHART_FILENAME" ]; then
         graph-burndown "$BDCHART_FILENAME"
