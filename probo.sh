@@ -460,8 +460,8 @@ function generate-report-files-raw {
         generate-burndown-data-file-raw "${BDDATA_FILENAME}"
     fi
     # summary data file 指定があれば生成（raw target では insersion 指定は無視）
-    if [ ! -z "${SUMDATA_FILENAME}" ]; then
-        generate-summary-data-file-raw "${SUMDATA_FILENAME}"
+    if [ ! -z "${SUMMARY_FILENAME}" ]; then
+        generate-summary-data-file-raw "${SUMMARY_FILENAME}"
     fi
 	# ファイル名が指定されている場合のみグラフ生成
     if [ ! -z "$BDCHART_FILENAME" ]; then
@@ -493,12 +493,13 @@ function generate-report-files-markdown {
         # 一時ファイルを削除
         rm -f "$$.status.raw.tmp"
     fi
-    # burn-down data file 指定は markdown target では無視
-    # ToDo : 指定されている場合、警告でも出す？
-    
+    # burn-down data file 指定は markdown target では無視（指定されていれば警告）
+    if [ ! -z "${BDDATA_FILENAME}" ]; then
+        echo "WARNING : BDDATA_FILENAME is ignored in markdown target."
+    fi
     # summary data file 指定があれば生成
-    if [ ! -z "${SUMDATA_FILENAME}" ]; then
-        generate-summary-data-file-markdown "$SUMDATA_FILENAME" "$SUMDATA_INSERSION"
+    if [ ! -z "${SUMMARY_FILENAME}" ]; then
+        generate-summary-data-file-markdown "$SUMMARY_FILENAME" "$SUMMARY_INSERSION"
     fi
 	# ファイル名が指定されている場合のみグラフ生成
     if [ ! -z "$BDCHART_FILENAME" ]; then
