@@ -382,11 +382,17 @@ function dump-current-group-status {
 
 function generate-report-files-raw {
 
-    if [ ! -z "${STATUS_FULL_FILENAME}" ]; then
-        generate-status-file-raw "${STATUS_FULL_FILENAME}"
+    # status file 指定があれば生成
+    if [ ! -z "${STATUS_FULL_FILENAME}" ] || [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
+        generate-status-file-raw "$$.status.tmp"
         if [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
-            cat "${STATUS_FULL_FILENAME}" | grep -v '	PASS	' \
-                                          | grep -v '	READY	' >  "${STATUS_PICKUP_FILENAME}"
+            cat "$$.status.tmp" | grep -v '	PASS	' \
+                                | grep -v '	READY	' >  "${STATUS_PICKUP_FILENAME}"
+        fi
+        if [ ! -z "${STATUS_FULL_FILENAME}" ]; then
+            mv "$$.status.tmp" "${STATUS_FULL_FILENAME}"
+        else
+            rm -f "$$.status.tmp"
         fi
     fi
 
