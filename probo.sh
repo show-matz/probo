@@ -2,10 +2,10 @@
 
 function show-usage {
     echo "USAGE:"
-    echo "    prueba.sh --track [-d DESCRIPTION] STATUS RUNFILE..."
-    echo "    prueba.sh --log RUNFILE..."
-    echo "    prueba.sh --ls"
-    echo "    prueba.sh --report [-c CONF_FILE]"
+    echo "    probo.sh --track [-d DESCRIPTION] STATUS RUNFILE..."
+    echo "    probo.sh --log RUNFILE..."
+    echo "    probo.sh --ls"
+    echo "    probo.sh --report [-c CONF_FILE]"
 }
 
 function generate-burndown-data-file-raw {
@@ -446,7 +446,7 @@ fi
 
 
 
-CONF_FILE="./prueba.conf"
+CONF_FILE="./probo.conf"
 
 # -c オプションの回収（あれば）
 while getopts "c:" opt; do
@@ -460,7 +460,7 @@ shift $((OPTIND - 1))
 
 # カレントディレクトリに conf file がなければエラー終了
 if [ ! -e "$CONF_FILE" ]; then
-    echo "ERROR : prueba.conf missing."
+    echo "ERROR : $CONF_FILE missing."
     exit 1
 fi
 

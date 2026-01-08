@@ -1,13 +1,13 @@
 .PHONY: raw gitlab turnup clean
 
 raw:
-	../prueba.sh --report -c prueba.raw.conf
+	../probo.sh --report -c probo.raw.conf
 
 gitlab:
-	../prueba.sh --report -c prueba.gitlab.conf
+	../probo.sh --report -c probo.gitlab.conf
 
 turnup:
-	../prueba.sh --report -c prueba.turnup.conf
+	../probo.sh --report -c probo.turnup.conf
 
 clean:
 	rm -f *.txt *.svg *.png *.jpg *.jpeg *~
