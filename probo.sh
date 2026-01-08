@@ -14,7 +14,7 @@ function generate-burndown-data-file-raw {
     local REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
     local REST2=$REST1                                     # 実績用残数
     echo "日付	期待値	消化数	Fail数	基準線	実績" > "${DAT_FILE}"
-    for LINE in ${PRUEBA_SCHEDULE}
+    for LINE in ${PROBO_SCHEDULE}
     do
         local DATE=$(echo      "$LINE" | cut -d , -f 1)
         local ESTIMATED=$(echo "$LINE" | cut -d , -f 2)
@@ -35,7 +35,7 @@ function generate-burndown-data-file-raw {
 function generate-summary-data-file-raw {
     local OUT_FILE="$1"
     echo "GROUP	READY	BLOCK	RUN	OTHER	FAIL	PASS	TOTAL" > "${OUT_FILE}"
-    for GROUP in ${PRUEBA_GROUPS}
+    for GROUP in ${PROBO_GROUPS}
     do
         pushd ${GROUP} > /dev/null
         COUNTS=(0 0 0 0 0 0 0)    # READY,BLOCK,RUN,OTHER,FAIL,PASS,TOTAL
@@ -60,7 +60,7 @@ function generate-summary-data-file-raw {
 function generate-status-file-raw {
 	local OUT_FILE="$1"
     echo "GROUP	CASE	TIMESTAMP	STATUS	DESRIPTION" > $OUT_FILE
-    for GROUP in ${PRUEBA_GROUPS}
+    for GROUP in ${PROBO_GROUPS}
     do
         pushd ${GROUP} > /dev/null
         for RUN_FILE in $(ls *.testrun.md)
@@ -249,7 +249,7 @@ function make-summary-image {
 function graph-summary {
     local OUT_FILE="$1"
     COUNTS=(0 0 0 0 0 0)    # READY,BLOCK,FAIL,RUN,PASS,OTHER
-    for GROUP in ${PRUEBA_GROUPS}
+    for GROUP in ${PROBO_GROUPS}
     do
         pushd ${GROUP} > /dev/null
         for RUN_FILE in $(ls *.testrun.md)
@@ -279,7 +279,7 @@ function graph-burndown {
     local TODAY=$(date '+%Y-%m-%d')
     local REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
     local REST2=$REST1                                     # 実績用残数
-    for LINE in ${PRUEBA_SCHEDULE}
+    for LINE in ${PROBO_SCHEDULE}
     do
         local DATE=$(echo      "$LINE" | cut -d , -f 1)
         local ESTIMATED=$(echo "$LINE" | cut -d , -f 2)
