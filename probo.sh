@@ -76,6 +76,39 @@ function generate-status-file-raw {
     done
 }
 
+function generate-status-file-markdown {
+    local FILE_MODE="$1"    # full or pickup
+    local RAW_TMPFILE="$2"
+    local OUT_FILE="$3"
+    local INS_FLAG="$4"
+
+    # ヘッダ行は raw file を無視して固定で出しちゃう
+    echo "| GROUP | CASE | TIMESTAMP | STATUS | DESRIPTION |"  >  "$$.status.tmp"
+    echo "|:-----:|:----:|:---------:|:------:|:-----------|" >>  "$$.status.tmp"
+
+    # ２行目以降は markdown の表形式に変換（INS_FLAG に応じて分岐）
+    if [ "$FILE_MODE" == "pickup" ]; then
+        tail -n +2 "$RAW_TMPFILE" | grep -v '	PASS	' \
+                                  | grep -v '	READY	' \
+                                  | perl -pe 's/	/ | /g' \
+                                  | perl -pe 's/^/| /'  \
+                                  | perl -pe 's/$/ |/'       >>  "$$.status.tmp"
+    else
+        tail -n +2 "$RAW_TMPFILE" | perl -pe 's/	/ | /g' \
+                                  | perl -pe 's/^/| /'  \
+                                  | perl -pe 's/$/ |/'       >>  "$$.status.tmp"
+    fi
+    # INS_FLAG の値で分岐
+    if [ "$INS_FLAG" -eq 1 ]; then
+        # 1 なら差し込みを実施
+        mv    "$$.status.tmp" "$OUT_FILE"    # ToDo : implement...
+        rm -f "$$.status.tmp"
+    else
+        # 1 以外なら単純にリネーム
+        mv "$$.status.tmp" "$OUT_FILE"
+    fi
+}
+
 function get-image-type-from-filename {
     local IMG_TYPE="${1##*.}"    # 最後のピリオドまでを削除
     case "$IMG_TYPE" in
@@ -399,7 +432,7 @@ function generate-report-files-raw {
             rm -f "$$.status.tmp"
         fi
     fi
-    # burn-down data file 指定があれば生成（raw target では insersion 指定は無視）
+    # burn-down data file 指定があれば生成
     if [ ! -z "${BDDATA_FILENAME}" ]; then
         generate-burndown-data-file-raw "${BDDATA_FILENAME}"
     fi
@@ -419,6 +452,26 @@ function generate-report-files-raw {
 }
 
 function generate-report-files-markdown {
+
+    # status file 指定があれば生成
+    if [ ! -z "${STATUS_FULL_FILENAME}" ] || [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
+        # 最初に一時ファイルとして raw 形式ファイルを作成
+        generate-status-file-raw "$$.status.raw.tmp"
+        # pickup ファイルが指定されていれば作成
+        if [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
+            generate-status-file-markdown 'pickup' "$$.status.raw.tmp" \
+                                          "$STATUS_PICKUP_FILENAME" "$STATUS_PICKUP_INSERSION"
+        fi
+        # full ファイルが指定されている場合
+        if [ ! -z "${STATUS_FULL_FILENAME}" ]; then
+            generate-status-file-markdown 'full' "$$.status.raw.tmp" \
+                                          "$STATUS_FULL_FILENAME" "$STATUS_FULL_INSERSION"
+        fi
+        # 一時ファイルを削除
+        rm -f "$$.status.raw.tmp"
+    fi
+
+    # markdown target では burn-down data file 指定は無視
 
 	# ToDo : implement...
 
