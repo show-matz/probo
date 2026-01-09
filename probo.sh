@@ -252,6 +252,12 @@ function make-summary-gpfile {
     local DAT_FILE="$2"
     local IMG_TYPE="$3"    # svg|png|jpeg|gif
     local IMG_SIZE="$4"    # 'width,height'
+    local CLR1=$(choice-first-value "$SUMGRAPH_CLR_READY"    "gray")
+    local CLR2=$(choice-first-value "$SUMGRAPH_CLR_BLOCK"  "purple")
+    local CLR3=$(choice-first-value "$SUMGRAPH_CLR_OTHER" "#98FB98")
+    local CLR4=$(choice-first-value "$SUMGRAPH_CLR_FAIL"     "pink")
+    local CLR5=$(choice-first-value "$SUMGRAPH_CLR_RUN"      "blue")
+    local CLR6=$(choice-first-value "$SUMGRAPH_CLR_PASS"     "cyan")
 
     if [ "$IMG_TYPE" == "svg" ]; then
         echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"white\"" > ${OUT_FILE}
@@ -279,12 +285,12 @@ unset border
 # ラベルを表示する位置の半径（外半径が1の場合、0.7くらいが適当）
 r_label = 0.7
 
-set lt 1 lc rgb "gray"
-set lt 2 lc rgb "purple"
-set lt 3 lc rgb "#98FB98"
-set lt 4 lc rgb "pink"
-set lt 5 lc rgb "blue"
-set lt 6 lc rgb "cyan"
+set lt 1 lc rgb "$CLR1"
+set lt 2 lc rgb "$CLR2"
+set lt 3 lc rgb "$CLR3"
+set lt 4 lc rgb "$CLR4"
+set lt 5 lc rgb "$CLR5"
+set lt 6 lc rgb "$CLR6"
 
 set yrange [-1.1:1.1]
 set xrange [-1.1:1.1]  # x軸も同様に広げるとバランスが良くなります
