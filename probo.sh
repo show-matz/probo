@@ -89,7 +89,7 @@ function generate-summary-data-file-markdown {
 
     # ヘッダ行は raw file を無視して固定で出しちゃう
     echo "| GROUP | READY | BLOCK | RUN | OTHER | FAIL | PASS | TOTAL | PROGRESS |"  > "$$.summary.tmp"
-    echo "|:-----:|------:|------:|----:|------:|-----:|-----:|------:|---------:|" >> "$$.summary.tmp"
+    echo "|:------|------:|------:|----:|------:|-----:|-----:|------:|---------:|" >> "$$.summary.tmp"
 
     # ２行目以降は markdown の表形式に変換（INS_FLAG に応じて分岐）
     tail -n +2 "$$.summary.raw.tmp" | perl -pe 's/	/ | /g' \
@@ -135,7 +135,7 @@ function generate-status-file-markdown {
 
     # ヘッダ行は raw file を無視して固定で出しちゃう
     echo "| GROUP | CASE | TIMESTAMP | STATUS | DESRIPTION |"  >  "$$.status.tmp"
-    echo "|:-----:|:----:|:---------:|:------:|:-----------|" >>  "$$.status.tmp"
+    echo "|:------|:----:|:---------:|:------:|:-----------|" >>  "$$.status.tmp"
 
     # ２行目以降は markdown の表形式に変換（FILE_MODE に応じて分岐）
     if [ "$FILE_MODE" == "pickup" ]; then
