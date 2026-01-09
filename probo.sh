@@ -8,6 +8,17 @@ function show-usage {
     echo "    probo.sh --report [-c CONF_FILE]"
 }
 
+# 不定数のパラメータを取り、最初の空文字列でないものを返す関数
+function choice-first-value {
+    for ARG in "$@"; do
+        if [ ! -z "$ARG" ]; then
+            echo "$ARG"
+            return 0
+        fi
+    done    
+    return 1
+}
+
 function insert-data-to-markdown-file {
     local DAT_FILE="$1"
     local OUT_FILE="$2"
@@ -177,9 +188,14 @@ function make-burndown-gpfile {
     local OUT_FILE="$1"
     local DAT_FILE="$2"
     local IMG_TYPE="$3"    # svg|png|jpeg|gif
-    local IMG_SIZE="$4"    # 'width,height'
-    local TOP_Y1="$5"
-    local TOP_Y2="$6"
+    local TOP_Y1="$4"
+    local TOP_Y2="$5"
+    local IMG_W=$(choice-first-value "$BDCHART_WIDTH"  "800")
+    local IMG_H=$(choice-first-value "$BDCHART_HEIGHT" "400")
+    local CLR1=$(choice-first-value "$BDCHART_CLR_GUIDE"    "gray")
+    local CLR2=$(choice-first-value "$BDCHART_CLR_PASSLINE" "blue")
+    local CLR3=$(choice-first-value "$BDCHART_CLR_FAILBOX"   "red")
+    local IMG_SIZE="$IMG_W,$IMG_H"
 
     if [ "$IMG_TYPE" == "svg" ]; then
         echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"white\"" > ${OUT_FILE}
@@ -210,9 +226,9 @@ set boxwidth 0.2 relative
 set style fill solid 0.75
 
 # 描画の実行
-plot "${DAT_FILE}" using 1:2 with linespoints pt 5 ps 0.5 linecolor rgb "gray" title "GuideLine", \\
-     "${DAT_FILE}" using 1:3 with linespoints pt 7 ps 0.5 linecolor rgb "blue" title "Pass", \\
-     "${DAT_FILE}" using 1:4 with boxes       axes x1y2   linecolor rgb "red"  title "Fail"
+plot "${DAT_FILE}" using 1:2 with linespoints pt 5 ps 0.5 linecolor rgb "$CLR1" title "GuideLine", \\
+     "${DAT_FILE}" using 1:3 with linespoints pt 7 ps 0.5 linecolor rgb "$CLR2" title "Pass", \\
+     "${DAT_FILE}" using 1:4 with boxes       axes x1y2   linecolor rgb "$CLR3" title "Fail"
 EOF
 }
 
@@ -220,15 +236,13 @@ function make-burndown-image {
     local DAT_FILE="$1"
     local OUT_FILE="$2"
     local IMG_TYPE="$3"
-    local IMG_W="$4"
-    local IMG_H="$5"
     # DAT_FILE を走査して TOP_Y1/TOP_Y2 を割り出す
     local TOP_Y1=$(cat $DAT_FILE | cut -d, -f2 | sort -g | tail -1)    # line graph
     local TOP_Y2=$(cat $DAT_FILE | cut -d, -f4 | sort -g | tail -1)    # Fail
     TOP_Y1=$((TOP_Y1 + 10))
     TOP_Y2=$((TOP_Y2 * 10))
     # gnuplot 設定ファイルを作成
-    make-burndown-gpfile "$$.tmp.gp" "$DAT_FILE" ${IMG_TYPE} "$IMG_W,$IMG_H" $TOP_Y1 $TOP_Y2
+    make-burndown-gpfile "$$.tmp.gp" "$DAT_FILE" ${IMG_TYPE} $TOP_Y1 $TOP_Y2
     gnuplot "$$.tmp.gp" > "${OUT_FILE}"
     rm -f "$$.tmp.gp"
 }
@@ -380,7 +394,7 @@ function graph-burndown {
         echo "${DATE},${REST1},${REST2},${NGCNT}" >> ${DAT_FILE}
     done
     IMG_TYPE=$(get-image-type-from-filename "$IMG_FILE")
-    make-burndown-image "$DAT_FILE" "$IMG_FILE" $IMG_TYPE $BDCHART_WIDTH $BDCHART_HEIGHT
+    make-burndown-image "$DAT_FILE" "$IMG_FILE" $IMG_TYPE
     rm -f ${DAT_FILE}
 }
 
