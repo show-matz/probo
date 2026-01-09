@@ -4,8 +4,20 @@ function show-usage {
     echo "USAGE:"
     echo "    probo --ls"
     echo "    probo --log RUNFILE..."
+    echo "    probo --addcase [COUNT]"
     echo "    probo --report [-c CONF_FILE]"
     echo "    probo --track [-d DESCRIPTION] STATUS RUNFILE..."
+}
+
+# 不定数のパラメータを取り、最初の存在するファイルを返す関数
+function first-exist-file {
+    for FILE in "$@"; do
+        if [ -e "$FILE" ]; then
+            echo "$FILE"
+            return 0
+        fi
+    done    
+    return 1
 }
 
 # 不定数のパラメータを取り、最初の空文字列でないものを返す関数
@@ -481,6 +493,41 @@ function track-runfile {
     echo "$FILE_COUNT file(s) updated."
 }
 
+function add-test-case-impl {
+    local ID="0000${1}"
+    local TIMESTAMP="$2"
+    local CASE_TMPL="$3"
+    ID="${ID: -4}"
+    CASE_FILE="$ID.testcase.md"
+    RUN_FILE="$ID.testrun.md"
+    echo "Adding test case $ID..."
+    if [ -z "$CASE_TMPL" ]; then
+        touch "$CASE_FILE"
+    else
+        cp "$CASE_TMPL" "$CASE_FILE"
+    fi   
+    track-runfile-impl "$TIMESTAMP" "NEW" "" 0
+}
+
+function add-test-case {
+    local COUNT="$1"
+    if [ -z "$COUNT" ]; then
+        COUNT=1
+    fi
+    if [[ ! "$COUNT" =~ ^[1-9][0-9]*$ ]]; then
+        echo "ERROR : invalid parameter \"$COUNT\"."
+        return 1
+    fi
+    local CASE_TMPL=$(first-exist-file "./.case.template" "../.case.template")
+    local TIMESTAMP=$(date '+%Y-%m-%d-%H-%M')
+    local CURTAIL=$(ls *.testcase.md | sort | tail -1 | cut -d. -f1)
+    local COUNT=$((10#$COUNT))
+    CURTAIL=$((10#$CURTAIL))
+    for ((i=0; i<$COUNT; i++)) do
+        add-test-case-impl $((CURTAIL + 1 + i)) "$TIMESTAMP" "$CASE_TMPL"
+    done
+}
+
 function dump-runfile-log {
     for RUN_FILE in $@
     do
@@ -606,6 +653,8 @@ case "$MODE" in
     --log )     dump-runfile-log "$@"
                 exit 0;;
     --track )   track-runfile "$@"
+                exit 0;;
+    --addcase ) add-test-case "$@"
                 exit 0;;
     --report )  ;;        # 後回し
     * )         echo "ERROR: Invalid option \"$MODE\"."

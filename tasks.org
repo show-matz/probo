@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [17/23]
+* tasks [18/24]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -28,14 +28,19 @@
 ** DONE 差し込みで位置マーカーコメントがなかった場合ファイル末尾に位置マーカーごと追加
 ** DONE --track で -d で指定する description に空白文字を入れられない問題を修正
 ** DONE --log / --track で runfile name でなく case ID（数値）も受け付ける
-** TODO --add-group でグループを追加する
-
-	* conf ファイルへの追加が一番問題になる‥‥‥conf は複数ありうるし。
-
-** TODO --add-case でテストケースを追加する
+** DONE --addcase でテストケースを追加する
 
 	* testcase.md と testrun.md を追加してあげるくらいか。
 	* PROBO_CASE_TEMPLATE 変数で初期化してあげるとか。
+	* conf file が必要ってことにするの？
+	* カレントまたはひとつ上のディレクトリで .case.template を探す、にするか
+	* probo --addcase [COUNT]
+
+** TODO --track で status を小文字で指定しても良いようにする
+** TODO --addcase で template file 内のパラメータ展開 : ID とか group ？
+** TODO --add-group でグループを追加する
+
+	* conf ファイルへの追加が一番問題になる‥‥‥conf は複数ありうるし。
 
 ** TODO --init でなんか初期化する
 ** TODO group 別のレポート生成もする？
