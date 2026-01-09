@@ -1,4 +1,8 @@
-* tasks [14/23]
+# +STARTUP: overview
+# +STARTUP: showeverything
+#+STARTUP: content
+
+* tasks [15/23]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -21,7 +25,7 @@
 ** DONE グラフの色指定を conf file で可能にしたい
 ** DONE --help で show-usage
 ** DONE probo.sh から拡張子を除去する
-** TODO 差し込みで位置マーカーコメントがなかった場合のエラー処理を追加
+** DONE 差し込みで位置マーカーコメントがなかった場合ファイル末尾に位置マーカーごと追加
 ** TODO --log / --track で runfile name でなく case ID（数値）も受け付ける
 ** TODO --add-group でグループを追加する
 

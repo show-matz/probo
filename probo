@@ -26,7 +26,12 @@ function insert-data-to-markdown-file {
     LINE1=$(cat "$OUT_FILE" | grep -n "<!-- begin $INS_MARK -->" | cut -d: -f1)
     LINE2=$(cat "$OUT_FILE" | grep -n "<!-- end $INS_MARK -->"   | cut -d: -f1)
     if [ -z "$LINE1" ] || [ -z "$LINE2" ]; then
-        return 1
+        echo ""                         >> "$OUT_FILE"
+        echo ""                         >> "$OUT_FILE"
+        echo "<!-- begin $INS_MARK -->" >> "$OUT_FILE"
+        cat  $DAT_FILE                  >> "$OUT_FILE"
+        echo "<!-- end $INS_MARK -->"   >> "$OUT_FILE"
+        echo ""                         >> "$OUT_FILE"
     else
         head    -$LINE1 $OUT_FILE >  $$.tmp
         cat             $DAT_FILE >> $$.tmp
