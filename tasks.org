@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [20/25]
+* tasks [21/27]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -38,6 +38,13 @@
 
 ** DONE --track で status を小文字で指定しても良いようにする
 ** DONE --addcase で template file 内のパラメータ展開 : ID とか group ？
+** DONE PROBO_GROUPS 指定がない場合、カレント配下のディレクトリを走査する
+	* この場合、.git のように . で始まるディレクトリは対象外に。
+** TODO PROBO_SCHEDULE を作るのが面倒臭い
+
+	* 日毎に消化予定数を指定するのはやりすぎ
+	* 開始日付、目標消化日数、終了日付くらいの指定で良いか
+
 ** TODO --add-group でグループを追加する
 
 	* conf ファイルへの追加が一番問題になる‥‥‥conf は複数ありうるし。

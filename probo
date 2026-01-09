@@ -688,6 +688,10 @@ fi
 
 source "$CONF_FILE"
 
+if [ -z "$PROBO_GROUPS" ]; then
+    PROBO_GROUPS=$(find . -maxdepth 1 -type d | grep -v '^\.$' | cut -d/ -f2 | grep -v '^\.' | sort)
+fi
+
 if [ "$MODE" == "--report" ]; then
 
     # REPORT_TARGET の正当性チェック
