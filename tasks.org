@@ -1,4 +1,4 @@
-* tasks [8/14]
+* tasks [11/14]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -15,9 +15,9 @@
 ** DONE ターゲットとして、 markdown|raw
 ** DONE 画像ファイル名に２つ以上ピリオドを使うとうまく動かない問題に対処する
 ** DONE 名称を probo に変更する
-** TODO --init でなんか初期化する
-** TODO GitLab 向けのレポートおよびステータス一覧を生成（して .md に挿入）する機能を追加
-** TODO 別 markdown ファイルにしちゃうか、あるいは挿入かは要検討
-** TODO group 別のレポート生成もする？
-** TODO ステータス一覧は full と partial（READY/PASS 除外）
+** DONE GitLab 向けのレポートおよびステータス一覧を生成（して .md に挿入）する機能を追加
+** DONE 別 markdown ファイルにしちゃうか、あるいは挿入かは要検討
+** DONE ステータス一覧は full と pickup（READY/PASS 除外）
 ** TODO グラフの色指定を conf file で可能にしたい
+** TODO --init でなんか初期化する
+** TODO group 別のレポート生成もする？

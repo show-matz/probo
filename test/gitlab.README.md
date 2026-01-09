@@ -2,10 +2,11 @@
 ## summary
 
 <!-- begin probo summary -->
-| GROUP | READY | BLOCK | RUN | OTHER | FAIL | PASS | TOTAL |
-|:-----:|------:|------:|----:|------:|-----:|-----:|------:|
-| group1 | 15 | 0 | 0 | 0 | 0 | 5 | 20 |
-| group2 | 20 | 0 | 0 | 0 | 0 | 0 | 20 |
+| GROUP | READY | BLOCK | RUN | OTHER | FAIL | PASS | TOTAL | PROGRESS |
+|:-----:|------:|------:|----:|------:|-----:|-----:|------:|---------:|
+| group1 | 15 | 0 | 0 | 0 | 0 | 5 | 20 | 25.0% |
+| group2 | 20 | 0 | 0 | 0 | 0 | 0 | 20 | 0.0% |
+| (total) | 35 | 0 | 0 | 0 | 0 | 5 | 40 | 12.5% |
 <!-- end probo summary -->
 
 ## status

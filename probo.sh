@@ -51,7 +51,8 @@ function generate-burndown-data-file-raw {
 
 function generate-summary-data-file-raw {
     local OUT_FILE="$1"
-    echo "GROUP	READY	BLOCK	RUN	OTHER	FAIL	PASS	TOTAL" > "${OUT_FILE}"
+    TOTALS=(0 0 0 0 0 0 0)        # READY,BLOCK,RUN,OTHER,FAIL,PASS,TOTAL
+    echo "GROUP	READY	BLOCK	RUN	OTHER	FAIL	PASS	TOTAL	PROGRESS" > "${OUT_FILE}"
     for GROUP in ${PROBO_GROUPS}
     do
         pushd ${GROUP} > /dev/null
@@ -69,9 +70,15 @@ function generate-summary-data-file-raw {
             esac
             COUNTS[6]=$((COUNTS[6] + 1))
         done
-        echo "${GROUP}	${COUNTS[0]}	${COUNTS[1]}	${COUNTS[2]}	${COUNTS[3]}	${COUNTS[4]}	${COUNTS[5]}	${COUNTS[6]}" >> ../"${OUT_FILE}"
+        local PROGRESS=$(ins-pt $((COUNTS[5] * 1000 / COUNTS[6])))
+        echo "${GROUP}	${COUNTS[0]}	${COUNTS[1]}	${COUNTS[2]}	${COUNTS[3]}	${COUNTS[4]}	${COUNTS[5]}	${COUNTS[6]}	${PROGRESS}%" >> ../"${OUT_FILE}"
+        for ((i=0; i<7; i++)) do
+            TOTALS[i]=$((TOTALS[i] + COUNTS[i]))
+        done
         popd > /dev/null
     done
+    local PROGRESS=$(ins-pt $((TOTALS[5] * 1000 / TOTALS[6])))
+    echo "(total)	${TOTALS[0]}	${TOTALS[1]}	${TOTALS[2]}	${TOTALS[3]}	${TOTALS[4]}	${TOTALS[5]}	${TOTALS[6]}	${PROGRESS}%" >> ./"${OUT_FILE}"
 }
 
 function generate-summary-data-file-markdown {
@@ -81,10 +88,8 @@ function generate-summary-data-file-markdown {
     generate-summary-data-file-raw "$$.summary.raw.tmp"
 
     # ヘッダ行は raw file を無視して固定で出しちゃう
-    echo "| GROUP | READY | BLOCK | RUN | OTHER | FAIL | PASS | TOTAL |"  > "$$.summary.tmp"
-    echo "|:-----:|------:|------:|----:|------:|-----:|-----:|------:|" >> "$$.summary.tmp"
-
-	# ToDo : ここで追加のデータ計算をする（あるいは raw 側でやる？）
+    echo "| GROUP | READY | BLOCK | RUN | OTHER | FAIL | PASS | TOTAL | PROGRESS |"  > "$$.summary.tmp"
+    echo "|:-----:|------:|------:|----:|------:|-----:|-----:|------:|---------:|" >> "$$.summary.tmp"
 
     # ２行目以降は markdown の表形式に変換（INS_FLAG に応じて分岐）
     tail -n +2 "$$.summary.raw.tmp" | perl -pe 's/	/ | /g' \
