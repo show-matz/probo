@@ -41,6 +41,34 @@ function fix-runfile-name {
     fi
 }
 
+function generate-probo-schedule {
+
+    local CURDATE="$PROBO_STARTDAY"
+    local ENDDATE="$PROBO_ENDDAY"
+    local UNIT="$PROBO_EXEC_PER_DAY"
+    local REST=$(find . -name '*.testcase.md' | wc -l)
+
+    if [ -z "$CURDATE" ] || [ -z "$ENDDATE" ]; then
+        echo "ERROR: Invalid date specifier : PROBO_STARTDAY or PROBO_ENDDAY."
+        return 1
+    fi
+
+    while :
+    do
+        if [ $REST -lt $UNIT ]; then
+            echo "$CURDATE,$REST"
+            REST=0
+        else
+            echo "$CURDATE,$UNIT"
+            REST=$((REST - UNIT))
+        fi
+        if [ "$CURDATE" == "$ENDDATE" ]; then
+            break
+        fi
+        CURDATE=$(date -d "$CURDATE + 1 day" +"%Y-%m-%d")
+    done
+}
+
 function insert-data-to-markdown-file {
     local DAT_FILE="$1"
     local OUT_FILE="$2"
@@ -691,6 +719,11 @@ source "$CONF_FILE"
 if [ -z "$PROBO_GROUPS" ]; then
     PROBO_GROUPS=$(find . -maxdepth 1 -type d | grep -v '^\.$' | cut -d/ -f2 | grep -v '^\.' | sort)
 fi
+
+if [ -z "${PROBO_SCHEDULE}" ]; then
+    PROBO_SCHEDULE=$(generate-probo-schedule)
+fi
+
 
 if [ "$MODE" == "--report" ]; then
 
