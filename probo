@@ -459,7 +459,7 @@ function track-runfile {
     shift $((OPTIND - 1))
 
     # STATUS パラメータの回収とチェック
-    local STATUS="$1"
+    local STATUS="${1^^}"
     shift
     case $STATUS in
         READY) ;;

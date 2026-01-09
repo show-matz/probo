@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [18/24]
+* tasks [19/25]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -36,7 +36,7 @@
 	* カレントまたはひとつ上のディレクトリで .case.template を探す、にするか
 	* probo --addcase [COUNT]
 
-** TODO --track で status を小文字で指定しても良いようにする
+** DONE --track で status を小文字で指定しても良いようにする
 ** TODO --addcase で template file 内のパラメータ展開 : ID とか group ？
 ** TODO --add-group でグループを追加する
 
