@@ -449,10 +449,12 @@ function track-runfile {
         if [ ! -e "$RUN_FILE" ]; then
             echo "ERROR : runfile $RUN_FILE is not found."
         else
-            echo ""          >> "$RUN_FILE"
-            echo ""          >> "$RUN_FILE"
-            echo "$NEW_LINE" >> "$RUN_FILE"
-            echo ""          >> "$RUN_FILE"
+            echo ""                        >> "$RUN_FILE"
+            echo ""                        >> "$RUN_FILE"
+            echo "$NEW_LINE"               >> "$RUN_FILE"
+            echo ""                        >> "$RUN_FILE"
+            echo "<!-- Add info here. -->" >> "$RUN_FILE"
+            echo ""                        >> "$RUN_FILE"
             FILE_COUNT=$((FILE_COUNT + 1))
         fi
     done
