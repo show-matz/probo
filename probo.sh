@@ -8,6 +8,23 @@ function show-usage {
     echo "    probo.sh --report [-c CONF_FILE]"
 }
 
+function insert-data-to-markdown-file {
+    local DAT_FILE="$1"
+    local OUT_FILE="$2"
+    local INS_MARK="$3"
+    LINE1=$(cat "$OUT_FILE" | grep -n "<!-- begin $INS_MARK -->" | cut -d: -f1)
+    LINE2=$(cat "$OUT_FILE" | grep -n "<!-- end $INS_MARK -->"   | cut -d: -f1)
+    if [ -z "$LINE1" ] || [ -z "$LINE2" ]; then
+        return 1
+    else
+        head    -$LINE1 $OUT_FILE >  $$.tmp
+        cat             $DAT_FILE >> $$.tmp
+        tail -n +$LINE2 $OUT_FILE >> $$.tmp
+        rm -f "$OUT_FILE"
+        mv $$.tmp "$OUT_FILE"
+    fi
+}
+
 function generate-burndown-data-file-raw {
     local DAT_FILE="$1"
     local TODAY=$(date '+%Y-%m-%d')
@@ -64,19 +81,25 @@ function generate-summary-data-file-markdown {
     generate-summary-data-file-raw "$$.summary.raw.tmp"
 
     # ヘッダ行は raw file を無視して固定で出しちゃう
-    echo "| GROUP | READY | BLOCK | RUN | OTHER | FAIL | PASS | TOTAL |"  > "${OUT_FILE}"
-    echo "|:-----:|------:|------:|----:|------:|-----:|-----:|------:|" >> "${OUT_FILE}"
+    echo "| GROUP | READY | BLOCK | RUN | OTHER | FAIL | PASS | TOTAL |"  > "$$.summary.tmp"
+    echo "|:-----:|------:|------:|----:|------:|-----:|-----:|------:|" >> "$$.summary.tmp"
 
 	# ToDo : ここで追加のデータ計算をする（あるいは raw 側でやる？）
 
     # ２行目以降は markdown の表形式に変換（INS_FLAG に応じて分岐）
     tail -n +2 "$$.summary.raw.tmp" | perl -pe 's/	/ | /g' \
                                     | perl -pe 's/^/| /'  \
-                                    | perl -pe 's/$/ |/'       >> "${OUT_FILE}"
-
-	# ToDo : INS_FLAG の処理ができてない
-
-    rm -f  "$$.summary.raw.tmp"
+                                    | perl -pe 's/$/ |/'       >> "$$.summary.tmp"
+    rm -f "$$.summary.raw.tmp"
+    # INS_FLAG の値で分岐
+    if [ "$INS_FLAG" -eq 1 ]; then
+        # 1 なら差し込みを実施
+        insert-data-to-markdown-file "$$.summary.tmp" "$OUT_FILE" "probo summary"
+        rm -f "$$.summary.tmp"
+    else
+        # 1 以外なら単純にリネーム
+        mv "$$.summary.tmp" "$OUT_FILE"
+    fi
 }
 
 
@@ -109,7 +132,7 @@ function generate-status-file-markdown {
     echo "| GROUP | CASE | TIMESTAMP | STATUS | DESRIPTION |"  >  "$$.status.tmp"
     echo "|:-----:|:----:|:---------:|:------:|:-----------|" >>  "$$.status.tmp"
 
-    # ２行目以降は markdown の表形式に変換（INS_FLAG に応じて分岐）
+    # ２行目以降は markdown の表形式に変換（FILE_MODE に応じて分岐）
     if [ "$FILE_MODE" == "pickup" ]; then
         tail -n +2 "$RAW_TMPFILE" | grep -v '	PASS	' \
                                   | grep -v '	READY	' \
@@ -124,7 +147,7 @@ function generate-status-file-markdown {
     # INS_FLAG の値で分岐
     if [ "$INS_FLAG" -eq 1 ]; then
         # 1 なら差し込みを実施
-        mv    "$$.status.tmp" "$OUT_FILE"    # ToDo : implement...
+        insert-data-to-markdown-file "$$.status.tmp" "$OUT_FILE" "probo status-${FILE_MODE}"
         rm -f "$$.status.tmp"
     else
         # 1 以外なら単純にリネーム
