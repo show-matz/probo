@@ -495,8 +495,9 @@ function track-runfile {
 
 function add-test-case-impl {
     local ID="0000${1}"
-    local TIMESTAMP="$2"
-    local CASE_TMPL="$3"
+    local GROUP="$2"
+    local TIMESTAMP="$3"
+    local CASE_TMPL="$4"
     ID="${ID: -4}"
     CASE_FILE="$ID.testcase.md"
     RUN_FILE="$ID.testrun.md"
@@ -504,7 +505,8 @@ function add-test-case-impl {
     if [ -z "$CASE_TMPL" ]; then
         touch "$CASE_FILE"
     else
-        cp "$CASE_TMPL" "$CASE_FILE"
+        cat "$CASE_TMPL" | perl -pe "s/%CASEID%/${ID}/g"   \
+                         | perl -pe "s/%GROUP%/${GROUP}/g" > "$CASE_FILE"
     fi   
     track-runfile-impl "$TIMESTAMP" "NEW" "" 0
 }
@@ -519,12 +521,13 @@ function add-test-case {
         return 1
     fi
     local CASE_TMPL=$(first-exist-file "./.case.template" "../.case.template")
+    local GROUP=$(basename $(pwd))
     local TIMESTAMP=$(date '+%Y-%m-%d-%H-%M')
     local CURTAIL=$(ls *.testcase.md | sort | tail -1 | cut -d. -f1)
     local COUNT=$((10#$COUNT))
     CURTAIL=$((10#$CURTAIL))
     for ((i=0; i<$COUNT; i++)) do
-        add-test-case-impl $((CURTAIL + 1 + i)) "$TIMESTAMP" "$CASE_TMPL"
+        add-test-case-impl $((CURTAIL + 1 + i)) "$GROUP" "$TIMESTAMP" "$CASE_TMPL"
     done
 }
 

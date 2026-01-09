@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [19/25]
+* tasks [20/25]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -37,7 +37,7 @@
 	* probo --addcase [COUNT]
 
 ** DONE --track で status を小文字で指定しても良いようにする
-** TODO --addcase で template file 内のパラメータ展開 : ID とか group ？
+** DONE --addcase で template file 内のパラメータ展開 : ID とか group ？
 ** TODO --add-group でグループを追加する
 
 	* conf ファイルへの追加が一番問題になる‥‥‥conf は複数ありうるし。
