@@ -419,6 +419,20 @@ function graph-burndown {
     rm -f ${DAT_FILE}
 }
 
+function track-runfile-impl {
+    TIMESTAMP="$1"
+    STATUS="$2"
+    DESCRIPTION="$3"
+    COMMENT="$4"
+    echo ""                                        >> "$RUN_FILE"
+    echo "## ${TIMESTAMP}.${STATUS}${DESCRIPTION}" >> "$RUN_FILE"
+    echo ""                                        >> "$RUN_FILE"
+    if [ "$COMMENT" -eq 1 ]; then
+        echo "<!-- Add info here. -->"             >> "$RUN_FILE"
+        echo ""                                    >> "$RUN_FILE"
+    fi
+}
+
 function track-runfile {
 
     # -d オプションの回収（あれば）
@@ -460,12 +474,7 @@ function track-runfile {
         if [ ! -e "$RUN_FILE" ]; then
             echo "ERROR : runfile $RUN_FILE is not found."
         else
-            echo ""                        >> "$RUN_FILE"
-            echo ""                        >> "$RUN_FILE"
-            echo "$NEW_LINE"               >> "$RUN_FILE"
-            echo ""                        >> "$RUN_FILE"
-            echo "<!-- Add info here. -->" >> "$RUN_FILE"
-            echo ""                        >> "$RUN_FILE"
+            track-runfile-impl "${TIMESTAMP}" "${STATUS}" "${DESCRIPTION}" 1
             FILE_COUNT=$((FILE_COUNT + 1))
         fi
     done

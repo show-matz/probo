@@ -35,6 +35,7 @@
 ** TODO --add-case でテストケースを追加する
 
 	* testcase.md と testrun.md を追加してあげるくらいか。
+	* PROBO_CASE_TEMPLATE 変数で初期化してあげるとか。
 
 ** TODO --init でなんか初期化する
 ** TODO group 別のレポート生成もする？
