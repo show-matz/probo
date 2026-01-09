@@ -251,13 +251,15 @@ function make-summary-gpfile {
     local OUT_FILE="$1"
     local DAT_FILE="$2"
     local IMG_TYPE="$3"    # svg|png|jpeg|gif
-    local IMG_SIZE="$4"    # 'width,height'
+    local IMG_W=$(choice-first-value "$SUMGRAPH_WIDTH"  "500")
+    local IMG_H=$(choice-first-value "$SUMGRAPH_HEIGHT" "400")
     local CLR1=$(choice-first-value "$SUMGRAPH_CLR_READY"    "gray")
     local CLR2=$(choice-first-value "$SUMGRAPH_CLR_BLOCK"  "purple")
     local CLR3=$(choice-first-value "$SUMGRAPH_CLR_OTHER" "#98FB98")
     local CLR4=$(choice-first-value "$SUMGRAPH_CLR_FAIL"     "pink")
     local CLR5=$(choice-first-value "$SUMGRAPH_CLR_RUN"      "blue")
     local CLR6=$(choice-first-value "$SUMGRAPH_CLR_PASS"     "cyan")
+    local IMG_SIZE="$IMG_W,$IMG_H"
 
     if [ "$IMG_TYPE" == "svg" ]; then
         echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"white\"" > ${OUT_FILE}
@@ -326,9 +328,7 @@ function ins-pt {
 function make-summary-image {
     local OUT_FILE="$1"
     local IMG_TYPE="$2"
-    local IMG_W="$3"
-    local IMG_H="$4"
-    local CASES=("$5" "$6" "$7" "$8" "$9" "${10}") # READY,BLOCK,OTHER,FAIL,RUN,PASS
+    local CASES=("$3" "$4" "$5" "$6" "$7" "$8") # READY,BLOCK,OTHER,FAIL,RUN,PASS
 
     local N_TOTAL=$((CASES[0] + CASES[1] + CASES[2] + CASES[3] + CASES[4] + CASES[5]))
     local DEG1=0
@@ -344,7 +344,7 @@ function make-summary-image {
     done
 
     # gnuplot 設定ファイルを作成
-    make-summary-gpfile "$$.tmp.gp" "$$.tmp.dat" ${IMG_TYPE} "$IMG_W,$IMG_H"
+    make-summary-gpfile "$$.tmp.gp" "$$.tmp.dat" ${IMG_TYPE}
     gnuplot "$$.tmp.gp" > "${OUT_FILE}"
     rm -f "$$.tmp.gp"
     rm -f "$$.tmp.dat"
@@ -371,7 +371,7 @@ function graph-summary {
         popd > /dev/null
     done
     IMG_TYPE=$(get-image-type-from-filename "$OUT_FILE")
-    make-summary-image "$OUT_FILE" $IMG_TYPE $SUMGRAPH_WIDTH $SUMGRAPH_HEIGHT \
+    make-summary-image "$OUT_FILE" $IMG_TYPE \
                        ${COUNTS[0]} ${COUNTS[1]} ${COUNTS[5]} ${COUNTS[2]} ${COUNTS[3]} ${COUNTS[4]}
     rm -f ${DAT_FILE}
 }
