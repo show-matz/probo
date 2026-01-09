@@ -5,7 +5,7 @@
 　実行時点のタイムスタンプで、指定されたファイルにステータスを記録します。
 
 ```
- probo.sh --track [-d DESCRIPTION] STATUS RUNFILE...
+ probo --track [-d DESCRIPTION] STATUS RUNFILE...
  STATUS := READY|BLOCK|PASS|FAIL|RUN
 ```
 
@@ -14,7 +14,7 @@
 　指定された run file のログを出力します。
 
 ```
- probo.sh --log RUNFILE...
+ probo --log RUNFILE...
 ```
 
 ### --ls オプション
@@ -22,7 +22,7 @@
 　カレントディレクトリの run file の現在のステータスを一覧します。
 
 ```
- probo.sh --ls
+ probo --ls
 ```
 
 ### --report オプション
@@ -30,5 +30,5 @@
 　指定された run file のログを出力します。
 
 ```
- probo.sh --report [-c CONF_FILE]
+ probo --report [-c CONF_FILE]
 ```

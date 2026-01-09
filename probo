@@ -2,10 +2,10 @@
 
 function show-usage {
     echo "USAGE:"
-    echo "    probo.sh --ls"
-    echo "    probo.sh --log RUNFILE..."
-    echo "    probo.sh --report [-c CONF_FILE]"
-    echo "    probo.sh --track [-d DESCRIPTION] STATUS RUNFILE..."
+    echo "    probo --ls"
+    echo "    probo --log RUNFILE..."
+    echo "    probo --report [-c CONF_FILE]"
+    echo "    probo --track [-d DESCRIPTION] STATUS RUNFILE..."
 }
 
 # 不定数のパラメータを取り、最初の空文字列でないものを返す関数
