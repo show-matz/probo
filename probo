@@ -415,7 +415,7 @@ function track-runfile {
     local DESCRIPTION=""
     while getopts "d:" opt; do
         case $opt in
-            d) DESCRIPTION=${OPTARG} ;;
+            d) DESCRIPTION="${OPTARG}" ;;
             *) echo "ERROR : invalid option."
                return 1;;
         esac
@@ -580,11 +580,11 @@ case "$MODE" in
                 exit 0;;
     --ls )      dump-current-group-status
                 exit 0;;
-    --log )     dump-runfile-log $@
+    --log )     dump-runfile-log "$@"
                 exit 0;;
-    --track )   track-runfile $@
+    --track )   track-runfile "$@"
                 exit 0;;
-    --report )  ;;
+    --report )  ;;        # 後回し
     * )         echo "ERROR: Invalid option \"$MODE\"."
                 echo ""
                 show-usage

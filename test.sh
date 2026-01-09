@@ -7,11 +7,11 @@ VERBOSE=false
 
 # オプション解析
 # n, v は引数なし、a は引数が必要
-while getopts "nva:" opt; do
+while getopts "n:va:" opt; do
   case $opt in
-    n) NAME="User" ;;
+    n) NAME="$OPTARG" ;; # 引数を取得
     v) VERBOSE=true ;;
-    a) AGE=$OPTARG ;; # 引数を取得
+    a) AGE="$OPTARG" ;; # 引数を取得
     *) echo "無効なオプションです" ;;
   esac
 done

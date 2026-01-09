@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [15/23]
+* tasks [16/23]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -26,6 +26,7 @@
 ** DONE --help で show-usage
 ** DONE probo.sh から拡張子を除去する
 ** DONE 差し込みで位置マーカーコメントがなかった場合ファイル末尾に位置マーカーごと追加
+** DONE --track で -d で指定する description に空白文字を入れられない問題を修正
 ** TODO --log / --track で runfile name でなく case ID（数値）も受け付ける
 ** TODO --add-group でグループを追加する
 
@@ -35,7 +36,6 @@
 
 	* testcase.md と testrun.md を追加してあげるくらいか。
 
-** TODO --track で -d で指定する description に空白文字を入れられない
 ** TODO --init でなんか初期化する
 ** TODO group 別のレポート生成もする？
 ** TODO testcase.md ファイルからテストを自動実行するような仕組みを検討する
