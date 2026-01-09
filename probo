@@ -19,6 +19,16 @@ function choice-first-value {
     return 1
 }
 
+# runfile 名の補完：４桁以下の数字列の場合のみ、カレントディレクトリにある test ID とみなす
+function fix-runfile-name {
+    if [[ "$1" =~ ^[0-9]{1,4}$ ]]; then
+        local TMP="0000${1}"
+        echo "${TMP: -4}.testrun.md"
+    else
+        echo "$1"
+    fi
+}
+
 function insert-data-to-markdown-file {
     local DAT_FILE="$1"
     local OUT_FILE="$2"
@@ -446,6 +456,7 @@ function track-runfile {
     local FILE_COUNT=0
     for RUN_FILE in $@
     do
+        RUN_FILE=$(fix-runfile-name "$RUN_FILE")
         if [ ! -e "$RUN_FILE" ]; then
             echo "ERROR : runfile $RUN_FILE is not found."
         else
@@ -464,6 +475,7 @@ function track-runfile {
 function dump-runfile-log {
     for RUN_FILE in $@
     do
+        RUN_FILE=$(fix-runfile-name "$RUN_FILE")
         if [ ! -e "$RUN_FILE" ]; then
             echo "ERROR : runfile $RUN_FILE is not found."
         else

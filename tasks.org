@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [16/23]
+* tasks [17/23]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -27,7 +27,7 @@
 ** DONE probo.sh から拡張子を除去する
 ** DONE 差し込みで位置マーカーコメントがなかった場合ファイル末尾に位置マーカーごと追加
 ** DONE --track で -d で指定する description に空白文字を入れられない問題を修正
-** TODO --log / --track で runfile name でなく case ID（数値）も受け付ける
+** DONE --log / --track で runfile name でなく case ID（数値）も受け付ける
 ** TODO --add-group でグループを追加する
 
 	* conf ファイルへの追加が一番問題になる‥‥‥conf は複数ありうるし。
