@@ -1,4 +1,4 @@
-* tasks [12/14]
+* tasks [13/16]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -19,6 +19,7 @@
 ** DONE 別 markdown ファイルにしちゃうか、あるいは挿入かは要検討
 ** DONE ステータス一覧は full と pickup（READY/PASS 除外）
 ** DONE グラフの色指定を conf file で可能にしたい
-** TODO --help で show-usage
+** DONE --help で show-usage
+** TODO --track で -d で指定する description に空白文字を入れられない
 ** TODO --init でなんか初期化する
 ** TODO group 別のレポート生成もする？

@@ -2,10 +2,10 @@
 
 function show-usage {
     echo "USAGE:"
-    echo "    probo.sh --track [-d DESCRIPTION] STATUS RUNFILE..."
-    echo "    probo.sh --log RUNFILE..."
     echo "    probo.sh --ls"
+    echo "    probo.sh --log RUNFILE..."
     echo "    probo.sh --report [-c CONF_FILE]"
+    echo "    probo.sh --track [-d DESCRIPTION] STATUS RUNFILE..."
 }
 
 # 不定数のパラメータを取り、最初の空文字列でないものを返す関数
@@ -563,19 +563,30 @@ function generate-report-files-markdown {
 MODE="$1"
 shift
 
-# conf ファイルが不要な処理
-if [ "$MODE" == "--track" ]; then
-    track-runfile $@
-    exit 0
-elif [ "$MODE" == "--log" ]; then
-    dump-runfile-log $@
-    exit 0
-elif [ "$MODE" == "--ls" ]; then
-    dump-current-group-status
-    exit 0
+# モード指定がなければ show-usage して終わり
+if [ -z "$MODE" ]; then
+    show-usage
+    exit 1
 fi
 
+# 先にモード指定のチェックをしてしまう（conf 不要コマンドも実施）
+case "$MODE" in
+    --help )    show-usage
+                exit 0;;
+    --ls )      dump-current-group-status
+                exit 0;;
+    --log )     dump-runfile-log $@
+                exit 0;;
+    --track )   track-runfile $@
+                exit 0;;
+    --report )  ;;
+    * )         echo "ERROR: Invalid option \"$MODE\"."
+                echo ""
+                show-usage
+                exit 1;;
+esac
 
+# これで、以下は conf file が必要なコマンドだけ
 
 CONF_FILE="./probo.conf"
 
@@ -615,8 +626,5 @@ if [ "$MODE" == "--report" ]; then
         fi
     fi
     generate-report-files-${REPORT_TARGET}
-else
-    show-usage
-    exit 1
 fi
 
