@@ -1,0 +1,707 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <title>probo readme</title>
+  <style>
+  <!--
+html {
+    font-size: 100%;
+    overflow-y: scroll;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+body{
+    color:#444;
+    font-family:'Meiryo UI', Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman', serif;
+    font-size:12px;
+    line-height:1.5em;
+    padding:1em;
+    margin:auto;
+    max-width:50em;
+    background:#fefefe;
+}
+
+/* floating toc link button */
+.toc_button_top    { position: fixed; top:    20px; right: -30px; padding: 6px 40px; }
+.toc_button_bottom { position: fixed; bottom: 20px; right: -30px; padding: 6px 40px; }
+
+a{ color: #0645ad; text-decoration:none;}
+a:visited{ color: #0b0080; }
+a:hover{ color: #06e; }
+a:active{ color:#faa700; }
+a:focus{ outline: thin dotted; }
+a:hover, a:active{ outline: 0; }
+
+a.term:hover{ text-decoration:underline; }
+a.autolink:hover{ text-decoration:underline; }
+
+::-moz-selection{background:rgba(255,255,0,0.3);color:#000}
+::selection{background:rgba(255,255,0,0.3);color:#000}
+
+a::-moz-selection{background:rgba(255,255,0,0.3);color:#0645ad}
+a::selection{background:rgba(255,255,0,0.3);color:#0645ad}
+
+p{
+    margin:1em 0;
+}
+
+p.footnote{  font-size: 80%; line-height: 1.1em; }
+p.fig_title{ text-align: center; font-weight: bold; line-height: 0.6em; padding-bottom: 10px }
+p.tbl_title{ text-align: center; font-weight: bold; line-height: 0.6em; padding-top:    10px }
+p.pagebreak{ page-break-after: always; }
+
+img{
+    max-width:100%;
+}
+
+h1,h2,h3,h4,h5,h6{
+    padding-top: 0.5em;
+    font-weight:normal;
+    color:#111;
+    line-height:1em;
+}
+h4,h5,h6{ font-weight: bold; }
+h1{ margin-top:1.5em; font-size:2.5em; }
+h2{ margin-top:1.5em; font-size:2em; }
+h3{ margin-top:1.5em; font-size:1.5em; }
+h4{ margin-top:1.5em; font-size:1.2em; }
+h5{ margin-top:1.5em; font-size:1em; }
+h6{ margin-top:1.5em; font-size:0.9em; }
+
+blockquote{
+    color:#666666;
+    margin:0;
+    padding-left: 1.5em;
+    border-left: 0.5em #EEE solid;
+}
+hr { display: block; height: 2px; border: 0; border-top: 1px solid #aaa;
+     border-bottom: 1px solid #eee; margin: 1em 0; padding: 0; }
+
+kbd, samp { color: #000; background:#eee;
+                 line-height:1.2em;
+                 _font-family: monospace, monospace;
+                 font-family: 'Courier New', monospace; font-size: 0.98em; }
+code { color: #000;
+       line-height:1.2em;
+       _font-family: monospace, monospace;
+       font-family: 'Courier New', monospace; font-size: 0.98em; }
+
+/* normal pre block */
+pre {
+    background:     #eee;
+    color:          #000;
+    font-size:      0.98em;
+    border:         1px solid #ccc;
+    border-radius:  8px;
+    margin-left:    2em;
+    margin-right:   2em;
+    padding:       .5em;
+
+    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height:1.2em;
+    _font-family: monospace, monospace;
+    font-family: 'Courier New', monospace;
+}
+
+b, strong { font-weight: bold; }
+
+dfn { font-style: italic; }
+
+ins { background: #ff9; color: #000; text-decoration: none; }
+
+mark { background: #ff0; color: #000; font-weight: bold; }
+mark_bak { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
+
+sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+
+ul, ol { margin: 0.2em 0; padding: 0 0 0 2em; }
+li p:last-child { margin:0 }
+dd { margin: 0 0 0 2em; }
+
+img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
+
+table {
+border-collapse: collapse;
+border-spacing: 0;
+}
+th { text-align;  center; padding: 3px; border: 1px solid black; border-bottom: 2px solid black; background: #D9E2F3  }
+td { vertical-align: top; padding: 3px; border: 1px solid black;}
+
+/* for filters */
+pre.diff {
+    background:     #334;
+    color:          #fff;
+    font-size:      14px;
+    border:         1px solid #000;
+    border-radius:  8px;
+    margin-left:    2em;
+    margin-right:   2em;
+    padding:       .5em;
+}
+span.diff_head { color: #FF88FF; background: #550055; font-weight: bold; }
+span.diff_line { color: #CCCCFF; background: #000077; font-weight: bold; }
+span.diff_add  { color: #DCFBDC; background: #004400; font-weight: bold; }
+span.diff_del  { color: #FBDCDC; background: #550000; font-weight: bold; }
+
+pre.code {
+    background:     #334;
+    color:          #fff;
+    font-size:      14px;
+    border:         1px solid #000;
+    border-radius:  8px;
+    margin-left:    2em;
+    margin-right:   2em;
+    padding:       .5em;
+}
+span.comment  { color: darkorange; }
+span.keyword1 { color: cyan; }
+span.keyword2 { color: lime; }
+span.keyword3 { color: slateblue; }
+span.keyword4 { color: yellow; }
+span.keyword5 { color: skyblue; }
+span.keyword6 { color: lightgray; }
+span.literal  { color: pink; }
+
+
+/* for collapse */
+details {
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    padding: .5em .5em 0;
+    background: #fefeee;
+}
+summary {
+    margin: -.5em -.5em 0;
+    padding: .5em;
+}
+details[open] {
+    padding: .5em;
+}
+details[open] summary {
+    border-bottom: 1px solid #aaa;
+    margin-bottom: .5em;
+}
+
+/* for toc-x */
+blockquote.tocx {
+    color:#666666;
+    margin:0;
+    padding-left: 1.5em;
+    border-left: 0.5em white solid;
+}
+li.tocx {
+}
+details.tocx {
+    border: 1px solid white;*/
+    border-radius: 0px;
+    padding: .2em .2em 0;
+    background: white;
+}
+summary.tocx {
+    margin: -.2em -.2em 0;
+    padding: 0em;
+}
+details.tocx[open] {
+    padding: .2em;
+}
+details.tocx[open] summary.tocx {
+    border-bottom: 1px solid white;
+    margin-bottom: .2em;
+}
+
+
+/* for index-x */
+blockquote.idx_x {
+    color:#666666;
+    margin:0;
+    padding-left: 1.5em;
+    border-left: 0.5em white solid;
+}
+li.idx_x {
+}
+details.idx_x {
+    border: 1px solid white;*/
+    border-radius: 0px;
+    padding: .2em .2em 0;
+    background: white;
+}
+summary.idx_x {
+    margin: -.2em -.2em 0;
+    padding: 0em;
+}
+details.idx_x[open] {
+    padding: .2em;
+}
+details.idx_x[open] summary.idx_x {
+    border-bottom: 1px solid white;
+    margin-bottom: .2em;
+}
+
+
+@media only screen and (min-width: 480px) {
+body{font-size:14px;}
+}
+
+@media only screen and (min-width: 768px) {
+body{font-size:16px;}
+}
+
+@media print {
+  * { background: transparent !important; color: black !important; filter:none !important; -ms-filter: none !important; }
+  body{font-size:12pt; max-width:100%;}
+  a, a:visited { text-decoration: underline; }
+  hr { height: 1px; border:0; border-bottom:1px solid black; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
+  pre, blockquote { border: 1px solid #999; padding-right: 1em; page-break-inside: avoid; }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page :left { margin: 15mm 20mm 15mm 10mm; }
+  @page :right { margin: 15mm 10mm 15mm 20mm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
+  -->
+  </style>
+</head>
+<body>
+<div class='toc_button_top'><a href='#0qJQvVjc3Xy'>
+<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 200 200'>
+<defs><g id='line'>
+  <circle cx='45' cy='50' r='15' fill='white' stroke='none' stroke-width='1' />
+  <polyline fill='none' stroke='white' stroke-width='20' points=' 75.0,50.0 170.0,50.0' />
+</g></defs>
+<rect x='0' y='0' width='200' height='200' rx='30' ry='30' fill='lightgray' stroke='none' stroke-width='1' />
+<use xlink:href='#line' x='0' y='0' />
+<use xlink:href='#line' x='0' y='50' />
+<use xlink:href='#line' x='0' y='100' />
+</svg>
+</a></div>
+<h1><a name='hH8oZY2uO3E'></a>README - probo</h1>
+<p>　この文書は、 <strong>probo</strong> のマニュアル文書です。</p>
+<h2><a name='0qJQvVjc3Xy'></a>1 Table of contents</h2>
+<li class='tocx'><a href='#0qJQvVjc3Xy'>1 Table of contents</a></li>
+<li class='tocx'><a href='#9xk9gUVGJO0'>2 probo とは</a></li>
+<li class='tocx'><a href='#jjjXfFtPMKV'>3 構成</a></li>
+<li class='tocx'><a href='#h1vILBov6aJ'>4 使い方</a></li>
+<details class='tocx' open>
+<summary class='tocx'><a href='#1k2s83jlT9a'>5 機能</a></summary>
+<blockquote class='tocx'>
+<details class='tocx' open>
+<summary class='tocx'><a href='#ddPuOYtb1Nh'>5.1 レポート生成</a></summary>
+<blockquote class='tocx'>
+<li class='tocx'><a href='#dfbSFhhdFRQ'>5.1.1 </a></li>
+<li class='tocx'><a href='#i7AphzYnVLt'>5.1.2 burndown-chart 生成</a></li>
+<li class='tocx'><a href='#0mVxd9E6hjH'>5.1.3 summary-graph 生成</a></li>
+</blockquote>
+</details>
+</blockquote>
+</details>
+<details class='tocx' open>
+<summary class='tocx'><a href='#7zBGcRx06tJ'>6 起動オプション</a></summary>
+<blockquote class='tocx'>
+<li class='tocx'><a href='#6RK38KzDT9g'>6.1 --addcase オプション</a></li>
+<li class='tocx'><a href='#fy8CiK2yYNr'>6.2 --log オプション</a></li>
+<li class='tocx'><a href='#ibqo8Q1548Y'>6.3 --ls オプション</a></li>
+<li class='tocx'><a href='#iLGxvGNVVb2'>6.4 --report オプション</a></li>
+<li class='tocx'><a href='#2D7rbHQtrFj'>6.5 --track オプション</a></li>
+</blockquote>
+</details>
+<details class='tocx' open>
+<summary class='tocx'><a href='#cNngUDCfTMJ'>7 設定</a></summary>
+<blockquote class='tocx'>
+<details class='tocx' open>
+<summary class='tocx'><a href='#7IfXyHeT29Z'>7.1 conf ファイルの設定項目</a></summary>
+<blockquote class='tocx'>
+<li class='tocx'><a href='#aaplMEJp1Vb'>7.1.1 BDCHART_CLR_FAILBOX</a></li>
+<li class='tocx'><a href='#3mYUMedGgw3'>7.1.2 BDCHART_CLR_GUIDE</a></li>
+<li class='tocx'><a href='#8tLQb89mY4s'>7.1.3 BDCHART_CLR_PASSLINE</a></li>
+<li class='tocx'><a href='#eK7s1i7uWT5'>7.1.4 BDCHART_FILENAME</a></li>
+<li class='tocx'><a href='#e8ni87rJ2fZ'>7.1.5 BDCHART_HEIGHT</a></li>
+<li class='tocx'><a href='#fvwkFsDNkod'>7.1.6 BDCHART_WIDTH</a></li>
+<li class='tocx'><a href='#jjDcRKCyj2r'>7.1.7 BDDATA_FILENAME</a></li>
+<li class='tocx'><a href='#6FfiNjwcGAF'>7.1.8 PROBO_ENDDAY</a></li>
+<li class='tocx'><a href='#hcSOvrJXNZp'>7.1.9 PROBO_EXEC_PER_DAY</a></li>
+<li class='tocx'><a href='#7TVn0dyLQNY'>7.1.10 PROBO_GROUPS</a></li>
+<li class='tocx'><a href='#lD6Qbw8rLDg'>7.1.11 PROBO_SCHEDULE</a></li>
+<li class='tocx'><a href='#i8gQrqvkY4W'>7.1.12 PROBO_STARTDAY</a></li>
+<li class='tocx'><a href='#iadnusY3mzH'>7.1.13 REPORT_TARGET</a></li>
+<li class='tocx'><a href='#92mRsXy1DjL'>7.1.14 STATUS_FULL_FILENAME</a></li>
+<li class='tocx'><a href='#ctULjT0lTyj'>7.1.15 STATUS_FULL_INSERTION</a></li>
+<li class='tocx'><a href='#6Pb5u40mzar'>7.1.16 STATUS_PICKUP_FILENAME</a></li>
+<li class='tocx'><a href='#5QlGlwrO9b6'>7.1.17 STATUS_PICKUP_INSERTION</a></li>
+<li class='tocx'><a href='#cAQFzPNwJTm'>7.1.18 SUMGRAPH_CLR_BLOCK</a></li>
+<li class='tocx'><a href='#bY3esgSteRL'>7.1.19 SUMGRAPH_CLR_FAIL</a></li>
+<li class='tocx'><a href='#fJqEdfVEO2O'>7.1.20 SUMGRAPH_CLR_OTHER</a></li>
+<li class='tocx'><a href='#3a0SEnNAVww'>7.1.21 SUMGRAPH_CLR_PASS</a></li>
+<li class='tocx'><a href='#h4zC1mibNK6'>7.1.22 SUMGRAPH_CLR_READY</a></li>
+<li class='tocx'><a href='#2dd8unLAGYo'>7.1.23 SUMGRAPH_CLR_RUN</a></li>
+<li class='tocx'><a href='#cljLkCXZ8QQ'>7.1.24 SUMGRAPH_FILENAME</a></li>
+<li class='tocx'><a href='#6cxfzSXLgSh'>7.1.25 SUMGRAPH_HEIGHT</a></li>
+<li class='tocx'><a href='#h490HjV8KnQ'>7.1.26 SUMGRAPH_WIDTH</a></li>
+<li class='tocx'><a href='#5fKFLmQKdek'>7.1.27 SUMMARY_FILENAME</a></li>
+<li class='tocx'><a href='#kzAR1bJoCYn'>7.1.28 SUMMARY_INSERTION</a></li>
+</blockquote>
+</details>
+<li class='tocx'><a href='#b6CghwSHfuk'>7.2 .case.template ファイル</a></li>
+</blockquote>
+</details>
+<li class='tocx'><a href='#8tTIqHSNoTg'>8 既知の問題点</a></li>
+<li class='tocx'><a href='#dGdSPnvay5N'>9 更新履歴</a></li>
+<li class='tocx'><a href='#1ewHzjI62xn'>10 索引</a></li>
+<p>　　</p>
+<h2><a name='9xk9gUVGJO0'></a>2 probo とは</h2>
+<p>　<strong>probo</strong> は、bash スクリプトで動作する軽量なテキスト主義のテスト管理ツールです。基本的に bash と gnuplot があれば動作します<sup><a name='footnote_ref1' href='#footnote1'>1</a></sup>。</p>
+<h2><a name='jjjXfFtPMKV'></a>3 構成</h2>
+<p>　probo では、ひとつ以上の <strong>グループ</strong> を作成してそれぞれの配下で複数の <strong>テスト</strong> を管理します。テストはグループ内で <strong>テスト ID</strong> で識別され、 <strong>テストケース</strong> と <strong>テストラン</strong> がそれぞれ別のファイルに保存されます。</p>
+<ul>
+<li><strong>テスト ID</strong> : テストを識別するための４桁の数字列です。</li>
+<li><strong>テストケース</strong> : テストの仕様や実施方法の記述です</li>
+<li><strong>テストラン</strong> : テストの実施履歴や結果の記録です</li>
+</ul>
+<p>　テスト ID は通常は番号として扱うため、 <code>0001</code> からの連番になります。</p>
+<p>　テストケースとテストランは、テスト ID の後ろにそれぞれ <code>.testcase.md</code> および <code>.testrun.md</code> をつけた名前のマークダウン形式のテキストファイルで管理されます。つまり、以下のような名前の２ファイルがセットになります。</p>
+<ul>
+<li><code>0001.testcase.md</code></li>
+<li><code>0001.testrun.md</code></li>
+</ul>
+<p>　続いて <strong>グループ</strong> について。グループはテストを分類するためのもので、その名前でディレクトリを作成し、配下にケースファイルやランファイルを配置します。以下のように。</p>
+<ul>
+<li><code>group1/</code>
+<ul>
+<li><code>0001.testcase.md</code></li>
+<li><code>0001.testrun.md</code></li>
+<li><code>0002.testcase.md</code></li>
+<li><code>0002.testrun.md</code></li>
+<li>　:</li>
+<li>　:</li>
+</ul>
+</li>
+<li><code>group2/</code>
+<ul>
+<li><code>0001.testcase.md</code></li>
+<li><code>0001.testrun.md</code></li>
+<li><code>0002.testcase.md</code></li>
+<li><code>0002.testrun.md</code></li>
+<li>　:</li>
+<li>　:</li>
+</ul>
+</li>
+<li><code>.case.template</code></li>
+<li><code>probo.conf</code></li>
+</ul>
+<p>　test-run ファイルは、テストに実施履歴を記録するためのファイルです。基本的には markdown 形式で自由に記述可能ですが、ひとつだけルールがあります。以下の形式の見出し行が、後述するレポート生成のスクリプトにより参照されます。</p>
+<pre>
+ ## YYYY-MM-DD-hh-mm.STATUS[.DESCRIPTION]
+</pre>
+<p>　ここで、上記における <code>YYYY-MM-DD-hh-mm</code> はタイムスタンプ（年月日時分）、<code>STATUS</code> は基本的に <code>READY|BLOCK|RUN|FAIL|PASS</code> のいずれか、 <code>[.DESCRIPTION]</code> は任意で追加情報を記述できます。 <code>STATUS</code> の使い方は以下の通り。</p>
+<ul>
+<li><code>READY :</code> 実施可能</li>
+<li><code>BLOCK :</code> なんらかの理由で実施（再開）できない</li>
+<li><code>RUN   :</code> 実施中</li>
+<li><code>FAIL  :</code> 実施し、Fail</li>
+<li><code>PASS  :</code> 実施し、Pass</li>
+</ul>
+<p>　後述するレポートの生成では、スクリプトが各 test-run ファイルにおける上記形式の行を全て抽出し、最後の行をそのテストケースの「現在のステータス」として認識します。また、 <code>FAIL</code> に関しては古い情報もカウントの対象となります。詳細はこのディレクトリにあるスクリプトファイルを参照してください。</p>
+<h2><a name='h1vILBov6aJ'></a>4 使い方</h2>
+<h2><a name='1k2s83jlT9a'></a>5 機能</h2>
+<h3><a name='ddPuOYtb1Nh'></a>5.1 レポート生成</h3>
+<h4><a name='dfbSFhhdFRQ'></a>5.1.1 </h4>
+<h4><a name='i7AphzYnVLt'></a>5.1.2 burndown-chart 生成</h4>
+<p>　以下の設定変数が関与しています。</p>
+<table align='center'>
+<tr><th>設定変数</th><th>説明</th></tr>
+<tr><td align='left'><a class='autolink' href='#eK7s1i7uWT5'>BDCHART_FILENAME</a></td><td align='left'>出力ファイル名を指定します。</td></tr>
+<tr><td align='left'><a class='autolink' href='#fvwkFsDNkod'>BDCHART_WIDTH</a></td><td align='left'>生成画像の幅を指定します。</td></tr>
+<tr><td align='left'><a class='autolink' href='#e8ni87rJ2fZ'>BDCHART_HEIGHT</a></td><td align='left'>生成画像の高さ指定します。</td></tr>
+<tr><td align='left'><a class='autolink' href='#3mYUMedGgw3'>BDCHART_CLR_GUIDE</a></td><td align='left'>基準線の色を指定します。</td></tr>
+<tr><td align='left'><a class='autolink' href='#8tLQb89mY4s'>BDCHART_CLR_PASSLINE</a></td><td align='left'>Pass 線の色を指定します。</td></tr>
+<tr><td align='left'><a class='autolink' href='#aaplMEJp1Vb'>BDCHART_CLR_FAILBOX</a></td><td align='left'>Fail 棒グラフの色を指定します。</td></tr>
+</table>
+<h4><a name='0mVxd9E6hjH'></a>5.1.3 summary-graph 生成</h4>
+<p>　以下の設定変数が関与しています。</p>
+<table align='center'>
+<tr><th>設定変数</th><th>説明</th></tr>
+<tr><td align='left'><a class='autolink' href='#cljLkCXZ8QQ'>SUMGRAPH_FILENAME</a></td><td align='left'>xxx</td></tr>
+<tr><td align='left'><a class='autolink' href='#h490HjV8KnQ'>SUMGRAPH_WIDTH</a></td><td align='left'>xxx</td></tr>
+<tr><td align='left'><a class='autolink' href='#6cxfzSXLgSh'>SUMGRAPH_HEIGHT</a></td><td align='left'>xxx</td></tr>
+<tr><td align='left'><a class='autolink' href='#h4zC1mibNK6'>SUMGRAPH_CLR_READY</a></td><td align='left'>xxx</td></tr>
+<tr><td align='left'><a class='autolink' href='#cAQFzPNwJTm'>SUMGRAPH_CLR_BLOCK</a></td><td align='left'>xxx</td></tr>
+<tr><td align='left'><a class='autolink' href='#2dd8unLAGYo'>SUMGRAPH_CLR_RUN</a></td><td align='left'>xxx</td></tr>
+<tr><td align='left'><a class='autolink' href='#3a0SEnNAVww'>SUMGRAPH_CLR_PASS</a></td><td align='left'>xxx</td></tr>
+<tr><td align='left'><a class='autolink' href='#bY3esgSteRL'>SUMGRAPH_CLR_FAIL</a></td><td align='left'>xxx</td></tr>
+<tr><td align='left'><a class='autolink' href='#fJqEdfVEO2O'>SUMGRAPH_CLR_OTHER</a></td><td align='left'>xxx</td></tr>
+</table>
+<h2><a name='7zBGcRx06tJ'></a>6 起動オプション</h2>
+<h3><a name='6RK38KzDT9g'></a>6.1 --addcase オプション</h3>
+<p>　カレントディレクトリにテストケースを追加します。個数を指定することも可能です。</p>
+<pre>
+ probo --addcase [COUNT]
+</pre>
+<h3><a name='fy8CiK2yYNr'></a>6.2 --log オプション</h3>
+<p>　指定された run file のログを出力します。</p>
+<pre>
+ probo --log RUNFILE...
+</pre>
+<ul>
+<li><span style='background:red; color:white;'>RUNFILE の説明を書く</span></li>
+<li><span style='background:red; color:white;'>カレントディレクトリであれば、テスト ID を数値で指定することも可能</span></li>
+</ul>
+<h3><a name='ibqo8Q1548Y'></a>6.3 --ls オプション</h3>
+<p>　カレントディレクトリの run file の現在のステータスを一覧します。</p>
+<pre>
+ probo --ls
+</pre>
+<h3><a name='iLGxvGNVVb2'></a>6.4 --report オプション</h3>
+<p>　指定された run file のログを出力します。</p>
+<pre>
+ probo --report [-c CONF_FILE]
+</pre>
+<h3><a name='2D7rbHQtrFj'></a>6.5 --track オプション</h3>
+<p>　実行時点のタイムスタンプで、指定されたファイルにステータスを記録します。</p>
+<pre>
+ probo --track [-d DESCRIPTION] STATUS RUNFILE...
+ STATUS := READY|BLOCK|PASS|FAIL|RUN
+</pre>
+<p>　　</p>
+<h2><a name='cNngUDCfTMJ'></a>7 設定</h2>
+<h3><a name='7IfXyHeT29Z'></a>7.1 conf ファイルの設定項目</h3>
+<h4><a name='aaplMEJp1Vb'></a>7.1.1 BDCHART_CLR_FAILBOX</h4>
+<p>　gnuplot を使用して burn-down chart を生成する場合に、Fail 棒グラフの描画に使用する色を指定します。省略した場合のデフォルトは <code>"red"</code> です。</p>
+<p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
+<pre>
+BDCHART_CLR_FAILBOX="brown"
+</pre>
+<h4><a name='3mYUMedGgw3'></a>7.1.2 BDCHART_CLR_GUIDE</h4>
+<p>　gnuplot を使用して burn-down chart を生成する場合に、基準線の描画に使用する色を指定します。省略した場合のデフォルトは <code>"gray"</code> です。</p>
+<p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
+<pre>
+BDCHART_CLR_GUIDE="light-gray"
+</pre>
+<h4><a name='8tLQb89mY4s'></a>7.1.3 BDCHART_CLR_PASSLINE</h4>
+<p>　gnuplot を使用して burn-down chart を生成する場合に、Pass 折線グラフの描画に使用する色を指定します。省略した場合のデフォルトは <code>"blue"</code> です。</p>
+<p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
+<pre>
+BDCHART_CLR_PASSLINE="navy"
+</pre>
+<h4><a name='eK7s1i7uWT5'></a>7.1.4 BDCHART_FILENAME</h4>
+<p>　gnuplot を使用して burn-down chart を生成する場合に、その出力ファイル名を以下の要領で指定します。生成を行なわない場合は設定自体を省略するか、空文字列を設定してください。</p>
+<pre>
+BDCHART_FILENAME="burndown.png"
+</pre>
+<p>　出力する画像形式はファイル名の拡張子から判断します。probo が認識するのは <code>gif jpeg jpg png svg</code> のいずれかです。</p>
+<h4><a name='e8ni87rJ2fZ'></a>7.1.5 BDCHART_HEIGHT</h4>
+<p>　gnuplot を使用して butn-down chart を生成する場合に、生成画像の高さをピクセル単位で指定します。省略した場合のデフォルト値は 400 です。</p>
+<pre>
+BDCHART_HEIGHT=500
+</pre>
+<h4><a name='fvwkFsDNkod'></a>7.1.6 BDCHART_WIDTH</h4>
+<p>　gnuplot を使用して butn-down chart を生成する場合に、生成画像の幅をピクセル単位で指定します。省略した場合のデフォルト値は 800 です。</p>
+<pre>
+BDCHART_WIDTH=700
+</pre>
+<h4><a name='jjDcRKCyj2r'></a>7.1.7 BDDATA_FILENAME</h4>
+<ul>
+<li><span style='background:red; color:white;'>まだ記述されていません。</span></li>
+</ul>
+<h4><a name='6FfiNjwcGAF'></a>7.1.8 PROBO_ENDDAY</h4>
+<ul>
+<li><span style='background:red; color:white;'>まだ記述されていません。</span></li>
+</ul>
+<h4><a name='hcSOvrJXNZp'></a>7.1.9 PROBO_EXEC_PER_DAY</h4>
+<ul>
+<li><span style='background:red; color:white;'>まだ記述されていません。</span></li>
+</ul>
+<h4><a name='7TVn0dyLQNY'></a>7.1.10 PROBO_GROUPS</h4>
+<ul>
+<li><span style='background:red; color:white;'>まだ記述されていません。</span></li>
+</ul>
+<h4><a name='lD6Qbw8rLDg'></a>7.1.11 PROBO_SCHEDULE</h4>
+<ul>
+<li><span style='background:red; color:white;'>まだ記述されていません。</span></li>
+</ul>
+<h4><a name='i8gQrqvkY4W'></a>7.1.12 PROBO_STARTDAY</h4>
+<ul>
+<li><span style='background:red; color:white;'>まだ記述されていません。</span></li>
+</ul>
+<h4><a name='iadnusY3mzH'></a>7.1.13 REPORT_TARGET</h4>
+<ul>
+<li><span style='background:red; color:white;'>まだ記述されていません。</span></li>
+</ul>
+<h4><a name='92mRsXy1DjL'></a>7.1.14 STATUS_FULL_FILENAME</h4>
+<ul>
+<li><span style='background:red; color:white;'>まだ記述されていません。</span></li>
+</ul>
+<h4><a name='ctULjT0lTyj'></a>7.1.15 STATUS_FULL_INSERTION</h4>
+<ul>
+<li><span style='background:red; color:white;'>まだ記述されていません。</span></li>
+</ul>
+<h4><a name='6Pb5u40mzar'></a>7.1.16 STATUS_PICKUP_FILENAME</h4>
+<ul>
+<li><span style='background:red; color:white;'>まだ記述されていません。</span></li>
+</ul>
+<h4><a name='5QlGlwrO9b6'></a>7.1.17 STATUS_PICKUP_INSERTION</h4>
+<ul>
+<li><span style='background:red; color:white;'>まだ記述されていません。</span></li>
+</ul>
+<h4><a name='cAQFzPNwJTm'></a>7.1.18 SUMGRAPH_CLR_BLOCK</h4>
+<p>　gnuplot を使用して summary graph を生成する場合に、BLOCK 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"purple"</code> です。</p>
+<p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
+<pre>
+SUMGRAPH_CLR_BLOCK="#D2B48C"
+</pre>
+<h4><a name='bY3esgSteRL'></a>7.1.19 SUMGRAPH_CLR_FAIL</h4>
+<p>　gnuplot を使用して summary graph を生成する場合に、FAIL 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"pink"</code> です。</p>
+<p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
+<pre>
+SUMGRAPH_CLR_FAIL="#FFC1C1"
+</pre>
+<h4><a name='fJqEdfVEO2O'></a>7.1.20 SUMGRAPH_CLR_OTHER</h4>
+<p>　gnuplot を使用して summary graph を生成する場合に、OTHER 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"#98FB98"</code> です。</p>
+<p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
+<pre>
+SUMGRAPH_CLR_OTHER="#EEEED1"
+</pre>
+<h4><a name='3a0SEnNAVww'></a>7.1.21 SUMGRAPH_CLR_PASS</h4>
+<p>　gnuplot を使用して summary graph を生成する場合に、PASS 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"cyan"</code> です。</p>
+<p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
+<pre>
+SUMGRAPH_CLR_PASS="#B0E0E6"
+</pre>
+<h4><a name='h4zC1mibNK6'></a>7.1.22 SUMGRAPH_CLR_READY</h4>
+<p>　gnuplot を使用して summary graph を生成する場合に、READY 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"gray"</code> です。</p>
+<p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
+<pre>
+SUMGRAPH_CLR_READY="#F5F5F5"
+</pre>
+<h4><a name='2dd8unLAGYo'></a>7.1.23 SUMGRAPH_CLR_RUN</h4>
+<p>　gnuplot を使用して summary graph を生成する場合に、RUN 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"blue"</code> です。</p>
+<p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
+<pre>
+SUMGRAPH_CLR_RUN="#B0C4DE"
+</pre>
+<h4><a name='cljLkCXZ8QQ'></a>7.1.24 SUMGRAPH_FILENAME</h4>
+<p>　gnuplot を使用して summary graph を生成する場合に、その出力ファイル名を以下の要領で指定します。生成を行なわない場合は設定自体を省略するか、空文字列を設定してください。</p>
+<pre>
+SUMGRAPH_FILENAME="summary.png"
+</pre>
+<p>　出力する画像形式はファイル名の拡張子から判断します。probo が認識するのは <code>gif jpeg jpg png svg</code> のいずれかです。</p>
+<h4><a name='6cxfzSXLgSh'></a>7.1.25 SUMGRAPH_HEIGHT</h4>
+<p>　gnuplot を使用して summary graph を生成する場合に、生成画像の高さをピクセル単位で指定します。省略した場合のデフォルト値は 400 です。</p>
+<pre>
+SUMGRAPH_HEIGHT=500
+</pre>
+<h4><a name='h490HjV8KnQ'></a>7.1.26 SUMGRAPH_WIDTH</h4>
+<p>　gnuplot を使用して summary graph を生成する場合に、生成画像の幅をピクセル単位で指定します。省略した場合のデフォルト値は 500 です。</p>
+<pre>
+SUMGRAPH_WIDTH=700
+</pre>
+<h4><a name='5fKFLmQKdek'></a>7.1.27 SUMMARY_FILENAME</h4>
+<ul>
+<li><span style='background:red; color:white;'>まだ記述されていません。</span></li>
+</ul>
+<h4><a name='kzAR1bJoCYn'></a>7.1.28 SUMMARY_INSERTION</h4>
+<ul>
+<li><span style='background:red; color:white;'>まだ記述されていません。</span></li>
+</ul>
+<p>　　</p>
+<h3><a name='b6CghwSHfuk'></a>7.2 .case.template ファイル</h3>
+<ul>
+<li><span style='background:red; color:white;'>--addcase オプションで使用されるテストケースのテンプレートファイル</span></li>
+<li><span style='background:red; color:white;'>以下のプレースホルダが展開される</span>
+<ul>
+<li><code>%CASEID%</code> : <code>0014</code> などのテストケース ID に展開される</li>
+<li><code>%GROUP%</code> : グループ名に展開される</li>
+</ul>
+</li>
+</ul>
+<h2><a name='8tTIqHSNoTg'></a>8 既知の問題点</h2>
+<p>　　</p>
+<h2><a name='dGdSPnvay5N'></a>9 更新履歴</h2>
+<p>　更新履歴です。2026/??/?? 以降バージョン番号の付与を開始しました。</p>
+<ul>
+<li><strong>2026/01/12</strong>
+<ul>
+<li>とりあえず動作する状態に。</li>
+</ul>
+</li>
+</ul>
+<p>　　</p>
+<h2><a name='1ewHzjI62xn'></a>10 索引</h2>
+<details class='idx_x' open>
+<summary class='idx_x'>Symbols</summary>
+<blockquote class='idx_x'>
+<li class='idx_x'><a class='autolink' href='#6RK38KzDT9g'>--addcase</a></li>
+<li class='idx_x'><a class='autolink' href='#fy8CiK2yYNr'>--log</a></li>
+<li class='idx_x'><a class='autolink' href='#ibqo8Q1548Y'>--ls</a></li>
+<li class='idx_x'><a class='autolink' href='#iLGxvGNVVb2'>--report</a></li>
+<li class='idx_x'><a class='autolink' href='#2D7rbHQtrFj'>--track</a></li>
+</blockquote>
+</details>
+<details class='idx_x' open>
+<summary class='idx_x'>B</summary>
+<blockquote class='idx_x'>
+<li class='idx_x'><a class='autolink' href='#aaplMEJp1Vb'>BDCHART_CLR_FAILBOX</a></li>
+<li class='idx_x'><a class='autolink' href='#3mYUMedGgw3'>BDCHART_CLR_GUIDE</a></li>
+<li class='idx_x'><a class='autolink' href='#8tLQb89mY4s'>BDCHART_CLR_PASSLINE</a></li>
+<li class='idx_x'><a class='autolink' href='#eK7s1i7uWT5'>BDCHART_FILENAME</a></li>
+<li class='idx_x'><a class='autolink' href='#e8ni87rJ2fZ'>BDCHART_HEIGHT</a></li>
+<li class='idx_x'><a class='autolink' href='#fvwkFsDNkod'>BDCHART_WIDTH</a></li>
+<li class='idx_x'><a class='autolink' href='#jjDcRKCyj2r'>BDDATA_FILENAME</a></li>
+</blockquote>
+</details>
+<details class='idx_x' open>
+<summary class='idx_x'>P</summary>
+<blockquote class='idx_x'>
+<li class='idx_x'><a class='autolink' href='#6FfiNjwcGAF'>PROBO_ENDDAY</a></li>
+<li class='idx_x'><a class='autolink' href='#hcSOvrJXNZp'>PROBO_EXEC_PER_DAY</a></li>
+<li class='idx_x'><a class='autolink' href='#7TVn0dyLQNY'>PROBO_GROUPS</a></li>
+<li class='idx_x'><a class='autolink' href='#lD6Qbw8rLDg'>PROBO_SCHEDULE</a></li>
+<li class='idx_x'><a class='autolink' href='#i8gQrqvkY4W'>PROBO_STARTDAY</a></li>
+</blockquote>
+</details>
+<details class='idx_x' open>
+<summary class='idx_x'>R</summary>
+<blockquote class='idx_x'>
+<li class='idx_x'><a class='autolink' href='#iadnusY3mzH'>REPORT_TARGET</a></li>
+</blockquote>
+</details>
+<details class='idx_x' open>
+<summary class='idx_x'>S</summary>
+<blockquote class='idx_x'>
+<li class='idx_x'><a class='autolink' href='#92mRsXy1DjL'>STATUS_FULL_FILENAME</a></li>
+<li class='idx_x'><a class='autolink' href='#ctULjT0lTyj'>STATUS_FULL_INSERTION</a></li>
+<li class='idx_x'><a class='autolink' href='#6Pb5u40mzar'>STATUS_PICKUP_FILENAME</a></li>
+<li class='idx_x'><a class='autolink' href='#5QlGlwrO9b6'>STATUS_PICKUP_INSERTION</a></li>
+<li class='idx_x'><a class='autolink' href='#cAQFzPNwJTm'>SUMGRAPH_CLR_BLOCK</a></li>
+<li class='idx_x'><a class='autolink' href='#bY3esgSteRL'>SUMGRAPH_CLR_FAIL</a></li>
+<li class='idx_x'><a class='autolink' href='#fJqEdfVEO2O'>SUMGRAPH_CLR_OTHER</a></li>
+<li class='idx_x'><a class='autolink' href='#3a0SEnNAVww'>SUMGRAPH_CLR_PASS</a></li>
+<li class='idx_x'><a class='autolink' href='#h4zC1mibNK6'>SUMGRAPH_CLR_READY</a></li>
+<li class='idx_x'><a class='autolink' href='#2dd8unLAGYo'>SUMGRAPH_CLR_RUN</a></li>
+<li class='idx_x'><a class='autolink' href='#cljLkCXZ8QQ'>SUMGRAPH_FILENAME</a></li>
+<li class='idx_x'><a class='autolink' href='#6cxfzSXLgSh'>SUMGRAPH_HEIGHT</a></li>
+<li class='idx_x'><a class='autolink' href='#h490HjV8KnQ'>SUMGRAPH_WIDTH</a></li>
+<li class='idx_x'><a class='autolink' href='#5fKFLmQKdek'>SUMMARY_FILENAME</a></li>
+<li class='idx_x'><a class='autolink' href='#kzAR1bJoCYn'>SUMMARY_INSERTION</a></li>
+</blockquote>
+</details>
+<details class='idx_x' open>
+<summary class='idx_x'>Others</summary>
+<blockquote class='idx_x'>
+<li class='idx_x'><a class='autolink' href='#8tTIqHSNoTg'>既知の問題点</a></li>
+<li class='idx_x'><a class='autolink' href='#7zBGcRx06tJ'>起動オプション</a></li>
+</blockquote>
+</details>
+<p>　　</p>
+<hr>
+<p class='footnote'><a name='footnote1' href='#footnote_ref1'>1</a> : これを書いている時点でざっと調べた限り、probo スクリプトが内部で使用しているコマンドは次の通りです。一般的な Linux 環境であれば、 <code>gnuplot</code> 以外は大体最初から使えるはず。 <code>cat cut date echo find gnuplot grep head ls mv perl pwd rm sort tail touch wc which</code> </p>
+</body>
+</html>
