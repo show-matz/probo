@@ -592,7 +592,7 @@ function dump-current-group-status {
 
 function generate-report-files-raw {
 
-    # status file 指定があれば生成（raw target では insersion 指定は無視）
+    # status file 指定があれば生成（raw target では insertion 指定は無視）
     if [ ! -z "${STATUS_FULL_FILENAME}" ] || [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
         # 最初に一時ファイルとして作成
         generate-status-file-raw "$$.status.tmp"
@@ -613,7 +613,7 @@ function generate-report-files-raw {
     if [ ! -z "${BDDATA_FILENAME}" ]; then
         generate-burndown-data-file-raw "${BDDATA_FILENAME}"
     fi
-    # summary data file 指定があれば生成（raw target では insersion 指定は無視）
+    # summary data file 指定があれば生成（raw target では insertion 指定は無視）
     if [ ! -z "${SUMMARY_FILENAME}" ]; then
         generate-summary-data-file-raw "${SUMMARY_FILENAME}"
     fi
@@ -637,12 +637,12 @@ function generate-report-files-markdown {
         # pickup ファイルが指定されていれば作成
         if [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
             generate-status-file-markdown 'pickup' "$$.status.raw.tmp" \
-                                          "$STATUS_PICKUP_FILENAME" "$STATUS_PICKUP_INSERSION"
+                                          "$STATUS_PICKUP_FILENAME" "$STATUS_PICKUP_INSERTION"
         fi
         # full ファイルが指定されている場合
         if [ ! -z "${STATUS_FULL_FILENAME}" ]; then
             generate-status-file-markdown 'full' "$$.status.raw.tmp" \
-                                          "$STATUS_FULL_FILENAME" "$STATUS_FULL_INSERSION"
+                                          "$STATUS_FULL_FILENAME" "$STATUS_FULL_INSERTION"
         fi
         # 一時ファイルを削除
         rm -f "$$.status.raw.tmp"
@@ -653,7 +653,7 @@ function generate-report-files-markdown {
     fi
     # summary data file 指定があれば生成
     if [ ! -z "${SUMMARY_FILENAME}" ]; then
-        generate-summary-data-file-markdown "$SUMMARY_FILENAME" "$SUMMARY_INSERSION"
+        generate-summary-data-file-markdown "$SUMMARY_FILENAME" "$SUMMARY_INSERTION"
     fi
 	# ファイル名が指定されている場合のみグラフ生成
     if [ ! -z "$BDCHART_FILENAME" ]; then
