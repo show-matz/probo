@@ -188,6 +188,20 @@ ${BLANK_PARAGRAPH}
 
 ## 設定
 ### conf ファイルの設定項目
+#### BDCHART_BGCLR
+<!-- autolink: [BDCHART_BGCLR](#BDCHART_BGCLR) -->
+
+　gnuplot を使用して burn-down chart を生成する場合に、背景色として使用する
+色を指定します。省略した場合のデフォルトは `"white"` です。
+
+　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する
+値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
+ん。詳細は gnuplot のマニュアルを参照してください。
+
+```
+BDCHART_BGCLR="#F0F8FF"
+```
+
 #### BDCHART_CLR_FAILBOX
 <!-- autolink: [BDCHART_CLR_FAILBOX](#BDCHART_CLR_FAILBOX) -->
 
@@ -318,6 +332,20 @@ BDCHART_WIDTH=700
 <!-- autolink: [STATUS_PICKUP_INSERTION](#STATUS_PICKUP_INSERTION) -->
 
 * ${{TODO}{まだ記述されていません。}}
+
+#### SUMGRAPH_BGCLR
+<!-- autolink: [SUMGRAPH_BGCLR](#SUMGRAPH_BGCLR) -->
+
+　gnuplot を使用して summary graph を生成する場合に、背景色として使用する
+色を指定します。省略した場合のデフォルトは `"white"` です。
+
+　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する
+値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
+ん。詳細は gnuplot のマニュアルを参照してください。
+
+```
+SUMGRAPH_BGCLR="#F0F8FF"
+```
 
 #### SUMGRAPH_CLR_BLOCK
 <!-- autolink: [SUMGRAPH_CLR_BLOCK](#SUMGRAPH_CLR_BLOCK) -->

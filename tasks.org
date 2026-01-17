@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [23/29]
+* tasks [24/29]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -47,7 +47,7 @@
 	* PROBO_SCHEDULE を省略した場合にだけ、新規追加した変数３つから自動生成するようにした
 
 ** DONE --track に -f オプションを追加し、status チェックをバイパスする
-** TODO 生成画像の背景色を指定可能にしたい
+** DONE 生成画像の背景色を指定可能にしたい
 ** TODO --add-group でグループを追加する
 
 	* conf ファイルへの追加が一番問題になる‥‥‥conf は複数ありうるし。

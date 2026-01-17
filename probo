@@ -247,15 +247,16 @@ function make-burndown-gpfile {
     local TOP_Y2="$5"
     local IMG_W=$(choice-first-value "$BDCHART_WIDTH"  "800")
     local IMG_H=$(choice-first-value "$BDCHART_HEIGHT" "400")
+    local BGCLR=$(choice-first-value "$BDCHART_BGCLR"    "white")
     local CLR1=$(choice-first-value "$BDCHART_CLR_GUIDE"    "gray")
     local CLR2=$(choice-first-value "$BDCHART_CLR_PASSLINE" "blue")
     local CLR3=$(choice-first-value "$BDCHART_CLR_FAILBOX"   "red")
     local IMG_SIZE="$IMG_W,$IMG_H"
 
     if [ "$IMG_TYPE" == "svg" ]; then
-        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"white\"" > ${OUT_FILE}
+        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"${BDCHART_BGCLR}\"" > ${OUT_FILE}
     else
-        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} background rgb \"white\"" > ${OUT_FILE}
+        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} background rgb \"${BDCHART_BGCLR}\"" > ${OUT_FILE}
     fi
     
     cat >> "${OUT_FILE}" <<EOF
@@ -308,6 +309,7 @@ function make-summary-gpfile {
     local IMG_TYPE="$3"    # svg|png|jpeg|gif
     local IMG_W=$(choice-first-value "$SUMGRAPH_WIDTH"  "500")
     local IMG_H=$(choice-first-value "$SUMGRAPH_HEIGHT" "400")
+    local BGCLR=$(choice-first-value "$SUMGRAPH_BGCLR"      "white")
     local CLR1=$(choice-first-value "$SUMGRAPH_CLR_READY"    "gray")
     local CLR2=$(choice-first-value "$SUMGRAPH_CLR_BLOCK"  "purple")
     local CLR3=$(choice-first-value "$SUMGRAPH_CLR_OTHER" "#98FB98")
@@ -317,9 +319,9 @@ function make-summary-gpfile {
     local IMG_SIZE="$IMG_W,$IMG_H"
 
     if [ "$IMG_TYPE" == "svg" ]; then
-        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"white\"" > ${OUT_FILE}
+        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"${SUMGRAPH_BGCLR}\"" > ${OUT_FILE}
     else
-        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} background rgb \"white\"" > ${OUT_FILE}
+        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} background rgb \"${SUMGRAPH_BGCLR}\"" > ${OUT_FILE}
     fi
     
     cat >> "${OUT_FILE}" <<EOF
@@ -706,7 +708,7 @@ while getopts "c:" opt; do
     case $opt in
         c) CONF_FILE=${OPTARG} ;;
         *) echo "ERROR : invalid option."
-           return 1;;
+           exit 1;;
     esac
 done
 shift $((OPTIND - 1))
