@@ -652,9 +652,9 @@ function generate-report-files-markdown {
         # 一時ファイルを削除
         rm -f "$$.status.raw.tmp"
     fi
-    # burn-down data file 指定は markdown target では無視（指定されていれば警告）
+    # burn-down data file 指定があれば生成
     if [ ! -z "${PROBO_BDDAT_FILENAME}" ]; then
-        echo "WARNING : PROBO_BDDAT_FILENAME is ignored in markdown target."
+        generate-burndown-data-file-raw "${PROBO_BDDAT_FILENAME}"
     fi
     # summary data file 指定があれば生成
     if [ ! -z "${PROBO_SUMDAT_FILENAME}" ]; then
