@@ -460,16 +460,19 @@ body{font-size:16px;}
  probo --ls
 </pre>
 <h3><a name='iLGxvGNVVb2'></a>6.4 --report オプション</h3>
-<p>　指定された run file のログを出力します。</p>
+<p>　レポートを生成します。</p>
 <pre>
  probo --report [-c CONF_FILE]
 </pre>
 <h3><a name='2D7rbHQtrFj'></a>6.5 --track オプション</h3>
 <p>　実行時点のタイムスタンプで、指定されたファイルにステータスを記録します。</p>
 <pre>
- probo --track [-d DESCRIPTION] STATUS RUNFILE...
+ probo --track [-f] [-d DESCRIPTION] STATUS RUNFILE...
  STATUS := READY|BLOCK|PASS|FAIL|RUN
 </pre>
+<ul>
+<li><code>-f</code> オプションを使用すると、 <code>STATUS</code> パラメータのチェックをバイパスする</li>
+</ul>
 <p>　　</p>
 <h2><a name='cNngUDCfTMJ'></a>7 設定</h2>
 <h3><a name='7IfXyHeT29Z'></a>7.1 conf ファイルの設定項目</h3>

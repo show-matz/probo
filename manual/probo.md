@@ -166,7 +166,7 @@ ${BLANK_PARAGRAPH}
 ### --report オプション
 <!-- autolink: [--report](#--report オプション) -->
 
-　指定された run file のログを出力します。
+　レポートを生成します。
 
 ```
  probo --report [-c CONF_FILE]
@@ -178,9 +178,11 @@ ${BLANK_PARAGRAPH}
 　実行時点のタイムスタンプで、指定されたファイルにステータスを記録します。
 
 ```
- probo --track [-d DESCRIPTION] STATUS RUNFILE...
+ probo --track [-f] [-d DESCRIPTION] STATUS RUNFILE...
  STATUS := READY|BLOCK|PASS|FAIL|RUN
 ```
+
+* `-f` オプションを使用すると、 `STATUS` パラメータのチェックをバイパスする
 
 ${BLANK_PARAGRAPH}
 

@@ -475,30 +475,33 @@ function track-runfile-impl {
 
 function track-runfile {
 
-    # -d オプションの回収（あれば）
+    # -f / -d オプションの回収（あれば）
+    local FORCE=0
     local DESCRIPTION=""
-    while getopts "d:" opt; do
+    while getopts "d:f" opt; do
         case $opt in
             d) DESCRIPTION="${OPTARG}" ;;
+            f) FORCE=1 ;;
             *) echo "ERROR : invalid option."
                return 1;;
         esac
     done
     shift $((OPTIND - 1))
 
-    # STATUS パラメータの回収とチェック
+    # STATUS パラメータの回収とチェック（ただし -f オプションありの場合チェックはバイパス）
     local STATUS="${1^^}"
     shift
-    case $STATUS in
-        READY) ;;
-        BLOCK) ;;
-        PASS)  ;;
-        FAIL)  ;;
-        RUN)   ;;
-        *) echo "ERROR : invalid status \"$STATUS\"."
-           return 1;;
-    esac
-
+    if [ $FORCE -eq 0 ]; then
+        case $STATUS in
+            READY) ;;
+            BLOCK) ;;
+            PASS)  ;;
+            FAIL)  ;;
+            RUN)   ;;
+            *) echo "ERROR : invalid status \"$STATUS\"."
+               return 1;;
+        esac
+    fi
     # 追加する行の生成
     if [ ! -z "$DESCRIPTION" ]; then
         DESCRIPTION=".$DESCRIPTION"
