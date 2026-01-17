@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [24/29]
+* tasks [25/31]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -48,6 +48,15 @@
 
 ** DONE --track に -f オプションを追加し、status チェックをバイパスする
 ** DONE 生成画像の背景色を指定可能にしたい
+** DONE 設定変数名称を統一したい
+
+	* PROBO_ で始めることにする？
+
+** TODO PASS が複数ある場合の扱いを考える
+
+	* 「最後の FAIL」以降で「最初の PASS」を唯一の PASS として数える、かな
+	* しかし、ケース更新とかで READY に戻ってるとかは？ ⇒ やはり「最後が PASS」かどうかだけでよい？
+
 ** TODO --add-group でグループを追加する
 
 	* conf ファイルへの追加が一番問題になる‥‥‥conf は複数ありうるし。

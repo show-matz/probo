@@ -43,13 +43,13 @@ function fix-runfile-name {
 
 function generate-probo-schedule {
 
-    local CURDATE="$PROBO_STARTDAY"
-    local ENDDATE="$PROBO_ENDDAY"
-    local UNIT="$PROBO_EXEC_PER_DAY"
+    local CURDATE="$PROBO_BD_STARTDAY"
+    local ENDDATE="$PROBO_BD_ENDDAY"
+    local UNIT="$PROBO_BD_EXEC_PER_DAY"
     local REST=$(find . -name '*.testcase.md' | wc -l)
 
     if [ -z "$CURDATE" ] || [ -z "$ENDDATE" ]; then
-        echo "ERROR: Invalid date specifier : PROBO_STARTDAY or PROBO_ENDDAY."
+        echo "ERROR: Invalid date specifier : PROBO_BD_STARTDAY or PROBO_BD_ENDDAY."
         return 1
     fi
 
@@ -97,7 +97,7 @@ function generate-burndown-data-file-raw {
     local REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
     local REST2=$REST1                                     # 実績用残数
     echo "日付	期待値	消化数	Fail数	基準線	実績" > "${DAT_FILE}"
-    for LINE in ${PROBO_SCHEDULE}
+    for LINE in ${PROBO_BD_SCHEDULE}
     do
         local DATE=$(echo      "$LINE" | cut -d , -f 1)
         local ESTIMATED=$(echo "$LINE" | cut -d , -f 2)
@@ -245,18 +245,18 @@ function make-burndown-gpfile {
     local IMG_TYPE="$3"    # svg|png|jpeg|gif
     local TOP_Y1="$4"
     local TOP_Y2="$5"
-    local IMG_W=$(choice-first-value "$BDCHART_WIDTH"  "800")
-    local IMG_H=$(choice-first-value "$BDCHART_HEIGHT" "400")
-    local BGCLR=$(choice-first-value "$BDCHART_BGCLR"    "white")
-    local CLR1=$(choice-first-value "$BDCHART_CLR_GUIDE"    "gray")
-    local CLR2=$(choice-first-value "$BDCHART_CLR_PASSLINE" "blue")
-    local CLR3=$(choice-first-value "$BDCHART_CLR_FAILBOX"   "red")
+    local IMG_W=$(choice-first-value "$PROBO_BDIMG_WIDTH"  "800")
+    local IMG_H=$(choice-first-value "$PROBO_BDIMG_HEIGHT" "400")
+    local BGCLR=$(choice-first-value "$PROBO_BDIMG_BGCLR"    "white")
+    local CLR1=$(choice-first-value "$PROBO_BDIMG_CLR_GUIDE"    "gray")
+    local CLR2=$(choice-first-value "$PROBO_BDIMG_CLR_PASSLINE" "blue")
+    local CLR3=$(choice-first-value "$PROBO_BDIMG_CLR_FAILBOX"   "red")
     local IMG_SIZE="$IMG_W,$IMG_H"
 
     if [ "$IMG_TYPE" == "svg" ]; then
-        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"${BDCHART_BGCLR}\"" > ${OUT_FILE}
+        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"${PROBO_BDIMG_BGCLR}\"" > ${OUT_FILE}
     else
-        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} background rgb \"${BDCHART_BGCLR}\"" > ${OUT_FILE}
+        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} background rgb \"${PROBO_BDIMG_BGCLR}\"" > ${OUT_FILE}
     fi
     
     cat >> "${OUT_FILE}" <<EOF
@@ -307,21 +307,21 @@ function make-summary-gpfile {
     local OUT_FILE="$1"
     local DAT_FILE="$2"
     local IMG_TYPE="$3"    # svg|png|jpeg|gif
-    local IMG_W=$(choice-first-value "$SUMGRAPH_WIDTH"  "500")
-    local IMG_H=$(choice-first-value "$SUMGRAPH_HEIGHT" "400")
-    local BGCLR=$(choice-first-value "$SUMGRAPH_BGCLR"      "white")
-    local CLR1=$(choice-first-value "$SUMGRAPH_CLR_READY"    "gray")
-    local CLR2=$(choice-first-value "$SUMGRAPH_CLR_BLOCK"  "purple")
-    local CLR3=$(choice-first-value "$SUMGRAPH_CLR_OTHER" "#98FB98")
-    local CLR4=$(choice-first-value "$SUMGRAPH_CLR_FAIL"     "pink")
-    local CLR5=$(choice-first-value "$SUMGRAPH_CLR_RUN"      "blue")
-    local CLR6=$(choice-first-value "$SUMGRAPH_CLR_PASS"     "cyan")
+    local IMG_W=$(choice-first-value "$PROBO_SUMIMG_WIDTH"  "500")
+    local IMG_H=$(choice-first-value "$PROBO_SUMIMG_HEIGHT" "400")
+    local BGCLR=$(choice-first-value "$PROBO_SUMIMG_BGCLR"      "white")
+    local CLR1=$(choice-first-value "$PROBO_SUMIMG_CLR_READY"    "gray")
+    local CLR2=$(choice-first-value "$PROBO_SUMIMG_CLR_BLOCK"  "purple")
+    local CLR3=$(choice-first-value "$PROBO_SUMIMG_CLR_OTHER" "#98FB98")
+    local CLR4=$(choice-first-value "$PROBO_SUMIMG_CLR_FAIL"     "pink")
+    local CLR5=$(choice-first-value "$PROBO_SUMIMG_CLR_RUN"      "blue")
+    local CLR6=$(choice-first-value "$PROBO_SUMIMG_CLR_PASS"     "cyan")
     local IMG_SIZE="$IMG_W,$IMG_H"
 
     if [ "$IMG_TYPE" == "svg" ]; then
-        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"${SUMGRAPH_BGCLR}\"" > ${OUT_FILE}
+        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"${PROBO_SUMIMG_BGCLR}\"" > ${OUT_FILE}
     else
-        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} background rgb \"${SUMGRAPH_BGCLR}\"" > ${OUT_FILE}
+        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} background rgb \"${PROBO_SUMIMG_BGCLR}\"" > ${OUT_FILE}
     fi
     
     cat >> "${OUT_FILE}" <<EOF
@@ -440,7 +440,7 @@ function graph-burndown {
     local TODAY=$(date '+%Y-%m-%d')
     local REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
     local REST2=$REST1                                     # 実績用残数
-    for LINE in ${PROBO_SCHEDULE}
+    for LINE in ${PROBO_BD_SCHEDULE}
     do
         local DATE=$(echo      "$LINE" | cut -d , -f 1)
         local ESTIMATED=$(echo "$LINE" | cut -d , -f 2)
@@ -598,36 +598,36 @@ function dump-current-group-status {
 function generate-report-files-raw {
 
     # status file 指定があれば生成（raw target では insertion 指定は無視）
-    if [ ! -z "${STATUS_FULL_FILENAME}" ] || [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
+    if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
         # 最初に一時ファイルとして作成
         generate-status-file-raw "$$.status.tmp"
         # pickup ファイルが指定されていれば grep -v chain で作成
-        if [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
+        if [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
             cat "$$.status.tmp" | grep -v '	PASS	' \
-                                | grep -v '	READY	' >  "${STATUS_PICKUP_FILENAME}"
+                                | grep -v '	READY	' >  "${PROBO_PARTSTAT_FILENAME}"
         fi
         # full ファイルが指定されていれば mv で一時ファイルを rename
-        if [ ! -z "${STATUS_FULL_FILENAME}" ]; then
-            mv "$$.status.tmp" "${STATUS_FULL_FILENAME}"
+        if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ]; then
+            mv "$$.status.tmp" "${PROBO_FULLSTAT_FILENAME}"
         else
             # 指定なしなら一時ファイルを削除
             rm -f "$$.status.tmp"
         fi
     fi
     # burn-down data file 指定があれば生成
-    if [ ! -z "${BDDATA_FILENAME}" ]; then
-        generate-burndown-data-file-raw "${BDDATA_FILENAME}"
+    if [ ! -z "${PROBO_BDDAT_FILENAME}" ]; then
+        generate-burndown-data-file-raw "${PROBO_BDDAT_FILENAME}"
     fi
     # summary data file 指定があれば生成（raw target では insertion 指定は無視）
-    if [ ! -z "${SUMMARY_FILENAME}" ]; then
-        generate-summary-data-file-raw "${SUMMARY_FILENAME}"
+    if [ ! -z "${PROBO_SUMDAT_FILENAME}" ]; then
+        generate-summary-data-file-raw "${PROBO_SUMDAT_FILENAME}"
     fi
 	# ファイル名が指定されている場合のみグラフ生成
-    if [ ! -z "$BDCHART_FILENAME" ]; then
-        graph-burndown "$BDCHART_FILENAME"
+    if [ ! -z "$PROBO_BDIMG_FILENAME" ]; then
+        graph-burndown "$PROBO_BDIMG_FILENAME"
     fi
-    if [ ! -z "$SUMGRAPH_FILENAME" ]; then
-        graph-summary "$SUMGRAPH_FILENAME"
+    if [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
+        graph-summary "$PROBO_SUMIMG_FILENAME"
     fi
 
 	return 0
@@ -636,36 +636,36 @@ function generate-report-files-raw {
 function generate-report-files-markdown {
 
     # status file 指定があれば生成
-    if [ ! -z "${STATUS_FULL_FILENAME}" ] || [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
+    if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
         # 最初に一時ファイルとして raw 形式ファイルを作成
         generate-status-file-raw "$$.status.raw.tmp"
         # pickup ファイルが指定されていれば作成
-        if [ ! -z "${STATUS_PICKUP_FILENAME}" ]; then
+        if [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
             generate-status-file-markdown 'pickup' "$$.status.raw.tmp" \
-                                          "$STATUS_PICKUP_FILENAME" "$STATUS_PICKUP_INSERTION"
+                                          "$PROBO_PARTSTAT_FILENAME" "$PROBO_PARTSTAT_INSERTION"
         fi
         # full ファイルが指定されている場合
-        if [ ! -z "${STATUS_FULL_FILENAME}" ]; then
+        if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ]; then
             generate-status-file-markdown 'full' "$$.status.raw.tmp" \
-                                          "$STATUS_FULL_FILENAME" "$STATUS_FULL_INSERTION"
+                                          "$PROBO_FULLSTAT_FILENAME" "$PROBO_FULLSTAT_INSERTION"
         fi
         # 一時ファイルを削除
         rm -f "$$.status.raw.tmp"
     fi
     # burn-down data file 指定は markdown target では無視（指定されていれば警告）
-    if [ ! -z "${BDDATA_FILENAME}" ]; then
-        echo "WARNING : BDDATA_FILENAME is ignored in markdown target."
+    if [ ! -z "${PROBO_BDDAT_FILENAME}" ]; then
+        echo "WARNING : PROBO_BDDAT_FILENAME is ignored in markdown target."
     fi
     # summary data file 指定があれば生成
-    if [ ! -z "${SUMMARY_FILENAME}" ]; then
-        generate-summary-data-file-markdown "$SUMMARY_FILENAME" "$SUMMARY_INSERTION"
+    if [ ! -z "${PROBO_SUMDAT_FILENAME}" ]; then
+        generate-summary-data-file-markdown "$PROBO_SUMDAT_FILENAME" "$PROBO_SUMDAT_INSERTION"
     fi
 	# ファイル名が指定されている場合のみグラフ生成
-    if [ ! -z "$BDCHART_FILENAME" ]; then
-        graph-burndown "$BDCHART_FILENAME"
+    if [ ! -z "$PROBO_BDIMG_FILENAME" ]; then
+        graph-burndown "$PROBO_BDIMG_FILENAME"
     fi
-    if [ ! -z "$SUMGRAPH_FILENAME" ]; then
-        graph-summary "$SUMGRAPH_FILENAME"
+    if [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
+        graph-summary "$PROBO_SUMIMG_FILENAME"
     fi
 
 	return 0
@@ -725,28 +725,28 @@ if [ -z "$PROBO_GROUPS" ]; then
     PROBO_GROUPS=$(find . -maxdepth 1 -type d | grep -v '^\.$' | cut -d/ -f2 | grep -v '^\.' | sort)
 fi
 
-if [ -z "${PROBO_SCHEDULE}" ]; then
-    PROBO_SCHEDULE=$(generate-probo-schedule)
+if [ -z "${PROBO_BD_SCHEDULE}" ]; then
+    PROBO_BD_SCHEDULE=$(generate-probo-schedule)
 fi
 
 
 if [ "$MODE" == "--report" ]; then
 
-    # REPORT_TARGET の正当性チェック
-    case "${REPORT_TARGET}" in
+    # PROBO_REPORT_TYPE の正当性チェック
+    case "${PROBO_REPORT_TYPE}" in
         raw)      ;;
         markdown) ;;
-        *) echo "ERROR : invalid REPORT_TARGET variable."
+        *) echo "ERROR : invalid PROBO_REPORT_TYPE variable."
            return 1;;
     esac
 
     # gnuplot 要否、および存在チェック
-    if [ ! -z "$BDCHART_FILENAME" ] || [ ! -z "$SUMGRAPH_FILENAME" ]; then
+    if [ ! -z "$PROBO_BDIMG_FILENAME" ] || [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
         if [ $(which gnuplot | wc -l) -eq 0 ]; then
             echo "ERROR : gnuplot is missing."
             exit 1
         fi
     fi
-    generate-report-files-${REPORT_TARGET}
+    generate-report-files-${PROBO_REPORT_TYPE}
 fi
 

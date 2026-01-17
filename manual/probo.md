@@ -107,12 +107,12 @@ ${BLANK_PARAGRAPH}
 
 | 設定変数             | 説明                            |
 |:---------------------|:--------------------------------|
-| BDCHART_FILENAME     | 出力ファイル名を指定します。    |
-| BDCHART_WIDTH        | 生成画像の幅を指定します。      |
-| BDCHART_HEIGHT       | 生成画像の高さ指定します。      |
-| BDCHART_CLR_GUIDE    | 基準線の色を指定します。        |
-| BDCHART_CLR_PASSLINE | Pass 線の色を指定します。       |
-| BDCHART_CLR_FAILBOX  | Fail 棒グラフの色を指定します。 |
+| PROBO_BDIMG_FILENAME     | 出力ファイル名を指定します。    |
+| PROBO_BDIMG_WIDTH        | 生成画像の幅を指定します。      |
+| PROBO_BDIMG_HEIGHT       | 生成画像の高さ指定します。      |
+| PROBO_BDIMG_CLR_GUIDE    | 基準線の色を指定します。        |
+| PROBO_BDIMG_CLR_PASSLINE | Pass 線の色を指定します。       |
+| PROBO_BDIMG_CLR_FAILBOX  | Fail 棒グラフの色を指定します。 |
 
 
 #### summary-graph 生成
@@ -120,15 +120,15 @@ ${BLANK_PARAGRAPH}
 　以下の設定変数が関与しています。
 
 | 設定変数           | 説明 |
-| SUMGRAPH_FILENAME  | xxx  |
-| SUMGRAPH_WIDTH     | xxx  |
-| SUMGRAPH_HEIGHT    | xxx  |
-| SUMGRAPH_CLR_READY | xxx  |
-| SUMGRAPH_CLR_BLOCK | xxx  |
-| SUMGRAPH_CLR_RUN   | xxx  |
-| SUMGRAPH_CLR_PASS  | xxx  |
-| SUMGRAPH_CLR_FAIL  | xxx  |
-| SUMGRAPH_CLR_OTHER | xxx  |
+| PROBO_SUMIMG_FILENAME  | xxx  |
+| PROBO_SUMIMG_WIDTH     | xxx  |
+| PROBO_SUMIMG_HEIGHT    | xxx  |
+| PROBO_SUMIMG_CLR_READY | xxx  |
+| PROBO_SUMIMG_CLR_BLOCK | xxx  |
+| PROBO_SUMIMG_CLR_RUN   | xxx  |
+| PROBO_SUMIMG_CLR_PASS  | xxx  |
+| PROBO_SUMIMG_CLR_FAIL  | xxx  |
+| PROBO_SUMIMG_CLR_OTHER | xxx  |
 
 ## 起動オプション
 <!-- autolink: [$$](#起動オプション) -->
@@ -188,8 +188,13 @@ ${BLANK_PARAGRAPH}
 
 ## 設定
 ### conf ファイルの設定項目
-#### BDCHART_BGCLR
-<!-- autolink: [BDCHART_BGCLR](#BDCHART_BGCLR) -->
+#### PROBO_BDDAT_FILENAME
+<!-- autolink: [PROBO_BDDAT_FILENAME](#PROBO_BDDAT_FILENAME) -->
+
+* ${{TODO}{まだ記述されていません。}}
+
+#### PROBO_BDIMG_BGCLR
+<!-- autolink: [PROBO_BDIMG_BGCLR](#PROBO_BDIMG_BGCLR) -->
 
 　gnuplot を使用して burn-down chart を生成する場合に、背景色として使用する
 色を指定します。省略した場合のデフォルトは `"white"` です。
@@ -199,11 +204,11 @@ ${BLANK_PARAGRAPH}
 ん。詳細は gnuplot のマニュアルを参照してください。
 
 ```
-BDCHART_BGCLR="#F0F8FF"
+PROBO_BDIMG_BGCLR="#F0F8FF"
 ```
 
-#### BDCHART_CLR_FAILBOX
-<!-- autolink: [BDCHART_CLR_FAILBOX](#BDCHART_CLR_FAILBOX) -->
+#### PROBO_BDIMG_CLR_FAILBOX
+<!-- autolink: [PROBO_BDIMG_CLR_FAILBOX](#PROBO_BDIMG_CLR_FAILBOX) -->
 
 　gnuplot を使用して burn-down chart を生成する場合に、Fail 棒グラフの描画に
 使用する色を指定します。省略した場合のデフォルトは `"red"` です。
@@ -213,11 +218,11 @@ BDCHART_BGCLR="#F0F8FF"
 ん。詳細は gnuplot のマニュアルを参照してください。
 
 ```
-BDCHART_CLR_FAILBOX="brown"
+PROBO_BDIMG_CLR_FAILBOX="brown"
 ```
 
-#### BDCHART_CLR_GUIDE
-<!-- autolink: [BDCHART_CLR_GUIDE](#BDCHART_CLR_GUIDE) -->
+#### PROBO_BDIMG_CLR_GUIDE
+<!-- autolink: [PROBO_BDIMG_CLR_GUIDE](#PROBO_BDIMG_CLR_GUIDE) -->
 
 　gnuplot を使用して burn-down chart を生成する場合に、基準線の描画に使用する
 色を指定します。省略した場合のデフォルトは `"gray"` です。
@@ -227,11 +232,11 @@ BDCHART_CLR_FAILBOX="brown"
 ん。詳細は gnuplot のマニュアルを参照してください。
 
 ```
-BDCHART_CLR_GUIDE="light-gray"
+PROBO_BDIMG_CLR_GUIDE="light-gray"
 ```
 
-#### BDCHART_CLR_PASSLINE
-<!-- autolink: [BDCHART_CLR_PASSLINE](#BDCHART_CLR_PASSLINE) -->
+#### PROBO_BDIMG_CLR_PASSLINE
+<!-- autolink: [PROBO_BDIMG_CLR_PASSLINE](#PROBO_BDIMG_CLR_PASSLINE) -->
 
 　gnuplot を使用して burn-down chart を生成する場合に、Pass 折線グラフの描画に
 使用する色を指定します。省略した場合のデフォルトは `"blue"` です。
@@ -241,55 +246,70 @@ BDCHART_CLR_GUIDE="light-gray"
 ん。詳細は gnuplot のマニュアルを参照してください。
 
 ```
-BDCHART_CLR_PASSLINE="navy"
+PROBO_BDIMG_CLR_PASSLINE="navy"
 ```
 
-#### BDCHART_FILENAME
-<!-- autolink: [BDCHART_FILENAME](#BDCHART_FILENAME) -->
+#### PROBO_BDIMG_FILENAME
+<!-- autolink: [PROBO_BDIMG_FILENAME](#PROBO_BDIMG_FILENAME) -->
 
 　gnuplot を使用して burn-down chart を生成する場合に、その出力ファイル名を
 以下の要領で指定します。生成を行なわない場合は設定自体を省略するか、空文字列
 を設定してください。
 
 ```
-BDCHART_FILENAME="burndown.png"
+PROBO_BDIMG_FILENAME="burndown.png"
 ```
 
 　出力する画像形式はファイル名の拡張子から判断します。probo が認識するのは 
 `gif jpeg jpg png svg` のいずれかです。
 
-#### BDCHART_HEIGHT
-<!-- autolink: [BDCHART_HEIGHT](#BDCHART_HEIGHT) -->
+#### PROBO_BDIMG_HEIGHT
+<!-- autolink: [PROBO_BDIMG_HEIGHT](#PROBO_BDIMG_HEIGHT) -->
 
 　gnuplot を使用して butn-down chart を生成する場合に、生成画像の高さをピクセル
 単位で指定します。省略した場合のデフォルト値は 400 です。
 
 ```
-BDCHART_HEIGHT=500
+PROBO_BDIMG_HEIGHT=500
 ```
 
-#### BDCHART_WIDTH
-<!-- autolink: [BDCHART_WIDTH](#BDCHART_WIDTH) -->
+#### PROBO_BDIMG_WIDTH
+<!-- autolink: [PROBO_BDIMG_WIDTH](#PROBO_BDIMG_WIDTH) -->
 
 　gnuplot を使用して butn-down chart を生成する場合に、生成画像の幅をピクセル
 単位で指定します。省略した場合のデフォルト値は 800 です。
 
 ```
-BDCHART_WIDTH=700
+PROBO_BDIMG_WIDTH=700
 ```
 
-#### BDDATA_FILENAME
-<!-- autolink: [BDDATA_FILENAME](#BDDATA_FILENAME) -->
+#### PROBO_BD_ENDDAY
+<!-- autolink: [PROBO_BD_ENDDAY](#PROBO_BD_ENDDAY) -->
 
 * ${{TODO}{まだ記述されていません。}}
 
-#### PROBO_ENDDAY
-<!-- autolink: [PROBO_ENDDAY](#PROBO_ENDDAY) -->
+#### PROBO_BD_EXEC_PER_DAY
+<!-- autolink: [PROBO_BD_EXEC_PER_DAY](#PROBO_BD_EXEC_PER_DAY) -->
 
 * ${{TODO}{まだ記述されていません。}}
 
-#### PROBO_EXEC_PER_DAY
-<!-- autolink: [PROBO_EXEC_PER_DAY](#PROBO_EXEC_PER_DAY) -->
+#### PROBO_BD_SCHEDULE
+<!-- autolink: [PROBO_BD_SCHEDULE](#PROBO_BD_SCHEDULE) -->
+
+* ${{TODO}{まだ記述されていません。}}
+
+#### PROBO_BD_STARTDAY
+<!-- autolink: [PROBO_BD_STARTDAY](#PROBO_BD_STARTDAY) -->
+
+* ${{TODO}{まだ記述されていません。}}
+
+#### PROBO_FULLSTAT_FILENAME
+<!-- autolink: [PROBO_FULLSTAT_FILENAME](#PROBO_FULLSTAT_FILENAME) -->
+
+* ${{TODO}{まだ記述されていません。}}
+
+#### PROBO_FULLSTAT_INSERTION
+<!-- autolink: [PROBO_FULLSTAT_INSERTION](#PROBO_FULLSTAT_INSERTION) -->
 
 * ${{TODO}{まだ記述されていません。}}
 
@@ -298,43 +318,31 @@ BDCHART_WIDTH=700
 
 * ${{TODO}{まだ記述されていません。}}
 
-#### PROBO_SCHEDULE
-<!-- autolink: [PROBO_SCHEDULE](#PROBO_SCHEDULE) -->
+#### PROBO_PARTSTAT_FILENAME
+<!-- autolink: [PROBO_PARTSTAT_FILENAME](#PROBO_PARTSTAT_FILENAME) -->
 
 * ${{TODO}{まだ記述されていません。}}
 
-#### PROBO_STARTDAY
-<!-- autolink: [PROBO_STARTDAY](#PROBO_STARTDAY) -->
+#### PROBO_PARTSTAT_INSERTION
+<!-- autolink: [PROBO_PARTSTAT_INSERTION](#PROBO_PARTSTAT_INSERTION) -->
 
 * ${{TODO}{まだ記述されていません。}}
 
-#### REPORT_TARGET
-<!-- autolink: [REPORT_TARGET](#REPORT_TARGET) -->
+#### PROBO_REPORT_TYPE
+<!-- autolink: [PROBO_REPORT_TYPE](#PROBO_REPORT_TYPE) -->
 
 * ${{TODO}{まだ記述されていません。}}
 
-#### STATUS_FULL_FILENAME
-<!-- autolink: [STATUS_FULL_FILENAME](#STATUS_FULL_FILENAME) -->
+#### PROBO_SUMDAT_FILENAME
+<!-- autolink: [PROBO_SUMDAT_FILENAME](#PROBO_SUMDAT_FILENAME) -->
 
 * ${{TODO}{まだ記述されていません。}}
 
-#### STATUS_FULL_INSERTION
-<!-- autolink: [STATUS_FULL_INSERTION](#STATUS_FULL_INSERTION) -->
+#### PROBO_SUMDAT_INSERTION
+<!-- autolink: [PROBO_SUMDAT_INSERTION](#PROBO_SUMDAT_INSERTION) -->
 
-* ${{TODO}{まだ記述されていません。}}
-
-#### STATUS_PICKUP_FILENAME
-<!-- autolink: [STATUS_PICKUP_FILENAME](#STATUS_PICKUP_FILENAME) -->
-
-* ${{TODO}{まだ記述されていません。}}
-
-#### STATUS_PICKUP_INSERTION
-<!-- autolink: [STATUS_PICKUP_INSERTION](#STATUS_PICKUP_INSERTION) -->
-
-* ${{TODO}{まだ記述されていません。}}
-
-#### SUMGRAPH_BGCLR
-<!-- autolink: [SUMGRAPH_BGCLR](#SUMGRAPH_BGCLR) -->
+#### PROBO_SUMIMG_BGCLR
+<!-- autolink: [PROBO_SUMIMG_BGCLR](#PROBO_SUMIMG_BGCLR) -->
 
 　gnuplot を使用して summary graph を生成する場合に、背景色として使用する
 色を指定します。省略した場合のデフォルトは `"white"` です。
@@ -344,11 +352,11 @@ BDCHART_WIDTH=700
 ん。詳細は gnuplot のマニュアルを参照してください。
 
 ```
-SUMGRAPH_BGCLR="#F0F8FF"
+PROBO_SUMIMG_BGCLR="#F0F8FF"
 ```
 
-#### SUMGRAPH_CLR_BLOCK
-<!-- autolink: [SUMGRAPH_CLR_BLOCK](#SUMGRAPH_CLR_BLOCK) -->
+#### PROBO_SUMIMG_CLR_BLOCK
+<!-- autolink: [PROBO_SUMIMG_CLR_BLOCK](#PROBO_SUMIMG_CLR_BLOCK) -->
 
 　gnuplot を使用して summary graph を生成する場合に、BLOCK 部分の描画に使用
 する色を指定します。省略した場合のデフォルトは `"purple"` です。
@@ -358,11 +366,11 @@ SUMGRAPH_BGCLR="#F0F8FF"
 ん。詳細は gnuplot のマニュアルを参照してください。
 
 ```
-SUMGRAPH_CLR_BLOCK="#D2B48C"
+PROBO_SUMIMG_CLR_BLOCK="#D2B48C"
 ```
 
-#### SUMGRAPH_CLR_FAIL
-<!-- autolink: [SUMGRAPH_CLR_FAIL](#SUMGRAPH_CLR_FAIL) -->
+#### PROBO_SUMIMG_CLR_FAIL
+<!-- autolink: [PROBO_SUMIMG_CLR_FAIL](#PROBO_SUMIMG_CLR_FAIL) -->
 
 　gnuplot を使用して summary graph を生成する場合に、FAIL 部分の描画に使用
 する色を指定します。省略した場合のデフォルトは `"pink"` です。
@@ -372,11 +380,11 @@ SUMGRAPH_CLR_BLOCK="#D2B48C"
 ん。詳細は gnuplot のマニュアルを参照してください。
 
 ```
-SUMGRAPH_CLR_FAIL="#FFC1C1"
+PROBO_SUMIMG_CLR_FAIL="#FFC1C1"
 ```
 
-#### SUMGRAPH_CLR_OTHER
-<!-- autolink: [SUMGRAPH_CLR_OTHER](#SUMGRAPH_CLR_OTHER) -->
+#### PROBO_SUMIMG_CLR_OTHER
+<!-- autolink: [PROBO_SUMIMG_CLR_OTHER](#PROBO_SUMIMG_CLR_OTHER) -->
 
 　gnuplot を使用して summary graph を生成する場合に、OTHER 部分の描画に使用
 する色を指定します。省略した場合のデフォルトは `"#98FB98"` です。
@@ -386,11 +394,11 @@ SUMGRAPH_CLR_FAIL="#FFC1C1"
 ん。詳細は gnuplot のマニュアルを参照してください。
 
 ```
-SUMGRAPH_CLR_OTHER="#EEEED1"
+PROBO_SUMIMG_CLR_OTHER="#EEEED1"
 ```
 
-#### SUMGRAPH_CLR_PASS
-<!-- autolink: [SUMGRAPH_CLR_PASS](#SUMGRAPH_CLR_PASS) -->
+#### PROBO_SUMIMG_CLR_PASS
+<!-- autolink: [PROBO_SUMIMG_CLR_PASS](#PROBO_SUMIMG_CLR_PASS) -->
 
 　gnuplot を使用して summary graph を生成する場合に、PASS 部分の描画に使用
 する色を指定します。省略した場合のデフォルトは `"cyan"` です。
@@ -400,11 +408,11 @@ SUMGRAPH_CLR_OTHER="#EEEED1"
 ん。詳細は gnuplot のマニュアルを参照してください。
 
 ```
-SUMGRAPH_CLR_PASS="#B0E0E6"
+PROBO_SUMIMG_CLR_PASS="#B0E0E6"
 ```
 
-#### SUMGRAPH_CLR_READY
-<!-- autolink: [SUMGRAPH_CLR_READY](#SUMGRAPH_CLR_READY) -->
+#### PROBO_SUMIMG_CLR_READY
+<!-- autolink: [PROBO_SUMIMG_CLR_READY](#PROBO_SUMIMG_CLR_READY) -->
 
 　gnuplot を使用して summary graph を生成する場合に、READY 部分の描画に使用
 する色を指定します。省略した場合のデフォルトは `"gray"` です。
@@ -414,11 +422,11 @@ SUMGRAPH_CLR_PASS="#B0E0E6"
 ん。詳細は gnuplot のマニュアルを参照してください。
 
 ```
-SUMGRAPH_CLR_READY="#F5F5F5"
+PROBO_SUMIMG_CLR_READY="#F5F5F5"
 ```
 
-#### SUMGRAPH_CLR_RUN
-<!-- autolink: [SUMGRAPH_CLR_RUN](#SUMGRAPH_CLR_RUN) -->
+#### PROBO_SUMIMG_CLR_RUN
+<!-- autolink: [PROBO_SUMIMG_CLR_RUN](#PROBO_SUMIMG_CLR_RUN) -->
 
 　gnuplot を使用して summary graph を生成する場合に、RUN 部分の描画に使用
 する色を指定します。省略した場合のデフォルトは `"blue"` です。
@@ -428,50 +436,42 @@ SUMGRAPH_CLR_READY="#F5F5F5"
 ん。詳細は gnuplot のマニュアルを参照してください。
 
 ```
-SUMGRAPH_CLR_RUN="#B0C4DE"
+PROBO_SUMIMG_CLR_RUN="#B0C4DE"
 ```
 
-#### SUMGRAPH_FILENAME
-<!-- autolink: [SUMGRAPH_FILENAME](#SUMGRAPH_FILENAME) -->
+#### PROBO_SUMIMG_FILENAME
+<!-- autolink: [PROBO_SUMIMG_FILENAME](#PROBO_SUMIMG_FILENAME) -->
 
 　gnuplot を使用して summary graph を生成する場合に、その出力ファイル名を
 以下の要領で指定します。生成を行なわない場合は設定自体を省略するか、空文字列
 を設定してください。
 
 ```
-SUMGRAPH_FILENAME="summary.png"
+PROBO_SUMIMG_FILENAME="summary.png"
 ```
 
 　出力する画像形式はファイル名の拡張子から判断します。probo が認識するのは 
 `gif jpeg jpg png svg` のいずれかです。
 
-#### SUMGRAPH_HEIGHT
-<!-- autolink: [SUMGRAPH_HEIGHT](#SUMGRAPH_HEIGHT) -->
+#### PROBO_SUMIMG_HEIGHT
+<!-- autolink: [PROBO_SUMIMG_HEIGHT](#PROBO_SUMIMG_HEIGHT) -->
 
 　gnuplot を使用して summary graph を生成する場合に、生成画像の高さをピクセル
 単位で指定します。省略した場合のデフォルト値は 400 です。
 
 ```
-SUMGRAPH_HEIGHT=500
+PROBO_SUMIMG_HEIGHT=500
 ```
 
-#### SUMGRAPH_WIDTH
-<!-- autolink: [SUMGRAPH_WIDTH](#SUMGRAPH_WIDTH) -->
+#### PROBO_SUMIMG_WIDTH
+<!-- autolink: [PROBO_SUMIMG_WIDTH](#PROBO_SUMIMG_WIDTH) -->
 
 　gnuplot を使用して summary graph を生成する場合に、生成画像の幅をピクセル
 単位で指定します。省略した場合のデフォルト値は 500 です。
 
 ```
-SUMGRAPH_WIDTH=700
+PROBO_SUMIMG_WIDTH=700
 ```
-
-#### SUMMARY_FILENAME
-<!-- autolink: [SUMMARY_FILENAME](#SUMMARY_FILENAME) -->
-
-* ${{TODO}{まだ記述されていません。}}
-
-#### SUMMARY_INSERTION
-<!-- autolink: [SUMMARY_INSERTION](#SUMMARY_INSERTION) -->
 
 * ${{TODO}{まだ記述されていません。}}
 
