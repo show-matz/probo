@@ -308,10 +308,12 @@ body{font-size:16px;}
 <summary class='tocx'><a href='#7zBGcRx06tJ'>6 起動オプション</a></summary>
 <blockquote class='tocx'>
 <li class='tocx'><a href='#6RK38KzDT9g'>6.1 --addcase オプション</a></li>
-<li class='tocx'><a href='#fy8CiK2yYNr'>6.2 --log オプション</a></li>
-<li class='tocx'><a href='#ibqo8Q1548Y'>6.3 --ls オプション</a></li>
-<li class='tocx'><a href='#iLGxvGNVVb2'>6.4 --report オプション</a></li>
-<li class='tocx'><a href='#2D7rbHQtrFj'>6.5 --track オプション</a></li>
+<li class='tocx'><a href='#4saVmSQErTb'>6.2 --help オプション</a></li>
+<li class='tocx'><a href='#c09k6WLIoEN'>6.3 --init オプション</a></li>
+<li class='tocx'><a href='#fy8CiK2yYNr'>6.4 --log オプション</a></li>
+<li class='tocx'><a href='#ibqo8Q1548Y'>6.5 --ls オプション</a></li>
+<li class='tocx'><a href='#iLGxvGNVVb2'>6.6 --report オプション</a></li>
+<li class='tocx'><a href='#2D7rbHQtrFj'>6.7 --track オプション</a></li>
 </blockquote>
 </details>
 <details class='tocx' open>
@@ -447,7 +449,17 @@ body{font-size:16px;}
 <pre>
  probo --addcase [COUNT]
 </pre>
-<h3><a name='fy8CiK2yYNr'></a>6.2 --log オプション</h3>
+<h3><a name='4saVmSQErTb'></a>6.2 --help オプション</h3>
+<p>　標準出力に command usage を出力します。</p>
+<pre>
+ probo --help
+</pre>
+<h3><a name='c09k6WLIoEN'></a>6.3 --init オプション</h3>
+<p>　カレントディレクトリに指定されたレポート種別で conf ファイルを作成し、グループの指定があればディレクトリを作成します。</p>
+<pre>
+ probo --init  [-c CONF_FILE]  REPORT_TYPE  [GROUP]...
+</pre>
+<h3><a name='fy8CiK2yYNr'></a>6.4 --log オプション</h3>
 <p>　指定された run file のログを出力します。</p>
 <pre>
  probo --log RUNFILE...
@@ -456,17 +468,17 @@ body{font-size:16px;}
 <li><span style='background:red; color:white;'>RUNFILE の説明を書く</span></li>
 <li><span style='background:red; color:white;'>カレントディレクトリであれば、テスト ID を数値で指定することも可能</span></li>
 </ul>
-<h3><a name='ibqo8Q1548Y'></a>6.3 --ls オプション</h3>
+<h3><a name='ibqo8Q1548Y'></a>6.5 --ls オプション</h3>
 <p>　カレントディレクトリの run file の現在のステータスを一覧します。</p>
 <pre>
  probo --ls
 </pre>
-<h3><a name='iLGxvGNVVb2'></a>6.4 --report オプション</h3>
+<h3><a name='iLGxvGNVVb2'></a>6.6 --report オプション</h3>
 <p>　レポートを生成します。</p>
 <pre>
  probo --report [-c CONF_FILE]
 </pre>
-<h3><a name='2D7rbHQtrFj'></a>6.5 --track オプション</h3>
+<h3><a name='2D7rbHQtrFj'></a>6.7 --track オプション</h3>
 <p>　実行時点のタイムスタンプで、指定されたファイルにステータスを記録します。</p>
 <pre>
  probo --track [-f] [-d DESCRIPTION] STATUS RUNFILE...
@@ -705,6 +717,8 @@ PROBO_SUMIMG_WIDTH=700
 <summary class='idx_x'>Symbols</summary>
 <blockquote class='idx_x'>
 <li class='idx_x'><a class='autolink' href='#6RK38KzDT9g'>--addcase</a></li>
+<li class='idx_x'><a class='autolink' href='#4saVmSQErTb'>--help</a></li>
+<li class='idx_x'><a class='autolink' href='#c09k6WLIoEN'>--init</a></li>
 <li class='idx_x'><a class='autolink' href='#fy8CiK2yYNr'>--log</a></li>
 <li class='idx_x'><a class='autolink' href='#ibqo8Q1548Y'>--ls</a></li>
 <li class='idx_x'><a class='autolink' href='#iLGxvGNVVb2'>--report</a></li>

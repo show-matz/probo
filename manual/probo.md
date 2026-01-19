@@ -144,6 +144,25 @@ ${BLANK_PARAGRAPH}
  probo --addcase [COUNT]
 ```
 
+### --help オプション
+<!-- autolink: [--help](#--help オプション) -->
+
+　標準出力に command usage を出力します。
+
+```
+ probo --help
+```
+
+### --init オプション
+<!-- autolink: [--init](#--init オプション) -->
+
+　カレントディレクトリに指定されたレポート種別で conf ファイルを作成し、グループの
+指定があればディレクトリを作成します。
+
+```
+ probo --init  [-c CONF_FILE]  REPORT_TYPE  [GROUP]...
+```
+
 ### --log オプション
 <!-- autolink: [--log](#--log オプション) -->
 

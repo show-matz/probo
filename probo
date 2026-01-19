@@ -2,6 +2,7 @@
 
 function show-usage {
     echo "USAGE:"
+    echo "    probo --init [-c CONF_FILE] REPORT_TYPE [GROUP...]"
     echo "    probo --ls"
     echo "    probo --log RUNFILE..."
     echo "    probo --addcase [COUNT]"
@@ -528,6 +529,121 @@ function track-runfile {
     echo "$FILE_COUNT file(s) updated."
 }
 
+function generate-probo-conf-file {
+    local CONF_FILE="$1"
+    local REPORT_TYPE="$2"
+    local GNUPLOT_FLAG="$3"
+
+    local FULLSTAT_FILE=""
+    local PARTSTAT_FILE=""
+    local BDDAT_FILE=""
+    local SUMDAT_FILE=""
+    local BDIMG_FILE=""
+    local SUMIMG_FILE=""
+    local DAY1=$(date -d "$(date +%Y-%m-01) +1 month"         +%Y-%m-%d)    # 翌月の初日
+    local DAY2=$(date -d "$(date +%Y-%m-01) +2 month -1 days" +%Y-%m-%d)    # 翌月の末日
+
+    if [ "$REPORT_TYPE" == "raw" ]; then
+        FULLSTAT_FILE="full_stat.txt"
+        PARTSTAT_FILE="part_stat.txt"
+        BDDAT_FILE="burndown_data.txt"
+        SUMDAT_FILE="summary.txt"
+    else
+        FULLSTAT_FILE="full_stat.md"
+        PARTSTAT_FILE="part_stat.md"
+        BDDAT_FILE=""
+        SUMDAT_FILE="summary.md"
+    fi
+    if [ $GNUPLOT_FLAG -eq 1 ]; then
+        BDIMG_FILE="burndown.svg"
+        SUMIMG_FILE="summary.svg"
+    fi
+
+    cat <<EOF > "$CONF_FILE"
+PROBO_REPORT_TYPE="$REPORT_TYPE"
+
+PROBO_FULLSTAT_FILENAME="$FULLSTAT_FILE"
+PROBO_FULLSTAT_INSERTION=0
+
+PROBO_PARTSTAT_FILENAME="$PARTSTAT_FILE"
+PROBO_PARTSTAT_INSERTION=0
+
+PROBO_BDDAT_FILENAME="$BDDAT_FILE"
+
+PROBO_SUMDAT_FILENAME="$SUMDAT_FILE"
+PROBO_SUMDAT_INSERTION=0
+
+PROBO_BDIMG_FILENAME="$BDIMG_FILE"
+PROBO_BDIMG_WIDTH=
+PROBO_BDIMG_HEIGHT=
+PROBO_BDIMG_BGCLR=
+PROBO_BDIMG_CLR_GUIDE=
+PROBO_BDIMG_CLR_PASSLINE=
+PROBO_BDIMG_CLR_FAILBOX=
+
+PROBO_SUMIMG_FILENAME="$SUMIMG_FILE"
+PROBO_SUMIMG_WIDTH=
+PROBO_SUMIMG_HEIGHT=
+PROBO_SUMIMG_BGCLR=
+PROBO_SUMIMG_CLR_READY=
+PROBO_SUMIMG_CLR_BLOCK=
+PROBO_SUMIMG_CLR_RUN=
+PROBO_SUMIMG_CLR_PASS=
+PROBO_SUMIMG_CLR_FAIL=
+PROBO_SUMIMG_CLR_OTHER=
+
+PROBO_GROUPS=
+
+PROBO_BD_STARTDAY="$DAY1"
+PROBO_BD_ENDDAY="$DAY2"
+PROBO_BD_EXEC_PER_DAY=5
+
+PROBO_BD_SCHEDULE=
+EOF
+}
+
+function initialize-probo {
+
+    # -c オプションの回収（あれば）
+    local CONF_FILE="probo.conf"
+    while getopts "c:" opt; do
+        case $opt in
+            c) CONF_FILE="${OPTARG}" ;;
+            *) echo "ERROR : invalid option."
+               return 1;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    # カレントディレクトリに指定 conf file がすでにあればエラー
+    if [ -e "$CONF_FILE" ]; then
+        echo "ERROR : $CONF_FILE has already exists."
+        exit 1
+    fi
+
+    local REPORT_TYPE="$1"
+    # REPORT_TYPE の正当性チェック
+    case "${REPORT_TYPE}" in
+        raw)      ;;
+        markdown) ;;
+        *) echo "ERROR : invalid REPORT_TYPE parameter."
+           return 1;;
+    esac
+    shift 1
+
+    generate-probo-conf-file "$CONF_FILE" "$REPORT_TYPE" $(which gnuplot | wc -l)
+
+    local GROUP_NAME="$1"
+    while [ ! -z "$GROUP_NAME" ]; do
+        if [ ! -d "$GROUP_NAME" ]; then
+            mkdir "./$GROUP_NAME"
+        fi
+        shift 1
+        GROUP_NAME="$1"
+    done
+    
+}
+
 function add-test-case-impl {
     local ID="0000${1}"
     local GROUP="$2"
@@ -689,6 +805,8 @@ fi
 case "$MODE" in
     --help )    show-usage
                 exit 0;;
+    --init )    initialize-probo "$@"
+                exit 0;;
     --ls )      dump-current-group-status
                 exit 0;;
     --log )     dump-runfile-log "$@"
@@ -711,7 +829,7 @@ CONF_FILE="./probo.conf"
 # -c オプションの回収（あれば）
 while getopts "c:" opt; do
     case $opt in
-        c) CONF_FILE=${OPTARG} ;;
+        c) CONF_FILE="${OPTARG}" ;;
         *) echo "ERROR : invalid option."
            exit 1;;
     esac

@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [26/32]
+* tasks [27/32]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -53,6 +53,12 @@
 	* PROBO_ で始めることにする？
 
 ** DONE markdown target でも指定があれば Burndown data を生成する
+** DONE --init でなんか初期化する
+
+	* やるとすれば、probo.conf を自動で生成してくれる‥‥‥くらい？
+
+	* probo --init [-c CONF_FILE] REPORT_TYPE [GROUP...]
+
 ** TODO PASS が複数ある場合の扱いを考える
 
 	* 「最後の FAIL」以降で「最初の PASS」を唯一の PASS として数える、かな
@@ -64,12 +70,6 @@
 	* PROBO_GROUPS は省略可能になったので、やっちゃっていいかも。
 	* 逆に手作業で mkdir すればよくね？（PROBO_GROUPS 使う場合は自力で頑張れ、というスタンス）
 	* probo --addgrp GROUP_NAME [CASE_COUNT] とかなら役には立つかな‥‥‥
-
-** TODO --init でなんか初期化する
-
-	* やるとすれば、probo.conf を自動で生成してくれる‥‥‥くらい？
-
-	* probo --init [-c CONF_FILE] REPORT_TYPE [GROUP...]
 
 ** TODO group 別のレポート生成もする？
 
