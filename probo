@@ -558,7 +558,10 @@ function add-test-case {
     local CASE_TMPL=$(first-exist-file "./.case.template" "../.case.template")
     local GROUP=$(basename $(pwd))
     local TIMESTAMP=$(date '+%Y-%m-%d-%H-%M')
-    local CURTAIL=$(ls *.testcase.md | sort | tail -1 | cut -d. -f1)
+    local CURTAIL=0
+    if [ $(ls *.testcase.md 2> /dev/null | wc -l) -ne 0 ]; then
+        CURTAIL=$(ls *.testcase.md | sort | tail -1 | cut -d. -f1)
+    fi
     local COUNT=$((10#$COUNT))
     CURTAIL=$((10#$CURTAIL))
     for ((i=0; i<$COUNT; i++)) do
