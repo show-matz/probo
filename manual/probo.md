@@ -21,8 +21,8 @@ ${BLANK_PARAGRAPH}
 
 ## probo とは
 
-　**probo** は、bash スクリプトで動作する軽量なテキスト主義のテスト管理ツールです。
-基本的に bash と gnuplot があれば動作します
+　**probo** （ぷろーぼ）は、bash スクリプトで動作する軽量なテキスト主義のテスト
+管理ツールです。基本的に bash と gnuplot があれば動作します
 {{fn:これを書いている時点でざっと調べた限り、probo スクリプトが内部で使用しているコマンドは \
 次の通りです。一般的な Linux 環境であれば、 `gnuplot` 以外は大体最初から使えるはず。  \
 `cat cut date echo find gnuplot grep head ls mv perl pwd rm sort tail touch wc which` }}。
@@ -99,6 +99,8 @@ ${BLANK_PARAGRAPH}
 ## 機能
 
 ### レポート生成
+<!-- autolink: [$$](#レポート生成) -->
+
 #### 
 
 #### burndown-chart 生成
@@ -191,12 +193,21 @@ ${BLANK_PARAGRAPH}
 #### PROBO_BDDAT_FILENAME
 <!-- autolink: [PROBO_BDDAT_FILENAME](#PROBO_BDDAT_FILENAME) -->
 
-* ${{TODO}{まだ記述されていません。}}
+　Burndown chart のデータを生成する場合に、その出力ファイル名を以下の要領で指定
+します。生成を行なわない場合は設定自体を省略するか、空文字列を設定してください。
+
+```
+PROBO_BDDAT_FILENAME="burndown.txt"
+```
+
+　これは通常、gnuplot が使用できない環境において、表計算ソフトなどを使用して 
+Burndown chart を作成する場合に使用します。出力形式は PROBO_REPORT_TYPE の
+値に関わらず、常にタブ区切りテキストになります。
 
 #### PROBO_BDIMG_BGCLR
 <!-- autolink: [PROBO_BDIMG_BGCLR](#PROBO_BDIMG_BGCLR) -->
 
-　gnuplot を使用して burn-down chart を生成する場合に、背景色として使用する
+　gnuplot を使用して Burndown chart を生成する場合に、背景色として使用する
 色を指定します。省略した場合のデフォルトは `"white"` です。
 
 　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する
@@ -210,7 +221,7 @@ PROBO_BDIMG_BGCLR="#F0F8FF"
 #### PROBO_BDIMG_CLR_FAILBOX
 <!-- autolink: [PROBO_BDIMG_CLR_FAILBOX](#PROBO_BDIMG_CLR_FAILBOX) -->
 
-　gnuplot を使用して burn-down chart を生成する場合に、Fail 棒グラフの描画に
+　gnuplot を使用して Burndown chart を生成する場合に、Fail 棒グラフの描画に
 使用する色を指定します。省略した場合のデフォルトは `"red"` です。
 
 　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する
@@ -224,7 +235,7 @@ PROBO_BDIMG_CLR_FAILBOX="brown"
 #### PROBO_BDIMG_CLR_GUIDE
 <!-- autolink: [PROBO_BDIMG_CLR_GUIDE](#PROBO_BDIMG_CLR_GUIDE) -->
 
-　gnuplot を使用して burn-down chart を生成する場合に、基準線の描画に使用する
+　gnuplot を使用して Burndown chart を生成する場合に、基準線の描画に使用する
 色を指定します。省略した場合のデフォルトは `"gray"` です。
 
 　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する
@@ -238,7 +249,7 @@ PROBO_BDIMG_CLR_GUIDE="light-gray"
 #### PROBO_BDIMG_CLR_PASSLINE
 <!-- autolink: [PROBO_BDIMG_CLR_PASSLINE](#PROBO_BDIMG_CLR_PASSLINE) -->
 
-　gnuplot を使用して burn-down chart を生成する場合に、Pass 折線グラフの描画に
+　gnuplot を使用して Burndown chart を生成する場合に、Pass 折線グラフの描画に
 使用する色を指定します。省略した場合のデフォルトは `"blue"` です。
 
 　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する
@@ -252,7 +263,7 @@ PROBO_BDIMG_CLR_PASSLINE="navy"
 #### PROBO_BDIMG_FILENAME
 <!-- autolink: [PROBO_BDIMG_FILENAME](#PROBO_BDIMG_FILENAME) -->
 
-　gnuplot を使用して burn-down chart を生成する場合に、その出力ファイル名を
+　gnuplot を使用して Burndown chart を生成する場合に、その出力ファイル名を
 以下の要領で指定します。生成を行なわない場合は設定自体を省略するか、空文字列
 を設定してください。
 
@@ -286,22 +297,70 @@ PROBO_BDIMG_WIDTH=700
 #### PROBO_BD_ENDDAY
 <!-- autolink: [PROBO_BD_ENDDAY](#PROBO_BD_ENDDAY) -->
 
-* ${{TODO}{まだ記述されていません。}}
+　Burndown chart を生成する場合に、X 軸の終了日付を `YYYY-MM-DD` 形式で指定します。
+
+```
+PROBO_BD_ENDDAY="2026-07-31"
+```
+
+　PROBO_BD_SCHEDULE が指定されている場合にはそちらが優先されるため、この設定値は
+使用されません。PROBO_BD_SCHEDULE が省略された場合、この設定は必ず指定する必要が
+あり、これを省略した場合はエラーになります。
 
 #### PROBO_BD_EXEC_PER_DAY
 <!-- autolink: [PROBO_BD_EXEC_PER_DAY](#PROBO_BD_EXEC_PER_DAY) -->
 
-* ${{TODO}{まだ記述されていません。}}
+　Burndown chart を生成する場合に、一日あたりのテスト消化予定数を数値で指定します。
+
+```
+PROBO_BD_EXEC_PER_DAY=10
+```
+
+　PROBO_BD_SCHEDULE が指定されている場合にはそちらが優先されるため、この設定値は
+使用されません。PROBO_BD_SCHEDULE が省略された場合、この設定は必ず指定する必要が
+あり、これを省略した場合はエラーになります。
 
 #### PROBO_BD_SCHEDULE
 <!-- autolink: [PROBO_BD_SCHEDULE](#PROBO_BD_SCHEDULE) -->
 
-* ${{TODO}{まだ記述されていません。}}
+　Burndown chart を生成する場合に、テスト開始日から終了日までの日毎のテスト消化
+予定数を以下の要領で指定します。
+
+```
+PROBO_BD_SCHEDULE="
+2026-07-01,5
+2026-07-02,5
+2026-07-03,5
+2026-07-04,5
+2026-07-05,5
+2026-07-06,0
+2026-07-07,0
+    :
+    :
+"
+```
+
+　PROBO_BD_SCHEDULE の指定は Burndown chart の予定線を引くのに使用されますが、
+記述が面倒な上にテストケース数の増減に手作業で対応する必要があります。休日などの
+非稼働日にも細かく対応する必要がない場合、PROBO_BD_SCHEDULE の指定は省略して以下
+の設定を代わりに使う方が楽かもしれません。
+
+* PROBO_BD_STARTDAY
+* PROBO_BD_ENDDAY
+* PROBO_BD_EXEC_PER_DAY
 
 #### PROBO_BD_STARTDAY
 <!-- autolink: [PROBO_BD_STARTDAY](#PROBO_BD_STARTDAY) -->
 
-* ${{TODO}{まだ記述されていません。}}
+　Burndown chart を生成する場合に、X 軸の開始日付を `YYYY-MM-DD` 形式で指定します。
+
+```
+PROBO_BD_STARTDAY="2026-07-01"
+```
+
+　PROBO_BD_SCHEDULE が指定されている場合にはそちらが優先されるため、この設定値は
+使用されません。PROBO_BD_SCHEDULE が省略された場合、この設定は必ず指定する必要が
+あり、これを省略した場合はエラーになります。
 
 #### PROBO_FULLSTAT_FILENAME
 <!-- autolink: [PROBO_FULLSTAT_FILENAME](#PROBO_FULLSTAT_FILENAME) -->
@@ -316,7 +375,22 @@ PROBO_BDIMG_WIDTH=700
 #### PROBO_GROUPS
 <!-- autolink: [PROBO_GROUPS](#PROBO_GROUPS) -->
 
-* ${{TODO}{まだ記述されていません。}}
+　以下の要領でグループの一覧を設定します。レポート生成において対象とするグループ
+とその順序の指定に使用されます。
+
+```
+PROBO_GROUPS="
+group1
+group2
+group3
+  :
+  :
+"
+```
+
+　この設定を省略（または空文字列を設定）した場合、probo は「カレントディレクトリ
+直下にあるディレクトリ」すべてをグループとして扱います。ただし、 `.git` のように
+ドットで始まるディレクトリは除外されます。
 
 #### PROBO_PARTSTAT_FILENAME
 <!-- autolink: [PROBO_PARTSTAT_FILENAME](#PROBO_PARTSTAT_FILENAME) -->
@@ -331,7 +405,20 @@ PROBO_BDIMG_WIDTH=700
 #### PROBO_REPORT_TYPE
 <!-- autolink: [PROBO_REPORT_TYPE](#PROBO_REPORT_TYPE) -->
 
-* ${{TODO}{まだ記述されていません。}}
+　--report で生成するレポートの種類を以下の要領で指定します。
+
+```
+PROBO_REPORT_TYPE="markdown"
+```
+
+　現在サポートされているレポートの種類は以下になります。
+
+* `markdown` : マークダウン形式での出力を行ないます
+    * 多くの出力ファイルがマークダウンにおける表形式で出力されます
+    * GitHub や GitLab などの環境で表示させたり、HTML に変換することを想定しています
+* `raw` : テキスト形式での出力を行ないます。
+    * 多くの出力ファイルがタブ区切りのテキスト形式で出力されます
+    * 表計算ソフトに貼り付けたり、その他の方法で使用することを想定しています
 
 #### PROBO_SUMDAT_FILENAME
 <!-- autolink: [PROBO_SUMDAT_FILENAME](#PROBO_SUMDAT_FILENAME) -->
@@ -340,6 +427,8 @@ PROBO_BDIMG_WIDTH=700
 
 #### PROBO_SUMDAT_INSERTION
 <!-- autolink: [PROBO_SUMDAT_INSERTION](#PROBO_SUMDAT_INSERTION) -->
+
+* ${{TODO}{まだ記述されていません。}}
 
 #### PROBO_SUMIMG_BGCLR
 <!-- autolink: [PROBO_SUMIMG_BGCLR](#PROBO_SUMIMG_BGCLR) -->
@@ -472,8 +561,6 @@ PROBO_SUMIMG_HEIGHT=500
 ```
 PROBO_SUMIMG_WIDTH=700
 ```
-
-* ${{TODO}{まだ記述されていません。}}
 
 ${BLANK_PARAGRAPH}
 
