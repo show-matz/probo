@@ -59,6 +59,10 @@
 
 	* probo --init [-c CONF_FILE] REPORT_TYPE [GROUP...]
 
+** TODO --report の処理時間が長いので状況通知をする
+
+	* ただし -q オプションで黙るようにしとくか。
+
 ** TODO PASS が複数ある場合の扱いを考える
 
 	* 「最後の FAIL」以降で「最初の PASS」を唯一の PASS として数える、かな

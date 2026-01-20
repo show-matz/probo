@@ -529,6 +529,40 @@ function track-runfile {
     echo "$FILE_COUNT file(s) updated."
 }
 
+function load-conf-file {
+    local CONF_FILE="$1"
+
+    # カレントディレクトリに conf file がなければエラー終了
+    if [ ! -e "$CONF_FILE" ]; then
+        echo "ERROR : $CONF_FILE missing."
+        return 1
+    fi
+
+    source "$CONF_FILE"
+
+    # PROBO_GROUPS が空ならディレクトリを走査して生成
+    if [ -z "$PROBO_GROUPS" ]; then
+        PROBO_GROUPS=$(find . -maxdepth 1 -type d | grep -v '^\.$' | cut -d/ -f2 | grep -v '^\.' | sort)
+    fi
+    # PROBO_BD_SCHEDULE が空なら生成
+    if [ -z "${PROBO_BD_SCHEDULE}" ]; then
+        PROBO_BD_SCHEDULE=$(generate-probo-schedule)
+        if [ $? -ne 0 ]; then
+            echo "ERROR : Schedule generation failed."
+            return 1
+        fi
+    fi
+    # PROBO_REPORT_TYPE の正当性チェック
+    case "${PROBO_REPORT_TYPE}" in
+        raw)      ;;
+        markdown) ;;
+        *) echo "ERROR : invalid PROBO_REPORT_TYPE variable."
+           return 1;;
+    esac
+
+    return 0
+}
+
 function generate-probo-conf-file {
     local CONF_FILE="$1"
     local REPORT_TYPE="$2"
@@ -792,6 +826,40 @@ function generate-report-files-markdown {
 	return 0
 }
 
+function generate-reports {
+
+    CONF_FILE="./probo.conf"
+
+    # -c オプションの回収（あれば）
+    while getopts "c:" opt; do
+        case $opt in
+            c) CONF_FILE="${OPTARG}" ;;
+            *) echo "ERROR : invalid option."
+               return 1;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    # loading conf file 
+    load-conf-file "$CONF_FILE"
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
+
+    if [ "$MODE" == "--report" ]; then
+
+        # gnuplot 要否、および存在チェック
+        if [ ! -z "$PROBO_BDIMG_FILENAME" ] || [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
+            if [ $(which gnuplot | wc -l) -eq 0 ]; then
+                echo "ERROR : gnuplot is missing."
+                return 1
+            fi
+        fi
+        generate-report-files-${PROBO_REPORT_TYPE}
+    fi
+
+}
+
 MODE="$1"
 shift
 
@@ -801,7 +869,7 @@ if [ -z "$MODE" ]; then
     exit 1
 fi
 
-# 先にモード指定のチェックをしてしまう（conf 不要コマンドも実施）
+# モード指定で分岐
 case "$MODE" in
     --help )    show-usage
                 exit 0;;
@@ -815,65 +883,11 @@ case "$MODE" in
                 exit 0;;
     --addcase ) add-test-case "$@"
                 exit 0;;
-    --report )  ;;        # 後回し
+    --report )  generate-reports "$@"
+                exit 0;;
     * )         echo "ERROR: Invalid option \"$MODE\"."
                 echo ""
                 show-usage
                 exit 1;;
 esac
-
-# これで、以下は conf file が必要なコマンドだけ
-
-CONF_FILE="./probo.conf"
-
-# -c オプションの回収（あれば）
-while getopts "c:" opt; do
-    case $opt in
-        c) CONF_FILE="${OPTARG}" ;;
-        *) echo "ERROR : invalid option."
-           exit 1;;
-    esac
-done
-shift $((OPTIND - 1))
-
-# カレントディレクトリに conf file がなければエラー終了
-if [ ! -e "$CONF_FILE" ]; then
-    echo "ERROR : $CONF_FILE missing."
-    exit 1
-fi
-
-source "$CONF_FILE"
-
-if [ -z "$PROBO_GROUPS" ]; then
-    PROBO_GROUPS=$(find . -maxdepth 1 -type d | grep -v '^\.$' | cut -d/ -f2 | grep -v '^\.' | sort)
-fi
-
-if [ -z "${PROBO_BD_SCHEDULE}" ]; then
-    PROBO_BD_SCHEDULE=$(generate-probo-schedule)
-    if [ $? -ne 0 ]; then
-        echo "ERROR : Schedule generation failed."
-        exit 1
-    fi
-fi
-
-
-if [ "$MODE" == "--report" ]; then
-
-    # PROBO_REPORT_TYPE の正当性チェック
-    case "${PROBO_REPORT_TYPE}" in
-        raw)      ;;
-        markdown) ;;
-        *) echo "ERROR : invalid PROBO_REPORT_TYPE variable."
-           return 1;;
-    esac
-
-    # gnuplot 要否、および存在チェック
-    if [ ! -z "$PROBO_BDIMG_FILENAME" ] || [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
-        if [ $(which gnuplot | wc -l) -eq 0 ]; then
-            echo "ERROR : gnuplot is missing."
-            exit 1
-        fi
-    fi
-    generate-report-files-${PROBO_REPORT_TYPE}
-fi
 
