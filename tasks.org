@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [27/32]
+* tasks [28/33]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -59,7 +59,7 @@
 
 	* probo --init [-c CONF_FILE] REPORT_TYPE [GROUP...]
 
-** TODO --report の処理時間が長いので状況通知をする
+** DONE --report の処理時間が長いので状況通知をする
 
 	* ただし -q オプションで黙るようにしとくか。
 

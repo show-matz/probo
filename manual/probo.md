@@ -190,7 +190,7 @@ ${BLANK_PARAGRAPH}
 　レポートを生成します。
 
 ```
- probo --report [-c CONF_FILE]
+ probo --report [-q] [-c CONF_FILE]
 ```
 
 ### --track オプション

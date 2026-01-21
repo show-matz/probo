@@ -6,7 +6,7 @@ function show-usage {
     echo "    probo --ls"
     echo "    probo --log RUNFILE..."
     echo "    probo --addcase [COUNT]"
-    echo "    probo --report [-c CONF_FILE]"
+    echo "    probo --report [-q] [-c CONF_FILE]"
     echo "    probo --track [-d DESCRIPTION] STATUS RUNFILE..."
 }
 
@@ -750,10 +750,24 @@ function dump-current-group-status {
     done
 }
 
+function probo-progress-notifier {
+    echo "$1"
+}
+
+function probo-progress-notifier-none {
+    echo "$1" > /dev/null
+}
+
 function generate-report-files-raw {
 
+    local BE_QUIET="$1"
+    local PROGRESS_NOTIFIER=probo-progress-notifier
+    if [ $BE_QUIET -eq 1 ]; then
+        PROGRESS_NOTIFIER=probo-progress-notifier-none
+    fi
     # status file 指定があれば生成（raw target では insertion 指定は無視）
     if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
+        ${PROGRESS_NOTIFIER} "generating status data..."
         # 最初に一時ファイルとして作成
         generate-status-file-raw "$$.status.tmp"
         # pickup ファイルが指定されていれば grep -v chain で作成
@@ -771,17 +785,21 @@ function generate-report-files-raw {
     fi
     # burn-down data file 指定があれば生成
     if [ ! -z "${PROBO_BDDAT_FILENAME}" ]; then
+        ${PROGRESS_NOTIFIER} "generating burndown data..."
         generate-burndown-data-file-raw "${PROBO_BDDAT_FILENAME}"
     fi
     # summary data file 指定があれば生成（raw target では insertion 指定は無視）
     if [ ! -z "${PROBO_SUMDAT_FILENAME}" ]; then
+        ${PROGRESS_NOTIFIER} "generating summary data..."
         generate-summary-data-file-raw "${PROBO_SUMDAT_FILENAME}"
     fi
 	# ファイル名が指定されている場合のみグラフ生成
     if [ ! -z "$PROBO_BDIMG_FILENAME" ]; then
+        ${PROGRESS_NOTIFIER} "generating burndown image..."
         graph-burndown "$PROBO_BDIMG_FILENAME"
     fi
     if [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
+        ${PROGRESS_NOTIFIER} "generating summary image..."
         graph-summary "$PROBO_SUMIMG_FILENAME"
     fi
 
@@ -790,8 +808,14 @@ function generate-report-files-raw {
 
 function generate-report-files-markdown {
 
+    local BE_QUIET="$1"
+    local PROGRESS_NOTIFIER=probo-progress-notifier
+    if [ $BE_QUIET -eq 1 ]; then
+        PROGRESS_NOTIFIER=probo-progress-notifier-none
+    fi
     # status file 指定があれば生成
     if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
+        ${PROGRESS_NOTIFIER} "generating status data..."
         # 最初に一時ファイルとして raw 形式ファイルを作成
         generate-status-file-raw "$$.status.raw.tmp"
         # pickup ファイルが指定されていれば作成
@@ -809,17 +833,21 @@ function generate-report-files-markdown {
     fi
     # burn-down data file 指定があれば生成
     if [ ! -z "${PROBO_BDDAT_FILENAME}" ]; then
+        ${PROGRESS_NOTIFIER} "generating burndown data..."
         generate-burndown-data-file-raw "${PROBO_BDDAT_FILENAME}"
     fi
     # summary data file 指定があれば生成
     if [ ! -z "${PROBO_SUMDAT_FILENAME}" ]; then
+        ${PROGRESS_NOTIFIER} "generating summary data..."
         generate-summary-data-file-markdown "$PROBO_SUMDAT_FILENAME" "$PROBO_SUMDAT_INSERTION"
     fi
 	# ファイル名が指定されている場合のみグラフ生成
     if [ ! -z "$PROBO_BDIMG_FILENAME" ]; then
+        ${PROGRESS_NOTIFIER} "generating burndown image..."
         graph-burndown "$PROBO_BDIMG_FILENAME"
     fi
     if [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
+        ${PROGRESS_NOTIFIER} "generating summary image..."
         graph-summary "$PROBO_SUMIMG_FILENAME"
     fi
 
@@ -828,12 +856,14 @@ function generate-report-files-markdown {
 
 function generate-reports {
 
+    BE_QUIET=0
     CONF_FILE="./probo.conf"
 
-    # -c オプションの回収（あれば）
-    while getopts "c:" opt; do
+    # -c  -q オプションの回収（あれば）
+    while getopts "c:q" opt; do
         case $opt in
             c) CONF_FILE="${OPTARG}" ;;
+            q) BE_QUIET=1 ;;
             *) echo "ERROR : invalid option."
                return 1;;
         esac
@@ -846,18 +876,15 @@ function generate-reports {
         return 1
     fi
 
-    if [ "$MODE" == "--report" ]; then
-
-        # gnuplot 要否、および存在チェック
-        if [ ! -z "$PROBO_BDIMG_FILENAME" ] || [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
-            if [ $(which gnuplot | wc -l) -eq 0 ]; then
-                echo "ERROR : gnuplot is missing."
-                return 1
-            fi
+    # gnuplot 要否、および存在チェック
+    if [ ! -z "$PROBO_BDIMG_FILENAME" ] || [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
+        if [ $(which gnuplot | wc -l) -eq 0 ]; then
+            echo "ERROR : gnuplot is missing."
+            return 1
         fi
-        generate-report-files-${PROBO_REPORT_TYPE}
     fi
-
+    generate-report-files-${PROBO_REPORT_TYPE}  $BE_QUIET
+    return 0
 }
 
 MODE="$1"
