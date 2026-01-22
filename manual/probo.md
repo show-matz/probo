@@ -411,6 +411,41 @@ group3
 直下にあるディレクトリ」すべてをグループとして扱います。ただし、 `.git` のように
 ドットで始まるディレクトリは除外されます。
 
+#### PROBO_GRP_FULLSTAT_FILENAME
+<!-- autolink: [PROBO_GRP_FULLSTAT_FILENAME](#PROBO_GRP_FULLSTAT_FILENAME) -->
+
+* ${{TODO}{まだ記述されていません。}}
+
+#### PROBO_GRP_FULLSTAT_INSERTION
+<!-- autolink: [PROBO_GRP_FULLSTAT_INSERTION](#PROBO_GRP_FULLSTAT_INSERTION) -->
+
+* ${{TODO}{まだ記述されていません。}}
+
+#### PROBO_GRP_PARTSTAT_FILENAME
+<!-- autolink: [PROBO_GRP_PARTSTAT_FILENAME](#PROBO_GRP_PARTSTAT_FILENAME) -->
+
+* ${{TODO}{まだ記述されていません。}}
+
+#### PROBO_GRP_PARTSTAT_INSERTION
+<!-- autolink: [PROBO_GRP_PARTSTAT_INSERTION](#PROBO_GRP_PARTSTAT_INSERTION) -->
+
+* ${{TODO}{まだ記述されていません。}}
+
+#### PROBO_GRP_SUMIMG_FILENAME
+<!-- autolink: [PROBO_GRP_SUMIMG_FILENAME](#PROBO_GRP_SUMIMG_FILENAME) -->
+
+　gnuplot を使用してグループ別の summary graph を生成する場合に、その出力
+ファイル名を以下の要領で指定します。生成を行なわない場合は設定自体を省略
+するか、空文字列を設定してください。
+
+```
+PROBO_GRU_SUMIMG_FILENAME="summary.png"
+```
+
+　グループ別の summary graph は、各グループのディレクトリ直下に作成されます。
+出力する画像形式はファイル名の拡張子から判断します。probo が認識するのは 
+`gif jpeg jpg png svg` のいずれかです。
+
 #### PROBO_PARTSTAT_FILENAME
 <!-- autolink: [PROBO_PARTSTAT_FILENAME](#PROBO_PARTSTAT_FILENAME) -->
 

@@ -17,16 +17,16 @@
 
 ## status
 
-<!-- begin probo status-pickup -->
-| GROUP | CASE | TIMESTAMP | STATUS | DESRIPTION |
-|:------|:----:|:---------:|:------:|:-----------|
+<!-- begin probo status-part -->
+| GROUP | CASE | TIMESTAMP | STATUS | DESCRIPTION |
+|:------|:----:|:---------:|:------:|:------------|
 | group1 | 0006 | 2026/01/09 15:30 | BLOCK | ticket #12345 |
 | group1 | 0007 | 2026/01/09 15:29 | FAIL | SEGV |
-<!-- end probo status-pickup -->
+<!-- end probo status-part -->
 
 <!-- begin probo status-full -->
-| GROUP | CASE | TIMESTAMP | STATUS | DESRIPTION |
-|:------|:----:|:---------:|:------:|:-----------|
+| GROUP | CASE | TIMESTAMP | STATUS | DESCRIPTION |
+|:------|:----:|:---------:|:------:|:------------|
 | group1 | 0001 | 2025/12/01 10:00 | PASS |  |
 | group1 | 0002 | 2025/12/02 10:00 | PASS |  |
 | group1 | 0003 | 2025/12/03 10:00 | PASS |  |

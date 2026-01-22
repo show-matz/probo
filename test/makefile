@@ -11,4 +11,6 @@ turnup:
 
 clean:
 	rm -f *.txt *.svg *.png *.jpg *.jpeg *~
+	rm -f group1/*.svg
+	rm -f group2/*.svg
 

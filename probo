@@ -76,6 +76,9 @@ function insert-data-to-markdown-file {
     local DAT_FILE="$1"
     local OUT_FILE="$2"
     local INS_MARK="$3"
+    if [ ! -e "$OUT_FILE" ]; then
+        touch "$OUT_FILE"
+    fi
     LINE1=$(cat "$OUT_FILE" | grep -n "<!-- begin $INS_MARK -->" | cut -d: -f1)
     LINE2=$(cat "$OUT_FILE" | grep -n "<!-- end $INS_MARK -->"   | cut -d: -f1)
     if [ -z "$LINE1" ] || [ -z "$LINE2" ]; then
@@ -120,6 +123,7 @@ function generate-burndown-data-file-raw {
 
 function generate-summary-data-file-raw {
     local OUT_FILE="$1"
+    local INS_FLAG="$2"           # raw target では INS_FLAG は使用しない
     TOTALS=(0 0 0 0 0 0 0)        # READY,BLOCK,RUN,OTHER,FAIL,PASS,TOTAL
     echo "GROUP	READY	BLOCK	RUN	OTHER	FAIL	PASS	TOTAL	PROGRESS" > "${OUT_FILE}"
     for GROUP in ${PROBO_GROUPS}
@@ -177,9 +181,9 @@ function generate-summary-data-file-markdown {
 }
 
 
-function generate-status-file-raw {
+function generate-status-tmpdata {
 	local OUT_FILE="$1"
-    echo "GROUP	CASE	TIMESTAMP	STATUS	DESRIPTION" > $OUT_FILE
+    echo "GROUP	CASE	TIMESTAMP	STATUS	DESCRIPTION" > $OUT_FILE
     for GROUP in ${PROBO_GROUPS}
     do
         pushd ${GROUP} > /dev/null
@@ -196,18 +200,50 @@ function generate-status-file-raw {
     done
 }
 
-function generate-status-file-markdown {
-    local FILE_MODE="$1"    # full or pickup
+function generate-group-status-tmpdata {
+    local RAW_FILE="$1"
+    local GROUP="$2"
+    local OUT_FILE="$3"
+    head -1                ${RAW_FILE}                      >  ${OUT_FILE}
+	grep -E "^${GROUP}	"  ${RAW_FILE} | cut -d '	' -f 2- >> ${OUT_FILE}
+}
+
+function generate-status-file-raw {
+    local FILE_MODE1="$1"    # top or group - raw target では FILE_MODE1 は使用しない
+    local FILE_MODE2="$1"    # full or part
     local RAW_TMPFILE="$2"
     local OUT_FILE="$3"
-    local INS_FLAG="$4"
+    local INS_FLAG="$4"      # raw target では INS_FLAG は使用しない
 
-    # ヘッダ行は raw file を無視して固定で出しちゃう
-    echo "| GROUP | CASE | TIMESTAMP | STATUS | DESRIPTION |"  >  "$$.status.tmp"
-    echo "|:------|:----:|:---------:|:------:|:-----------|" >>  "$$.status.tmp"
+    # part ファイルが指定されていれば grep -v chain で作成
+    if [ "$FILE_MODE2" == "part" ]; then
+        cat "${RAW_TMPFILE}" | grep -v '	PASS	' \
+                             | grep -v '	READY	' >  "${OUT_FILE}"
+    fi
+    # full ファイルが指定されていれば一時ファイルを単純にコピー
+    if [ "$FILE_MODE2" == "full" ]; then
+        cp "${RAW_TMPFILE}" "${OUT_FILE}"
+    fi
+}
 
-    # ２行目以降は markdown の表形式に変換（FILE_MODE に応じて分岐）
-    if [ "$FILE_MODE" == "pickup" ]; then
+function generate-status-file-markdown {
+    local FILE_MODE1="$1"    # top or group
+    local FILE_MODE2="$2"    # full or part
+    local RAW_TMPFILE="$3"
+    local OUT_FILE="$4"
+    local INS_FLAG="$5"
+
+    # ヘッダ行は raw file を無視して固定で出しちゃう（乱暴！）
+    if [ "$FILE_MODE1" == "top" ]; then
+        echo "| GROUP | CASE | TIMESTAMP | STATUS | DESCRIPTION |"  >  "$$.status.tmp"
+        echo "|:------|:----:|:---------:|:------:|:------------|" >>  "$$.status.tmp"
+    else
+        echo "| CASE | TIMESTAMP | STATUS | DESCRIPTION |"  >  "$$.status.tmp"
+        echo "|:----:|:---------:|:------:|:------------|" >>  "$$.status.tmp"
+    fi
+
+    # ２行目以降は markdown の表形式に変換（FILE_MODE2 に応じて分岐）
+    if [ "$FILE_MODE2" == "part" ]; then
         tail -n +2 "$RAW_TMPFILE" | grep -v '	PASS	' \
                                   | grep -v '	READY	' \
                                   | perl -pe 's/	/ | /g' \
@@ -221,7 +257,7 @@ function generate-status-file-markdown {
     # INS_FLAG の値で分岐
     if [ "$INS_FLAG" -eq 1 ]; then
         # 1 なら差し込みを実施
-        insert-data-to-markdown-file "$$.status.tmp" "$OUT_FILE" "probo status-${FILE_MODE}"
+        insert-data-to-markdown-file "$$.status.tmp" "$OUT_FILE" "probo status-${FILE_MODE2}"
         rm -f "$$.status.tmp"
     else
         # 1 以外なら単純にリネーム
@@ -436,6 +472,30 @@ function graph-summary {
     rm -f ${DAT_FILE}
 }
 
+function graph-group-summary {
+    local GROUP="$1"
+    local OUT_FILE="$2"
+    COUNTS=(0 0 0 0 0 0)    # READY,BLOCK,FAIL,RUN,PASS,OTHER
+    pushd ${GROUP} > /dev/null
+    for RUN_FILE in $(ls *.testrun.md)
+    do
+        RESULT=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1 | cut -d. -f2)
+        case "${RESULT}" in
+            READY ) COUNTS[0]=$((COUNTS[0] + 1));;
+            BLOCK ) COUNTS[1]=$((COUNTS[1] + 1));;
+            FAIL )  COUNTS[2]=$((COUNTS[2] + 1));;
+            RUN )   COUNTS[3]=$((COUNTS[3] + 1));;
+            PASS )  COUNTS[4]=$((COUNTS[4] + 1));;
+            * )     COUNTS[5]=$((COUNTS[5] + 1));;
+        esac
+    done
+    popd > /dev/null
+    IMG_TYPE=$(get-image-type-from-filename "$OUT_FILE")
+    make-summary-image "$GROUP/$OUT_FILE" $IMG_TYPE \
+                       ${COUNTS[0]} ${COUNTS[1]} ${COUNTS[5]} ${COUNTS[2]} ${COUNTS[3]} ${COUNTS[4]}
+    rm -f ${DAT_FILE}
+}
+
 function graph-burndown {
     # ToDo : generate-burndown-data-file-raw を利用するかたちにできそう
     local IMG_FILE="$1"
@@ -559,6 +619,12 @@ function load-conf-file {
         *) echo "ERROR : invalid PROBO_REPORT_TYPE variable."
            return 1;;
     esac
+
+    PROBO_FULLSTAT_INSERTION=$(choice-first-value     "$PROBO_FULLSTAT_INSERTION"     "0")
+    PROBO_PARTSTAT_INSERTION=$(choice-first-value     "$PROBO_PARTSTAT_INSERTION"     "0")
+    PROBO_SUMDAT_INSERTION=$(choice-first-value       "$PROBO_SUMDAT_INSERTION"       "0")
+    PROBO_GRP_FULLSTAT_INSERTION=$(choice-first-value "$PROBO_GRP_FULLSTAT_INSERTION" "0")
+    PROBO_GRP_PARTSTAT_INSERTION=$(choice-first-value "$PROBO_GRP_PARTSTAT_INSERTION" "0")
 
     return 0
 }
@@ -738,7 +804,7 @@ function dump-runfile-log {
 }
 
 function dump-current-group-status {
-    echo "CASE	TIMESTAMP	STATUS	DESRIPTION"
+    echo "CASE	TIMESTAMP	STATUS	DESCRIPTION"
     for RUN_FILE in $(ls *.testrun.md)
     do
         NUMBER=$(echo "$RUN_FILE" | cut -d. -f1)
@@ -758,80 +824,61 @@ function probo-progress-notifier-none {
     echo "$1" > /dev/null
 }
 
-function generate-report-files-raw {
+function generate-report-files {
 
-    local BE_QUIET="$1"
+    local TARGET="$1"
+    local BE_QUIET="$2"
     local PROGRESS_NOTIFIER=probo-progress-notifier
     if [ $BE_QUIET -eq 1 ]; then
         PROGRESS_NOTIFIER=probo-progress-notifier-none
     fi
-    # status file 指定があれば生成（raw target では insertion 指定は無視）
+    # 必要ならステータス一覧の一時ファイルを最初に作成
+    if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ]     || [ ! -z "${PROBO_PARTSTAT_FILENAME}" ] || \
+       [ ! -z "${PROBO_GRP_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_GRP_PARTSTAT_FILENAME}" ]; then
+        generate-status-tmpdata "$$.status.rawdata"
+    fi
+    # stop status file 指定があれば生成
     if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
         ${PROGRESS_NOTIFIER} "generating status data..."
-        # 最初に一時ファイルとして作成
-        generate-status-file-raw "$$.status.tmp"
-        # pickup ファイルが指定されていれば grep -v chain で作成
+        # part ファイルが指定されていれば作成
         if [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
-            cat "$$.status.tmp" | grep -v '	PASS	' \
-                                | grep -v '	READY	' >  "${PROBO_PARTSTAT_FILENAME}"
+            generate-status-file-${TARGET} 'top' 'part' "$$.status.rawdata" \
+                                           "$PROBO_PARTSTAT_FILENAME" "$PROBO_PARTSTAT_INSERTION"
         fi
-        # full ファイルが指定されていれば mv で一時ファイルを rename
+        # full ファイルが指定されていれば作成
         if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ]; then
-            mv "$$.status.tmp" "${PROBO_FULLSTAT_FILENAME}"
-        else
-            # 指定なしなら一時ファイルを削除
-            rm -f "$$.status.tmp"
+            generate-status-file-${TARGET} 'top' 'full' "$$.status.rawdata" \
+                                           "$PROBO_FULLSTAT_FILENAME" "$PROBO_FULLSTAT_INSERTION"
         fi
     fi
-    # burn-down data file 指定があれば生成
-    if [ ! -z "${PROBO_BDDAT_FILENAME}" ]; then
-        ${PROGRESS_NOTIFIER} "generating burndown data..."
-        generate-burndown-data-file-raw "${PROBO_BDDAT_FILENAME}"
+    # stop status file 指定があれば生成
+    if [ ! -z "${PROBO_GRP_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_GRP_PARTSTAT_FILENAME}" ]; then
+        ${PROGRESS_NOTIFIER} "generating group status data..."
+        for GROUP in ${PROBO_GROUPS}
+        do
+            generate-group-status-tmpdata "$$.status.rawdata" "$GROUP" "$$.grp.status.rawdata"
+            # part ファイルが指定されていれば作成
+            if [ ! -z "${PROBO_GRP_PARTSTAT_FILENAME}" ]; then
+                generate-status-file-${TARGET} 'group' 'part' \
+                                               "$$.grp.status.rawdata" \
+                                               "$GROUP/$PROBO_GRP_PARTSTAT_FILENAME" \
+                                               "$PROBO_GRP_PARTSTAT_INSERTION"
+            fi
+            # full ファイルが指定されていれば作成
+            if [ ! -z "${PROBO_GRP_FULLSTAT_FILENAME}" ]; then
+                generate-status-file-${TARGET} 'group' 'full' \
+                                               "$$.grp.status.rawdata" \
+                                               "$GROUP/$PROBO_GRP_FULLSTAT_FILENAME" \
+                                               "$PROBO_GRP_FULLSTAT_INSERTION"
+            fi
+            rm -f "$$.grp.status.rawdata"
+        done
     fi
-    # summary data file 指定があれば生成（raw target では insertion 指定は無視）
-    if [ ! -z "${PROBO_SUMDAT_FILENAME}" ]; then
-        ${PROGRESS_NOTIFIER} "generating summary data..."
-        generate-summary-data-file-raw "${PROBO_SUMDAT_FILENAME}"
+    # 一時ファイルが存在していれば削除
+    if [ -e "$$.status.rawdata" ]; then
+        rm -f "$$.status.rawdata"
     fi
-	# ファイル名が指定されている場合のみグラフ生成
-    if [ ! -z "$PROBO_BDIMG_FILENAME" ]; then
-        ${PROGRESS_NOTIFIER} "generating burndown image..."
-        graph-burndown "$PROBO_BDIMG_FILENAME"
-    fi
-    if [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
-        ${PROGRESS_NOTIFIER} "generating summary image..."
-        graph-summary "$PROBO_SUMIMG_FILENAME"
-    fi
-
-	return 0
-}
-
-function generate-report-files-markdown {
-
-    local BE_QUIET="$1"
-    local PROGRESS_NOTIFIER=probo-progress-notifier
-    if [ $BE_QUIET -eq 1 ]; then
-        PROGRESS_NOTIFIER=probo-progress-notifier-none
-    fi
-    # status file 指定があれば生成
-    if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
-        ${PROGRESS_NOTIFIER} "generating status data..."
-        # 最初に一時ファイルとして raw 形式ファイルを作成
-        generate-status-file-raw "$$.status.raw.tmp"
-        # pickup ファイルが指定されていれば作成
-        if [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
-            generate-status-file-markdown 'pickup' "$$.status.raw.tmp" \
-                                          "$PROBO_PARTSTAT_FILENAME" "$PROBO_PARTSTAT_INSERTION"
-        fi
-        # full ファイルが指定されている場合
-        if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ]; then
-            generate-status-file-markdown 'full' "$$.status.raw.tmp" \
-                                          "$PROBO_FULLSTAT_FILENAME" "$PROBO_FULLSTAT_INSERTION"
-        fi
-        # 一時ファイルを削除
-        rm -f "$$.status.raw.tmp"
-    fi
-    # burn-down data file 指定があれば生成
+    # burn-down data file 指定があれば生成（これは常に raw 形式）
     if [ ! -z "${PROBO_BDDAT_FILENAME}" ]; then
         ${PROGRESS_NOTIFIER} "generating burndown data..."
         generate-burndown-data-file-raw "${PROBO_BDDAT_FILENAME}"
@@ -839,9 +886,9 @@ function generate-report-files-markdown {
     # summary data file 指定があれば生成
     if [ ! -z "${PROBO_SUMDAT_FILENAME}" ]; then
         ${PROGRESS_NOTIFIER} "generating summary data..."
-        generate-summary-data-file-markdown "$PROBO_SUMDAT_FILENAME" "$PROBO_SUMDAT_INSERTION"
+        generate-summary-data-file-${TARGET} "$PROBO_SUMDAT_FILENAME" "$PROBO_SUMDAT_INSERTION"
     fi
-	# ファイル名が指定されている場合のみグラフ生成
+	# ファイル名が指定されている場合のみグラフイメージ生成
     if [ ! -z "$PROBO_BDIMG_FILENAME" ]; then
         ${PROGRESS_NOTIFIER} "generating burndown image..."
         graph-burndown "$PROBO_BDIMG_FILENAME"
@@ -849,6 +896,13 @@ function generate-report-files-markdown {
     if [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
         ${PROGRESS_NOTIFIER} "generating summary image..."
         graph-summary "$PROBO_SUMIMG_FILENAME"
+    fi
+    if [ ! -z "$PROBO_GRP_SUMIMG_FILENAME" ]; then
+        ${PROGRESS_NOTIFIER} "generating group summary image..."
+        for GROUP in ${PROBO_GROUPS}
+        do
+            graph-group-summary "$GROUP" "$PROBO_GRP_SUMIMG_FILENAME"
+        done
     fi
 
 	return 0
@@ -883,7 +937,7 @@ function generate-reports {
             return 1
         fi
     fi
-    generate-report-files-${PROBO_REPORT_TYPE}  $BE_QUIET
+    generate-report-files ${PROBO_REPORT_TYPE} $BE_QUIET
     return 0
 }
 
