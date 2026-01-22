@@ -79,14 +79,15 @@ ${BLANK_PARAGRAPH}
 ```
 
 　ここで、上記における `YYYY-MM-DD-hh-mm` はタイムスタンプ（年月日時分）、
-`STATUS` は基本的に `READY|BLOCK|RUN|FAIL|PASS` のいずれか、 `[.DESCRIPTION]` は
+`STATUS` は基本的に `READY|BLOCK|RUN|FAIL|PASS|REJECT` のいずれか、 `[.DESCRIPTION]` は
 任意で追加情報を記述できます。 `STATUS` の使い方は以下の通り。
 
-* `READY :` 実施可能
-* `BLOCK :` なんらかの理由で実施（再開）できない
-* `RUN   :` 実施中
-* `FAIL  :` 実施し、Fail
-* `PASS  :` 実施し、Pass
+* `READY  :` 実施可能
+* `BLOCK  :` なんらかの理由で実施（再開）できない
+* `RUN    :` 実施中
+* `FAIL   :` 実施し、Fail
+* `PASS   :` 実施し、Pass
+* `REJECT :` 実施対象外に変更
 
 　後述するレポートの生成では、スクリプトが各 test-run ファイルにおける上記
 形式の行を全て抽出し、最後の行をそのテストケースの「現在のステータス」とし
@@ -122,15 +123,16 @@ ${BLANK_PARAGRAPH}
 　以下の設定変数が関与しています。
 
 | 設定変数           | 説明 |
-| PROBO_SUMIMG_FILENAME  | xxx  |
-| PROBO_SUMIMG_WIDTH     | xxx  |
-| PROBO_SUMIMG_HEIGHT    | xxx  |
-| PROBO_SUMIMG_CLR_READY | xxx  |
-| PROBO_SUMIMG_CLR_BLOCK | xxx  |
-| PROBO_SUMIMG_CLR_RUN   | xxx  |
-| PROBO_SUMIMG_CLR_PASS  | xxx  |
-| PROBO_SUMIMG_CLR_FAIL  | xxx  |
-| PROBO_SUMIMG_CLR_OTHER | xxx  |
+| PROBO_SUMIMG_FILENAME   | xxx  |
+| PROBO_SUMIMG_WIDTH      | xxx  |
+| PROBO_SUMIMG_HEIGHT     | xxx  |
+| PROBO_SUMIMG_CLR_READY  | xxx  |
+| PROBO_SUMIMG_CLR_BLOCK  | xxx  |
+| PROBO_SUMIMG_CLR_RUN    | xxx  |
+| PROBO_SUMIMG_CLR_PASS   | xxx  |
+| PROBO_SUMIMG_CLR_FAIL   | xxx  |
+| PROBO_SUMIMG_CLR_REJECT | xxx  |
+| PROBO_SUMIMG_CLR_OTHER  | xxx  |
 
 ## 起動オプション
 <!-- autolink: [$$](#起動オプション) -->
@@ -200,7 +202,7 @@ ${BLANK_PARAGRAPH}
 
 ```
  probo --track [-f] [-d DESCRIPTION] STATUS RUNFILE...
- STATUS := READY|BLOCK|PASS|FAIL|RUN
+ STATUS := READY|BLOCK|PASS|FAIL|RUN|REJECT
 ```
 
 * `-f` オプションを使用すると、 `STATUS` パラメータのチェックをバイパスする
@@ -566,6 +568,20 @@ PROBO_SUMIMG_CLR_PASS="#B0E0E6"
 
 ```
 PROBO_SUMIMG_CLR_READY="#F5F5F5"
+```
+
+#### PROBO_SUMIMG_CLR_REJECT
+<!-- autolink: [PROBO_SUMIMG_CLR_REJECT](#PROBO_SUMIMG_CLR_REJECT) -->
+
+　gnuplot を使用して summary graph を生成する場合に、REJECT 部分の描画に使用
+する色を指定します。省略した場合のデフォルトは `"#CD9B9B"` です。
+
+　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する
+値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
+ん。詳細は gnuplot のマニュアルを参照してください。
+
+```
+PROBO_SUMIMG_CLR_REJECT="#CD9B9B"
 ```
 
 #### PROBO_SUMIMG_CLR_RUN

@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [29/33]
+* tasks [30/35]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -70,7 +70,7 @@
 	* ステータス一覧（full/part）と、サマリの円グラフかな
 	* これらは各ディレクトリ毎なので、ファイル名指定はしない（全体と同じにする）で、group 別生成要否だけフラグで与える？
 
-** TODO 途中で実施対象外としたもののステータス DROP? REJECTED? を追加する
+** DONE 途中で実施対象外としたもののステータス REJECT を追加する
 
 	* 終了扱いってことで
 

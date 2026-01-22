@@ -353,10 +353,11 @@ body{font-size:16px;}
 <li class='tocx'><a href='#0RrTNbuRFxh'>7.1.29 PROBO_SUMIMG_CLR_OTHER</a></li>
 <li class='tocx'><a href='#kxCt5dVra62'>7.1.30 PROBO_SUMIMG_CLR_PASS</a></li>
 <li class='tocx'><a href='#aDCj6nYSVlN'>7.1.31 PROBO_SUMIMG_CLR_READY</a></li>
-<li class='tocx'><a href='#lsqeSiSrRyv'>7.1.32 PROBO_SUMIMG_CLR_RUN</a></li>
-<li class='tocx'><a href='#5RDs28HXOMm'>7.1.33 PROBO_SUMIMG_FILENAME</a></li>
-<li class='tocx'><a href='#boKdBFjMP2k'>7.1.34 PROBO_SUMIMG_HEIGHT</a></li>
-<li class='tocx'><a href='#gkr4OjhwGxf'>7.1.35 PROBO_SUMIMG_WIDTH</a></li>
+<li class='tocx'><a href='#e8z2cG3B3Gw'>7.1.32 PROBO_SUMIMG_CLR_REJECT</a></li>
+<li class='tocx'><a href='#lsqeSiSrRyv'>7.1.33 PROBO_SUMIMG_CLR_RUN</a></li>
+<li class='tocx'><a href='#5RDs28HXOMm'>7.1.34 PROBO_SUMIMG_FILENAME</a></li>
+<li class='tocx'><a href='#boKdBFjMP2k'>7.1.35 PROBO_SUMIMG_HEIGHT</a></li>
+<li class='tocx'><a href='#gkr4OjhwGxf'>7.1.36 PROBO_SUMIMG_WIDTH</a></li>
 </blockquote>
 </details>
 <li class='tocx'><a href='#b6CghwSHfuk'>7.2 .case.template ファイル</a></li>
@@ -410,13 +411,14 @@ body{font-size:16px;}
 <pre>
  ## YYYY-MM-DD-hh-mm.STATUS[.DESCRIPTION]
 </pre>
-<p>　ここで、上記における <code>YYYY-MM-DD-hh-mm</code> はタイムスタンプ（年月日時分）、<code>STATUS</code> は基本的に <code>READY|BLOCK|RUN|FAIL|PASS</code> のいずれか、 <code>[.DESCRIPTION]</code> は任意で追加情報を記述できます。 <code>STATUS</code> の使い方は以下の通り。</p>
+<p>　ここで、上記における <code>YYYY-MM-DD-hh-mm</code> はタイムスタンプ（年月日時分）、<code>STATUS</code> は基本的に <code>READY|BLOCK|RUN|FAIL|PASS|REJECT</code> のいずれか、 <code>[.DESCRIPTION]</code> は任意で追加情報を記述できます。 <code>STATUS</code> の使い方は以下の通り。</p>
 <ul>
-<li><code>READY :</code> 実施可能</li>
-<li><code>BLOCK :</code> なんらかの理由で実施（再開）できない</li>
-<li><code>RUN   :</code> 実施中</li>
-<li><code>FAIL  :</code> 実施し、Fail</li>
-<li><code>PASS  :</code> 実施し、Pass</li>
+<li><code>READY  :</code> 実施可能</li>
+<li><code>BLOCK  :</code> なんらかの理由で実施（再開）できない</li>
+<li><code>RUN    :</code> 実施中</li>
+<li><code>FAIL   :</code> 実施し、Fail</li>
+<li><code>PASS   :</code> 実施し、Pass</li>
+<li><code>REJECT :</code> 実施対象外に変更</li>
 </ul>
 <p>　後述するレポートの生成では、スクリプトが各 test-run ファイルにおける上記形式の行を全て抽出し、最後の行をそのテストケースの「現在のステータス」として認識します。また、 <code>FAIL</code> に関しては古い情報もカウントの対象となります。詳細はこのディレクトリにあるスクリプトファイルを参照してください。</p>
 <h2><a name='h1vILBov6aJ'></a>4 使い方</h2>
@@ -446,6 +448,7 @@ body{font-size:16px;}
 <tr><td align='left'><a class='autolink' href='#lsqeSiSrRyv'>PROBO_SUMIMG_CLR_RUN</a></td><td align='left'>xxx</td></tr>
 <tr><td align='left'><a class='autolink' href='#kxCt5dVra62'>PROBO_SUMIMG_CLR_PASS</a></td><td align='left'>xxx</td></tr>
 <tr><td align='left'><a class='autolink' href='#5zGWX5XIBRZ'>PROBO_SUMIMG_CLR_FAIL</a></td><td align='left'>xxx</td></tr>
+<tr><td align='left'><a class='autolink' href='#e8z2cG3B3Gw'>PROBO_SUMIMG_CLR_REJECT</a></td><td align='left'>xxx</td></tr>
 <tr><td align='left'><a class='autolink' href='#0RrTNbuRFxh'>PROBO_SUMIMG_CLR_OTHER</a></td><td align='left'>xxx</td></tr>
 </table>
 <h2><a name='7zBGcRx06tJ'></a>6 起動オプション</h2>
@@ -487,7 +490,7 @@ body{font-size:16px;}
 <p>　実行時点のタイムスタンプで、指定されたファイルにステータスを記録します。</p>
 <pre>
  probo --track [-f] [-d DESCRIPTION] STATUS RUNFILE...
- STATUS := READY|BLOCK|PASS|FAIL|RUN
+ STATUS := READY|BLOCK|PASS|FAIL|RUN|REJECT
 </pre>
 <ul>
 <li><code>-f</code> オプションを使用すると、 <code>STATUS</code> パラメータのチェックをバイパスする</li>
@@ -694,24 +697,30 @@ PROBO_SUMIMG_CLR_PASS="#B0E0E6"
 <pre>
 PROBO_SUMIMG_CLR_READY="#F5F5F5"
 </pre>
-<h4><a name='lsqeSiSrRyv'></a>7.1.32 PROBO_SUMIMG_CLR_RUN</h4>
+<h4><a name='e8z2cG3B3Gw'></a>7.1.32 PROBO_SUMIMG_CLR_REJECT</h4>
+<p>　gnuplot を使用して summary graph を生成する場合に、REJECT 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"#CD9B9B"</code> です。</p>
+<p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
+<pre>
+PROBO_SUMIMG_CLR_REJECT="#CD9B9B"
+</pre>
+<h4><a name='lsqeSiSrRyv'></a>7.1.33 PROBO_SUMIMG_CLR_RUN</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、RUN 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"blue"</code> です。</p>
 <p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
 <pre>
 PROBO_SUMIMG_CLR_RUN="#B0C4DE"
 </pre>
-<h4><a name='5RDs28HXOMm'></a>7.1.33 PROBO_SUMIMG_FILENAME</h4>
+<h4><a name='5RDs28HXOMm'></a>7.1.34 PROBO_SUMIMG_FILENAME</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、その出力ファイル名を以下の要領で指定します。生成を行なわない場合は設定自体を省略するか、空文字列を設定してください。</p>
 <pre>
 PROBO_SUMIMG_FILENAME="summary.png"
 </pre>
 <p>　出力する画像形式はファイル名の拡張子から判断します。probo が認識するのは <code>gif jpeg jpg png svg</code> のいずれかです。</p>
-<h4><a name='boKdBFjMP2k'></a>7.1.34 PROBO_SUMIMG_HEIGHT</h4>
+<h4><a name='boKdBFjMP2k'></a>7.1.35 PROBO_SUMIMG_HEIGHT</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、生成画像の高さをピクセル単位で指定します。省略した場合のデフォルト値は 400 です。</p>
 <pre>
 PROBO_SUMIMG_HEIGHT=500
 </pre>
-<h4><a name='gkr4OjhwGxf'></a>7.1.35 PROBO_SUMIMG_WIDTH</h4>
+<h4><a name='gkr4OjhwGxf'></a>7.1.36 PROBO_SUMIMG_WIDTH</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、生成画像の幅をピクセル単位で指定します。省略した場合のデフォルト値は 500 です。</p>
 <pre>
 PROBO_SUMIMG_WIDTH=700
@@ -786,6 +795,7 @@ PROBO_SUMIMG_WIDTH=700
 <li class='idx_x'><a class='autolink' href='#0RrTNbuRFxh'>PROBO_SUMIMG_CLR_OTHER</a></li>
 <li class='idx_x'><a class='autolink' href='#kxCt5dVra62'>PROBO_SUMIMG_CLR_PASS</a></li>
 <li class='idx_x'><a class='autolink' href='#aDCj6nYSVlN'>PROBO_SUMIMG_CLR_READY</a></li>
+<li class='idx_x'><a class='autolink' href='#e8z2cG3B3Gw'>PROBO_SUMIMG_CLR_REJECT</a></li>
 <li class='idx_x'><a class='autolink' href='#lsqeSiSrRyv'>PROBO_SUMIMG_CLR_RUN</a></li>
 <li class='idx_x'><a class='autolink' href='#5RDs28HXOMm'>PROBO_SUMIMG_FILENAME</a></li>
 <li class='idx_x'><a class='autolink' href='#boKdBFjMP2k'>PROBO_SUMIMG_HEIGHT</a></li>

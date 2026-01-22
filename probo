@@ -7,7 +7,7 @@ function show-usage {
     echo "    probo --log RUNFILE..."
     echo "    probo --addcase [COUNT]"
     echo "    probo --report [-q] [-c CONF_FILE]"
-    echo "    probo --track [-d DESCRIPTION] STATUS RUNFILE..."
+    echo "    probo --track [-f] [-d DESCRIPTION] STATUS RUNFILE..."
 }
 
 # 不定数のパラメータを取り、最初の存在するファイルを返す関数
@@ -113,7 +113,7 @@ function generate-burndown-data-file-raw {
         if [ "$TODAY" "<" "$DATE" ]; then
             REST2=""
         else
-            COUNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.PASS" | wc -l)
+            COUNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.\(PASS\|REJECT\)" | wc -l)
             NGCNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.FAIL" | wc -l)
             REST2=$((REST2 - COUNT))
         fi
@@ -124,34 +124,35 @@ function generate-burndown-data-file-raw {
 function generate-summary-data-file-raw {
     local OUT_FILE="$1"
     local INS_FLAG="$2"           # raw target では INS_FLAG は使用しない
-    TOTALS=(0 0 0 0 0 0 0)        # READY,BLOCK,RUN,OTHER,FAIL,PASS,TOTAL
-    echo "GROUP	READY	BLOCK	RUN	OTHER	FAIL	PASS	TOTAL	PROGRESS" > "${OUT_FILE}"
+    TOTALS=(0 0 0 0 0 0 0 0)      # READY,BLOCK,RUN,OTHER,FAIL,PASS,REJECT,TOTAL
+    echo "GROUP	READY	BLOCK	RUN	OTHER	FAIL	PASS	REJECT	TOTAL	PROGRESS" > "${OUT_FILE}"
     for GROUP in ${PROBO_GROUPS}
     do
         pushd ${GROUP} > /dev/null
-        COUNTS=(0 0 0 0 0 0 0)    # READY,BLOCK,RUN,OTHER,FAIL,PASS,TOTAL
+        COUNTS=(0 0 0 0 0 0 0 0)  # READY,BLOCK,RUN,OTHER,FAIL,PASS,REJECT,TOTAL
         for RUN_FILE in $(ls *.testrun.md)
         do
             RESULT=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1 | cut -d. -f2)
             case "${RESULT}" in
-                READY ) COUNTS[0]=$((COUNTS[0] + 1));;
-                BLOCK ) COUNTS[1]=$((COUNTS[1] + 1));;
-                RUN )   COUNTS[2]=$((COUNTS[2] + 1));;
-                FAIL )  COUNTS[4]=$((COUNTS[4] + 1));;
-                PASS )  COUNTS[5]=$((COUNTS[5] + 1));;
-                * )     COUNTS[3]=$((COUNTS[3] + 1));;
+                READY )  COUNTS[0]=$((COUNTS[0] + 1));;
+                BLOCK )  COUNTS[1]=$((COUNTS[1] + 1));;
+                RUN )    COUNTS[2]=$((COUNTS[2] + 1));;
+                FAIL )   COUNTS[4]=$((COUNTS[4] + 1));;
+                PASS )   COUNTS[5]=$((COUNTS[5] + 1));;
+                REJECT ) COUNTS[6]=$((COUNTS[6] + 1));;
+                * )      COUNTS[3]=$((COUNTS[3] + 1));;
             esac
-            COUNTS[6]=$((COUNTS[6] + 1))
+            COUNTS[7]=$((COUNTS[7] + 1))
         done
-        local PROGRESS=$(ins-pt $((COUNTS[5] * 1000 / COUNTS[6])))
-        echo "${GROUP}	${COUNTS[0]}	${COUNTS[1]}	${COUNTS[2]}	${COUNTS[3]}	${COUNTS[4]}	${COUNTS[5]}	${COUNTS[6]}	${PROGRESS}%" >> ../"${OUT_FILE}"
-        for ((i=0; i<7; i++)) do
+        local PROGRESS=$(ins-pt $(( (COUNTS[5] + COUNTS[6]) * 1000 / COUNTS[7])) )
+        echo "${GROUP}	${COUNTS[0]}	${COUNTS[1]}	${COUNTS[2]}	${COUNTS[3]}	${COUNTS[4]}	${COUNTS[5]}	${COUNTS[6]}	${COUNTS[7]}	${PROGRESS}%" >> ../"${OUT_FILE}"
+        for ((i=0; i<8; i++)) do
             TOTALS[i]=$((TOTALS[i] + COUNTS[i]))
         done
         popd > /dev/null
     done
-    local PROGRESS=$(ins-pt $((TOTALS[5] * 1000 / TOTALS[6])))
-    echo "(total)	${TOTALS[0]}	${TOTALS[1]}	${TOTALS[2]}	${TOTALS[3]}	${TOTALS[4]}	${TOTALS[5]}	${TOTALS[6]}	${PROGRESS}%" >> ./"${OUT_FILE}"
+    local PROGRESS=$(ins-pt $(( (TOTALS[5] + TOTALS[6]) * 1000 / TOTALS[7])) )
+    echo "(total)	${TOTALS[0]}	${TOTALS[1]}	${TOTALS[2]}	${TOTALS[3]}	${TOTALS[4]}	${TOTALS[5]}	${TOTALS[6]}	${TOTALS[7]}	${PROGRESS}%" >> ./"${OUT_FILE}"
 }
 
 function generate-summary-data-file-markdown {
@@ -161,8 +162,8 @@ function generate-summary-data-file-markdown {
     generate-summary-data-file-raw "$$.summary.raw.tmp"
 
     # ヘッダ行は raw file を無視して固定で出しちゃう
-    echo "| GROUP | READY | BLOCK | RUN | OTHER | FAIL | PASS | TOTAL | PROGRESS |"  > "$$.summary.tmp"
-    echo "|:------|------:|------:|----:|------:|-----:|-----:|------:|---------:|" >> "$$.summary.tmp"
+    echo "|GROUP|READY|BLOCK|RUN|OTHER|FAIL|PASS|REJECT|TOTAL|PROGRESS|"  > "$$.summary.tmp"
+    echo "|:----|----:|----:|--:|----:|---:|---:|-----:|----:|-------:|" >> "$$.summary.tmp"
 
     # ２行目以降は markdown の表形式に変換（INS_FLAG に応じて分岐）
     tail -n +2 "$$.summary.raw.tmp" | perl -pe 's/	/ | /g' \
@@ -218,6 +219,7 @@ function generate-status-file-raw {
     # part ファイルが指定されていれば grep -v chain で作成
     if [ "$FILE_MODE2" == "part" ]; then
         cat "${RAW_TMPFILE}" | grep -v '	PASS	' \
+                             | grep -v '	REJECT	' \
                              | grep -v '	READY	' >  "${OUT_FILE}"
     fi
     # full ファイルが指定されていれば一時ファイルを単純にコピー
@@ -246,6 +248,7 @@ function generate-status-file-markdown {
     if [ "$FILE_MODE2" == "part" ]; then
         tail -n +2 "$RAW_TMPFILE" | grep -v '	PASS	' \
                                   | grep -v '	READY	' \
+                                  | grep -v '	REJECT	' \
                                   | perl -pe 's/	/ | /g' \
                                   | perl -pe 's/^/| /'  \
                                   | perl -pe 's/$/ |/'       >>  "$$.status.tmp"
@@ -348,13 +351,14 @@ function make-summary-gpfile {
     local IMG_TYPE="$3"    # svg|png|jpeg|gif
     local IMG_W=$(choice-first-value "$PROBO_SUMIMG_WIDTH"  "500")
     local IMG_H=$(choice-first-value "$PROBO_SUMIMG_HEIGHT" "400")
-    local BGCLR=$(choice-first-value "$PROBO_SUMIMG_BGCLR"      "white")
-    local CLR1=$(choice-first-value "$PROBO_SUMIMG_CLR_READY"    "gray")
-    local CLR2=$(choice-first-value "$PROBO_SUMIMG_CLR_BLOCK"  "purple")
-    local CLR3=$(choice-first-value "$PROBO_SUMIMG_CLR_OTHER" "#98FB98")
-    local CLR4=$(choice-first-value "$PROBO_SUMIMG_CLR_FAIL"     "pink")
-    local CLR5=$(choice-first-value "$PROBO_SUMIMG_CLR_RUN"      "blue")
-    local CLR6=$(choice-first-value "$PROBO_SUMIMG_CLR_PASS"     "cyan")
+    local BGCLR=$(choice-first-value "$PROBO_SUMIMG_BGCLR"       "white")
+    local CLR1=$(choice-first-value "$PROBO_SUMIMG_CLR_READY"     "gray")
+    local CLR2=$(choice-first-value "$PROBO_SUMIMG_CLR_BLOCK"   "purple")
+    local CLR3=$(choice-first-value "$PROBO_SUMIMG_CLR_OTHER"  "#98FB98")
+    local CLR4=$(choice-first-value "$PROBO_SUMIMG_CLR_FAIL"      "pink")
+    local CLR5=$(choice-first-value "$PROBO_SUMIMG_CLR_RUN"       "blue")
+    local CLR6=$(choice-first-value "$PROBO_SUMIMG_CLR_PASS"      "cyan")
+    local CLR7=$(choice-first-value "$PROBO_SUMIMG_CLR_REJECT" "#CD9B9B")
     local IMG_SIZE="$IMG_W,$IMG_H"
 
     if [ "$IMG_TYPE" == "svg" ]; then
@@ -389,6 +393,7 @@ set lt 3 lc rgb "$CLR3"
 set lt 4 lc rgb "$CLR4"
 set lt 5 lc rgb "$CLR5"
 set lt 6 lc rgb "$CLR6"
+set lt 7 lc rgb "$CLR7"
 
 set yrange [-1.1:1.1]
 set xrange [-1.1:1.1]  # x軸も同様に広げるとバランスが良くなります
@@ -405,6 +410,7 @@ plot "${DAT_FILE}" using 1:2:3:4:5:6 with circles lc variable notitle, \\
      keyentry with boxes lt 4 title "FAIL", \\
      keyentry with boxes lt 5 title "RUN", \\
      keyentry with boxes lt 6 title "PASS", \\
+     keyentry with boxes lt 7 title "REJECT", \\
      "${DAT_FILE}" using \\
      (\$1 + r_label * cos((\$4+\$5)/2.0)) : \\
      (\$2 + r_label * sin((\$4+\$5)/2.0)) : \\
@@ -424,13 +430,13 @@ function ins-pt {
 function make-summary-image {
     local OUT_FILE="$1"
     local IMG_TYPE="$2"
-    local CASES=("$3" "$4" "$5" "$6" "$7" "$8") # READY,BLOCK,OTHER,FAIL,RUN,PASS
+    local CASES=("$3" "$4" "$5" "$6" "$7" "$8" "$9") # READY,BLOCK,OTHER,FAIL,RUN,PASS,REJECT
 
-    local N_TOTAL=$((CASES[0] + CASES[1] + CASES[2] + CASES[3] + CASES[4] + CASES[5]))
+    local N_TOTAL=$((CASES[0] + CASES[1] + CASES[2] + CASES[3] + CASES[4] + CASES[5] + CASES[6]))
     local DEG1=0
 
     echo "# 中心X  中心Y  半径  開始角  終了角  色番号  表示する値" >  "$$.tmp.dat"
-    for ((i=0; i<6; i++)) do
+    for ((i=0; i<7; i++)) do
         local DEGREE=$((CASES[i] * 3600 / N_TOTAL))
         if [ "${CASES[i]}" -ne 0 ]; then
             local DEG2=$((DEG1 + DEGREE))
@@ -448,7 +454,7 @@ function make-summary-image {
 
 function graph-summary {
     local OUT_FILE="$1"
-    COUNTS=(0 0 0 0 0 0)    # READY,BLOCK,FAIL,RUN,PASS,OTHER
+    COUNTS=(0 0 0 0 0 0 0)    # READY,BLOCK,FAIL,RUN,PASS,REJECT,OTHER
     for GROUP in ${PROBO_GROUPS}
     do
         pushd ${GROUP} > /dev/null
@@ -456,43 +462,47 @@ function graph-summary {
         do
             RESULT=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1 | cut -d. -f2)
             case "${RESULT}" in
-                READY ) COUNTS[0]=$((COUNTS[0] + 1));;
-                BLOCK ) COUNTS[1]=$((COUNTS[1] + 1));;
-                FAIL )  COUNTS[2]=$((COUNTS[2] + 1));;
-                RUN )   COUNTS[3]=$((COUNTS[3] + 1));;
-                PASS )  COUNTS[4]=$((COUNTS[4] + 1));;
-                * )     COUNTS[5]=$((COUNTS[5] + 1));;
+                READY )  COUNTS[0]=$((COUNTS[0] + 1));;
+                BLOCK )  COUNTS[1]=$((COUNTS[1] + 1));;
+                FAIL )   COUNTS[2]=$((COUNTS[2] + 1));;
+                RUN )    COUNTS[3]=$((COUNTS[3] + 1));;
+                PASS )   COUNTS[4]=$((COUNTS[4] + 1));;
+                REJECT ) COUNTS[5]=$((COUNTS[5] + 1));;
+                * )      COUNTS[6]=$((COUNTS[6] + 1));;
             esac
         done
         popd > /dev/null
     done
     IMG_TYPE=$(get-image-type-from-filename "$OUT_FILE")
     make-summary-image "$OUT_FILE" $IMG_TYPE \
-                       ${COUNTS[0]} ${COUNTS[1]} ${COUNTS[5]} ${COUNTS[2]} ${COUNTS[3]} ${COUNTS[4]}
+                       ${COUNTS[0]} ${COUNTS[1]} ${COUNTS[6]} \
+                       ${COUNTS[2]} ${COUNTS[3]} ${COUNTS[4]} ${COUNTS[5]}
     rm -f ${DAT_FILE}
 }
 
 function graph-group-summary {
     local GROUP="$1"
     local OUT_FILE="$2"
-    COUNTS=(0 0 0 0 0 0)    # READY,BLOCK,FAIL,RUN,PASS,OTHER
+    COUNTS=(0 0 0 0 0 0 0)    # READY,BLOCK,FAIL,RUN,PASS,REJECT,OTHER
     pushd ${GROUP} > /dev/null
     for RUN_FILE in $(ls *.testrun.md)
     do
         RESULT=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1 | cut -d. -f2)
         case "${RESULT}" in
-            READY ) COUNTS[0]=$((COUNTS[0] + 1));;
-            BLOCK ) COUNTS[1]=$((COUNTS[1] + 1));;
-            FAIL )  COUNTS[2]=$((COUNTS[2] + 1));;
-            RUN )   COUNTS[3]=$((COUNTS[3] + 1));;
-            PASS )  COUNTS[4]=$((COUNTS[4] + 1));;
-            * )     COUNTS[5]=$((COUNTS[5] + 1));;
+            READY )  COUNTS[0]=$((COUNTS[0] + 1));;
+            BLOCK )  COUNTS[1]=$((COUNTS[1] + 1));;
+            FAIL )   COUNTS[2]=$((COUNTS[2] + 1));;
+            RUN )    COUNTS[3]=$((COUNTS[3] + 1));;
+            PASS )   COUNTS[4]=$((COUNTS[4] + 1));;
+            REJECT ) COUNTS[5]=$((COUNTS[5] + 1));;
+            * )      COUNTS[6]=$((COUNTS[6] + 1));;
         esac
     done
     popd > /dev/null
     IMG_TYPE=$(get-image-type-from-filename "$OUT_FILE")
     make-summary-image "$GROUP/$OUT_FILE" $IMG_TYPE \
-                       ${COUNTS[0]} ${COUNTS[1]} ${COUNTS[5]} ${COUNTS[2]} ${COUNTS[3]} ${COUNTS[4]}
+                       ${COUNTS[0]} ${COUNTS[1]} ${COUNTS[6]} \
+                       ${COUNTS[2]} ${COUNTS[3]} ${COUNTS[4]} ${COUNTS[5]}
     rm -f ${DAT_FILE}
 }
 
@@ -513,7 +523,7 @@ function graph-burndown {
         if [ "$TODAY" "<" "$DATE" ]; then
             REST2=""
         else
-            COUNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.PASS" | wc -l)
+            COUNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.\(PASS\|REJECT\)" | wc -l)
             NGCNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.FAIL" | wc -l)
             REST2=$((REST2 - COUNT))
         fi
@@ -558,11 +568,12 @@ function track-runfile {
     shift
     if [ $FORCE -eq 0 ]; then
         case $STATUS in
-            READY) ;;
-            BLOCK) ;;
-            PASS)  ;;
-            FAIL)  ;;
-            RUN)   ;;
+            READY)  ;;
+            BLOCK)  ;;
+            PASS)   ;;
+            FAIL)   ;;
+            RUN)    ;;
+            REJECT) ;;
             *) echo "ERROR : invalid status \"$STATUS\"."
                return 1;;
         esac
@@ -690,6 +701,7 @@ PROBO_SUMIMG_CLR_BLOCK=
 PROBO_SUMIMG_CLR_RUN=
 PROBO_SUMIMG_CLR_PASS=
 PROBO_SUMIMG_CLR_FAIL=
+PROBO_SUMIMG_CLR_REJECT=
 PROBO_SUMIMG_CLR_OTHER=
 
 PROBO_GRP_FULLSTAT_FILENAME=
