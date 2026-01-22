@@ -70,17 +70,28 @@
 	* ステータス一覧（full/part）と、サマリの円グラフかな
 	* これらは各ディレクトリ毎なので、ファイル名指定はしない（全体と同じにする）で、group 別生成要否だけフラグで与える？
 
+** TODO 途中で実施対象外としたもののステータス DROP? REJECTED? を追加する
+
+	* 終了扱いってことで
+
 ** TODO PASS が複数ある場合の扱いを考える
 
 	* 「最後の FAIL」以降で「最初の PASS」を唯一の PASS として数える、かな
 	* しかし、ケース更新とかで READY に戻ってるとかは？ ⇒ やはり「最後が PASS」かどうかだけでよい？
 
-** TODO --add-group でグループを追加する
+** TODO --init で各グループディレクトリ配下に README.md を生成する
+
+	* REPORT_TYPE として gitlab とか指定可能にすれば
+	* .group.template に従って生成するかな
+	* 上記をやるなら、生成する conf ファイルももっと細かく制御したくなる
+
+** TODO --addgrp でグループを追加する
 
 	* conf ファイルへの追加が一番問題になる‥‥‥conf は複数ありうるし。
 	* PROBO_GROUPS は省略可能になったので、やっちゃっていいかも。
 	* 逆に手作業で mkdir すればよくね？（PROBO_GROUPS 使う場合は自力で頑張れ、というスタンス）
 	* probo --addgrp GROUP_NAME [CASE_COUNT] とかなら役には立つかな‥‥‥
+	* gitlab 向けの README.md ファイル作ってくれるなら役立つ
 
 ** TODO testcase.md ファイルからテストを自動実行するような仕組みを検討する
 
