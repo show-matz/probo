@@ -184,6 +184,9 @@ ${BLANK_PARAGRAPH}
   変更できます。
 * `.case.template` ファイルを生成します。これは probo --addcase でテスト
   ケースファイルを作成する時のテンプレートとなるファイルです。
+* `REPORT_TYPE` が `gitlab` または `github` の場合に限り、 `group.readme.template` 
+  ファイルを生成します。これは probo --addgrp でグループを作成する際、
+  配下の README.md 作成のテンプレートとなるファイルです。
 
 ### --log オプション
 <!-- autolink: [--log](#--log オプション) -->

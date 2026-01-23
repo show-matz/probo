@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [33/38]
+* tasks [34/40]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -91,18 +91,29 @@
 
 	* .case.template
 
-** TODO --init で各種 .group.readme.template ファイルを生成する
+** DONE --init で各種 .group.readme.template ファイルを生成する
 
 	* .group.readme.template
+	* REPORT_TYPE として gitlab とかを指定可能にする
 
-	* REPORT_TYPE として gitlab を指定可能にするか、あるいは別オプションで
-	* 生成する conf ファイルももっと細かく制御したくなる
+** TODO --init での conf file 生成をもっと細かく制御する
+
+	* 以下の３通りかな
+		* raw
+		* github/gitlab
+		* turnup
+
+** TODO --init で README.md ファイルを生成する
+
+	* probo --init git(hub|lab) の場合かな
+	* probo --init turnup の場合はどうする？  report.md とか？
 
 ** TODO PROBO_GROUPS 変数の廃止検討
 
 	* .git みたいなドットで始まるディレクトリは除外
 	* 上記に加えて、配下に *.testcase.md が存在しないディレクトリも除外
 	* ‥‥‥で、良くない？
+	* 問題は、「レポートでの表示順序制御」かな。
 
 ** TODO PASS が複数ある場合の扱いを考える
 

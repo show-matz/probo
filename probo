@@ -732,6 +732,33 @@ function generate-case-template-file {
 EOF
 }
 
+function generate-group-readme-template-file {
+    cat <<EOF > "./.group.readme.template"
+# %GROUP%
+
+## summary
+
+![](summary.svg)
+
+  
+
+## Case status
+
+<!-- begin probo status-part -->
+<!-- end probo status-part -->
+
+  
+
+<details><summary>Full cases listed here.</summary>
+
+<!-- begin probo status-full -->
+<!-- end probo status-full -->
+
+</details>
+
+EOF
+}
+
 function initialize-probo {
 
     # -c オプションの回収（あれば）
@@ -751,11 +778,15 @@ function initialize-probo {
         exit 1
     fi
 
-    local REPORT_TYPE="$1"
+    local ORG_TYPE="${1,,}"
+    local REPORT_TYPE="${1,,}"
     # REPORT_TYPE の正当性チェック
-    case "${REPORT_TYPE}" in
+    case "${ORG_TYPE}" in
         raw)      ;;
         markdown) ;;
+        gitlab)   REPORT_TYPE="markdown";;
+        github)   REPORT_TYPE="markdown";;
+        turnup)   REPORT_TYPE="markdown";;
         *) echo "ERROR : invalid REPORT_TYPE parameter."
            return 1;;
     esac
@@ -763,6 +794,10 @@ function initialize-probo {
 
     generate-probo-conf-file "$CONF_FILE" "$REPORT_TYPE" $(which gnuplot | wc -l)
     generate-case-template-file
+
+    if [ "${ORG_TYPE}" == "gitlab" ] || [ "${ORG_TYPE}" == "github" ]; then
+        generate-group-readme-template-file
+    fi
 
 }
 
