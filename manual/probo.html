@@ -470,10 +470,17 @@ body{font-size:16px;}
  probo --help
 </pre>
 <h3><a name='c09k6WLIoEN'></a>6.4 --init オプション</h3>
-<p>　カレントディレクトリに指定されたレポート種別で conf ファイルを作成し、グループの指定があればディレクトリを作成します。</p>
+<p>　カレントディレクトリを probo のテスト環境として初期化します。</p>
 <pre>
- probo --init  [-c CONF_FILE]  REPORT_TYPE  [GROUP]...
+ probo --init  [-c CONF_FILE]  REPORT_TYPE
 </pre>
+<ul>
+<li><p><code>REPORT_TYPE</code> で指定されたレポート種別で conf ファイルを作成します。
+conf ファイルを名はデフォルトで <code>probo.conf</code> ですが、 <code>-c</code> オプションで
+変更できます。
+</p>
+</li>
+</ul>
 <h3><a name='fy8CiK2yYNr'></a>6.5 --log オプション</h3>
 <p>　指定された run file のログを出力します。</p>
 <pre>

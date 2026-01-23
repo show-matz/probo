@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [31/37]
+* tasks [32/37]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -82,7 +82,7 @@
 	* case 追加は別途 probo --addcase してね、とする
 	* 追加するファイル名は設定で渡すの？ ⇒ GitHub でも README.md だからひとまずいいのでは。
 
-** TODO --init でのグループディレクトリ追加をとりやめる
+** DONE --init でのグループディレクトリ追加をとりやめる
 
 	* .group.readme.template を生成するように変更する予定なので、
 	* 生成した上記ファイルを修正してから probo --addgrp してもらう方針

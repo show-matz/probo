@@ -171,12 +171,15 @@ ${BLANK_PARAGRAPH}
 ### --init オプション
 <!-- autolink: [--init](#--init オプション) -->
 
-　カレントディレクトリに指定されたレポート種別で conf ファイルを作成し、グループの
-指定があればディレクトリを作成します。
+　カレントディレクトリを probo のテスト環境として初期化します。
 
 ```
- probo --init  [-c CONF_FILE]  REPORT_TYPE  [GROUP]...
+ probo --init  [-c CONF_FILE]  REPORT_TYPE
 ```
+
+* `REPORT_TYPE` で指定されたレポート種別で conf ファイルを作成します。
+  conf ファイルを名はデフォルトで `probo.conf` ですが、 `-c` オプションで
+  変更できます。
 
 ### --log オプション
 <!-- autolink: [--log](#--log オプション) -->

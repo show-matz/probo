@@ -2,7 +2,7 @@
 
 function show-usage {
     echo "USAGE:"
-    echo "    probo --init [-c CONF_FILE] REPORT_TYPE [GROUP...]"
+    echo "    probo --init [-c CONF_FILE] REPORT_TYPE"
     echo "    probo --ls"
     echo "    probo --log RUNFILE..."
     echo "    probo --addgrp GROUP..."
@@ -752,15 +752,6 @@ function initialize-probo {
 
     generate-probo-conf-file "$CONF_FILE" "$REPORT_TYPE" $(which gnuplot | wc -l)
 
-    local GROUP_NAME="$1"
-    while [ ! -z "$GROUP_NAME" ]; do
-        if [ ! -d "$GROUP_NAME" ]; then
-            mkdir "./$GROUP_NAME"
-        fi
-        shift 1
-        GROUP_NAME="$1"
-    done
-    
 }
 
 function add-group {
