@@ -8,11 +8,11 @@
 ![](summary.svg)
 
 <!-- begin probo summary -->
-| GROUP | READY | BLOCK | RUN | OTHER | FAIL | PASS | TOTAL | PROGRESS |
-|:------|------:|------:|----:|------:|-----:|-----:|------:|---------:|
-| group1 | 13 | 1 | 0 | 0 | 1 | 5 | 20 | 25.0% |
-| group2 | 20 | 0 | 0 | 0 | 0 | 0 | 20 | 0.0% |
-| (total) | 33 | 1 | 0 | 0 | 1 | 5 | 40 | 12.5% |
+|GROUP|READY|BLOCK|RUN|OTHER|FAIL|PASS|REJECT|TOTAL|PROGRESS|
+|:----|----:|----:|--:|----:|---:|---:|-----:|----:|-------:|
+| group1 | 13 | 1 | 0 | 0 | 1 | 5 | 0 | 20 | 25.0% |
+| group2 | 20 | 0 | 0 | 0 | 0 | 0 | 0 | 20 | 0.0% |
+| (total) | 33 | 1 | 0 | 0 | 1 | 5 | 0 | 40 | 12.5% |
 <!-- end probo summary -->
 
 ## status
