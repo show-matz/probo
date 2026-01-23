@@ -177,9 +177,13 @@ ${BLANK_PARAGRAPH}
  probo --init  [-c CONF_FILE]  REPORT_TYPE
 ```
 
+　probo --init は、以下のことを行ないます。
+
 * `REPORT_TYPE` で指定されたレポート種別で conf ファイルを作成します。
   conf ファイルを名はデフォルトで `probo.conf` ですが、 `-c` オプションで
   変更できます。
+* `.case.template` ファイルを生成します。これは probo --addcase でテスト
+  ケースファイルを作成する時のテンプレートとなるファイルです。
 
 ### --log オプション
 <!-- autolink: [--log](#--log オプション) -->

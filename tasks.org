@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [32/37]
+* tasks [33/38]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -87,14 +87,16 @@
 	* .group.readme.template を生成するように変更する予定なので、
 	* 生成した上記ファイルを修正してから probo --addgrp してもらう方針
 
-** TODO --init で各種 .template ファイルを生成する
+** DONE --init で各種 .case.template ファイルを生成する
 
 	* .case.template
+
+** TODO --init で各種 .group.readme.template ファイルを生成する
+
 	* .group.readme.template
 
-	* REPORT_TYPE として gitlab とか指定可能にすれば
-	* .group.readme.template に従って生成するかな
-	* 上記をやるなら、生成する conf ファイルももっと細かく制御したくなる
+	* REPORT_TYPE として gitlab を指定可能にするか、あるいは別オプションで
+	* 生成する conf ファイルももっと細かく制御したくなる
 
 ** TODO PROBO_GROUPS 変数の廃止検討
 

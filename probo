@@ -719,6 +719,17 @@ PROBO_BD_EXEC_PER_DAY=5
 
 PROBO_BD_SCHEDULE=
 EOF
+
+}
+
+function generate-case-template-file {
+    cat <<EOF > "./.case.template"
+## %GROUP%/%CASEID%
+
+* GROUP: %GROUP%
+* ID: %CASEID%
+* DESCRIPTION: 
+EOF
 }
 
 function initialize-probo {
@@ -751,6 +762,7 @@ function initialize-probo {
     shift 1
 
     generate-probo-conf-file "$CONF_FILE" "$REPORT_TYPE" $(which gnuplot | wc -l)
+    generate-case-template-file
 
 }
 
