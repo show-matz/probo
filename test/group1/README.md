@@ -1,7 +1,7 @@
 
 ## summary
 
-![](gitlab.summary.svg)
+![](summary.svg)
 
 ## status
 

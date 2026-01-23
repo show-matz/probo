@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [30/35]
+* tasks [31/37]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -74,24 +74,38 @@
 
 	* 終了扱いってことで
 
+** DONE --addgrp でグループを追加する
+
+	* probo --addgrp GROUP_NAME...
+	* PROBO_GROUPS への追加は「自分で頑張ってね」とする
+	* .group.readme.template があるなら README.md を生成する
+	* case 追加は別途 probo --addcase してね、とする
+	* 追加するファイル名は設定で渡すの？ ⇒ GitHub でも README.md だからひとまずいいのでは。
+
+** TODO --init でのグループディレクトリ追加をとりやめる
+
+	* .group.readme.template を生成するように変更する予定なので、
+	* 生成した上記ファイルを修正してから probo --addgrp してもらう方針
+
+** TODO --init で各種 .template ファイルを生成する
+
+	* .case.template
+	* .group.readme.template
+
+	* REPORT_TYPE として gitlab とか指定可能にすれば
+	* .group.readme.template に従って生成するかな
+	* 上記をやるなら、生成する conf ファイルももっと細かく制御したくなる
+
+** TODO PROBO_GROUPS 変数の廃止検討
+
+	* .git みたいなドットで始まるディレクトリは除外
+	* 上記に加えて、配下に *.testcase.md が存在しないディレクトリも除外
+	* ‥‥‥で、良くない？
+
 ** TODO PASS が複数ある場合の扱いを考える
 
 	* 「最後の FAIL」以降で「最初の PASS」を唯一の PASS として数える、かな
 	* しかし、ケース更新とかで READY に戻ってるとかは？ ⇒ やはり「最後が PASS」かどうかだけでよい？
-
-** TODO --init で各グループディレクトリ配下に README.md を生成する
-
-	* REPORT_TYPE として gitlab とか指定可能にすれば
-	* .group.template に従って生成するかな
-	* 上記をやるなら、生成する conf ファイルももっと細かく制御したくなる
-
-** TODO --addgrp でグループを追加する
-
-	* conf ファイルへの追加が一番問題になる‥‥‥conf は複数ありうるし。
-	* PROBO_GROUPS は省略可能になったので、やっちゃっていいかも。
-	* 逆に手作業で mkdir すればよくね？（PROBO_GROUPS 使う場合は自力で頑張れ、というスタンス）
-	* probo --addgrp GROUP_NAME [CASE_COUNT] とかなら役には立つかな‥‥‥
-	* gitlab 向けの README.md ファイル作ってくれるなら役立つ
 
 ** TODO testcase.md ファイルからテストを自動実行するような仕組みを検討する
 

@@ -5,6 +5,7 @@ function show-usage {
     echo "    probo --init [-c CONF_FILE] REPORT_TYPE [GROUP...]"
     echo "    probo --ls"
     echo "    probo --log RUNFILE..."
+    echo "    probo --addgrp GROUP..."
     echo "    probo --addcase [COUNT]"
     echo "    probo --report [-q] [-c CONF_FILE]"
     echo "    probo --track [-f] [-d DESCRIPTION] STATUS RUNFILE..."
@@ -762,6 +763,29 @@ function initialize-probo {
     
 }
 
+function add-group {
+
+    local README_FILE="README.md"
+    local TMPL_FILE="./.group.readme.template"
+    if [ ! -e "$TMPL_FILE" ]; then
+        TMPL_FILE=""
+    fi
+
+    local GROUP_NAME="$1"
+    while [ ! -z "$GROUP_NAME" ]; do
+        if [ ! -d "$GROUP_NAME" ]; then
+            mkdir "./$GROUP_NAME"
+        fi
+        if [ -d "$GROUP_NAME" ] && [ ! -z "$TMPL_FILE" ]; then
+            cat "$TMPL_FILE" | perl -pe "s/%GROUP%/${GROUP_NAME}/g" \
+                                              > "./${GROUP_NAME}/${README_FILE}"
+        fi
+        shift 1
+        GROUP_NAME="$1"
+    done
+    
+}
+
 function add-test-case-impl {
     local ID="0000${1}"
     local GROUP="$2"
@@ -979,6 +1003,8 @@ case "$MODE" in
     --log )     dump-runfile-log "$@"
                 exit 0;;
     --track )   track-runfile "$@"
+                exit 0;;
+    --addgrp )  add-group "$@"
                 exit 0;;
     --addcase ) add-test-case "$@"
                 exit 0;;

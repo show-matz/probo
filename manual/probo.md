@@ -146,6 +146,19 @@ ${BLANK_PARAGRAPH}
  probo --addcase [COUNT]
 ```
 
+### --addgrp オプション
+<!-- autolink: [--addgrp](#--addgrp オプション) -->
+
+　指定した名前でグループを作成します。複数のグループを一度に指定できます。
+
+```
+ probo --addgrp GROUP...
+```
+
+　`.group.readme.template` ファイルが存在すると、その内容を使ってグループディレ
+クトリの配下に `README.md` ファイルを作成します。このとき、 `.group.readme.template` 
+内部の文字列 `%GROUP%` はグループ名に置き換えられます。
+
 ### --help オプション
 <!-- autolink: [--help](#--help オプション) -->
 

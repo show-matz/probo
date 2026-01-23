@@ -1,11 +1,11 @@
 
 ## burn-down chart
 
-![](gitlab.burndown.svg)
+![](burndown.svg)
 
 ## summary
 
-![](gitlab.summary.svg)
+![](summary.svg)
 
 <!-- begin probo summary -->
 | GROUP | READY | BLOCK | RUN | OTHER | FAIL | PASS | TOTAL | PROGRESS |
