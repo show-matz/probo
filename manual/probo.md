@@ -65,7 +65,9 @@ ${BLANK_PARAGRAPH}
     * 　:
     * 　:
 
-
+　グループには自由に名前をつけられますが、 `.git` のようにドットで始まる名前だけは
+対象外になります。また、配下に `*.testcase.md` ファイルが存在しないディレクトリも
+グループとはみなされません。
 
 * `.case.template`
 * `probo.conf`
@@ -415,26 +417,6 @@ PROBO_BD_STARTDAY="2026-07-01"
 <!-- autolink: [PROBO_FULLSTAT_INSERTION](#PROBO_FULLSTAT_INSERTION) -->
 
 * ${{TODO}{まだ記述されていません。}}
-
-#### PROBO_GROUPS
-<!-- autolink: [PROBO_GROUPS](#PROBO_GROUPS) -->
-
-　以下の要領でグループの一覧を設定します。レポート生成において対象とするグループ
-とその順序の指定に使用されます。
-
-```
-PROBO_GROUPS="
-group1
-group2
-group3
-  :
-  :
-"
-```
-
-　この設定を省略（または空文字列を設定）した場合、probo は「カレントディレクトリ
-直下にあるディレクトリ」すべてをグループとして扱います。ただし、 `.git` のように
-ドットで始まるディレクトリは除外されます。
 
 #### PROBO_GRP_FULLSTAT_FILENAME
 <!-- autolink: [PROBO_GRP_FULLSTAT_FILENAME](#PROBO_GRP_FULLSTAT_FILENAME) -->

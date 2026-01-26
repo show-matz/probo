@@ -601,6 +601,17 @@ function track-runfile {
     echo "$FILE_COUNT file(s) updated."
 }
 
+function enumerate-group-directories {
+    local COUNT=0
+    for DIRECTORY in $(find . -maxdepth 1 -type d | grep -v '^\.$' | cut -d/ -f2 | grep -v '^\.' | sort)
+    do
+        COUNT=$(ls $DIRECTORY/*.testcase.md 2> /dev/null | wc -l)
+        if [ $COUNT -ne 0 ]; then
+            echo "$DIRECTORY"
+        fi
+    done
+}
+
 function load-conf-file {
     local CONF_FILE="$1"
 
@@ -613,8 +624,9 @@ function load-conf-file {
     source "$CONF_FILE"
 
     # PROBO_GROUPS が空ならディレクトリを走査して生成
+    # MEMO : 「PROBO_GROUPS を conf file に書いておけばそれが使われる」のは undocumented な仕様だよ
     if [ -z "$PROBO_GROUPS" ]; then
-        PROBO_GROUPS=$(find . -maxdepth 1 -type d | grep -v '^\.$' | cut -d/ -f2 | grep -v '^\.' | sort)
+        PROBO_GROUPS=$(enumerate-group-directories)
     fi
     # PROBO_BD_SCHEDULE が空なら生成
     if [ -z "${PROBO_BD_SCHEDULE}" ]; then
@@ -710,8 +722,6 @@ PROBO_GRP_FULLSTAT_INSERTION=
 PROBO_GRP_PARTSTAT_FILENAME=
 PROBO_GRP_PARTSTAT_INSERTION=
 PROBO_GRP_SUMIMG_FILENAME=
-
-PROBO_GROUPS=
 
 PROBO_BD_STARTDAY="$DAY1"
 PROBO_BD_ENDDAY="$DAY2"
