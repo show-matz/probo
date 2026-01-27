@@ -128,6 +128,23 @@
      gnuplot "$$.tmp.gp" > "${OUT_FILE}"
 #+END_SRC
 
+** TODO --edit で runfile とか casefile を編集する
+
+	* probo --edit [-c] FILE-OR-NUMBER
+		* -c で case file、なければ run file
+	* PROBO_EDITOR 変数が必要になるね。
+		* PROBO_EDITOR 変数が空ならどこにでもある vi にする？
+		* vi ならブロックだろうけど、emacsclient なら & つけたいな
+		* PROBO_EDITOR="emacsclient %1 &" みたいに定義させるか
+		* よく考えてみたら conf file に依存できないだろこれ
+		* これは .bashrc で定義してもらうことに
+	* 動くようにはなった。あとはマニュアル。
+
+** TODO --track -e で編集も可能にする
+
+	* ただし、編集したのが 1 file だった場合のみね。
+	* 動くようにはなった。あとはマニュアル。
+
 ** TODO --init での conf file 生成をもっと細かく制御する
 
 	* 以下の３通りかな

@@ -309,12 +309,13 @@ body{font-size:16px;}
 <blockquote class='tocx'>
 <li class='tocx'><a href='#6RK38KzDT9g'>6.1 --addcase オプション</a></li>
 <li class='tocx'><a href='#aqrF7Ohm9qI'>6.2 --addgrp オプション</a></li>
-<li class='tocx'><a href='#4saVmSQErTb'>6.3 --help オプション</a></li>
-<li class='tocx'><a href='#c09k6WLIoEN'>6.4 --init オプション</a></li>
-<li class='tocx'><a href='#fy8CiK2yYNr'>6.5 --log オプション</a></li>
-<li class='tocx'><a href='#ibqo8Q1548Y'>6.6 --ls オプション</a></li>
-<li class='tocx'><a href='#iLGxvGNVVb2'>6.7 --report オプション</a></li>
-<li class='tocx'><a href='#2D7rbHQtrFj'>6.8 --track オプション</a></li>
+<li class='tocx'><a href='#kO1Toy1HeKM'>6.3 --edit オプション</a></li>
+<li class='tocx'><a href='#4saVmSQErTb'>6.4 --help オプション</a></li>
+<li class='tocx'><a href='#c09k6WLIoEN'>6.5 --init オプション</a></li>
+<li class='tocx'><a href='#fy8CiK2yYNr'>6.6 --log オプション</a></li>
+<li class='tocx'><a href='#ibqo8Q1548Y'>6.7 --ls オプション</a></li>
+<li class='tocx'><a href='#iLGxvGNVVb2'>6.8 --report オプション</a></li>
+<li class='tocx'><a href='#2D7rbHQtrFj'>6.9 --track オプション</a></li>
 </blockquote>
 </details>
 <details class='tocx' open>
@@ -360,7 +361,14 @@ body{font-size:16px;}
 <li class='tocx'><a href='#gkr4OjhwGxf'>7.1.35 PROBO_SUMIMG_WIDTH</a></li>
 </blockquote>
 </details>
-<li class='tocx'><a href='#b6CghwSHfuk'>7.2 .case.template ファイル</a></li>
+<details class='tocx' open>
+<summary class='tocx'><a href='#eOMxsXUGejj'>7.2 その他の設定変数</a></summary>
+<blockquote class='tocx'>
+<li class='tocx'><a href='#0XW1Xqn36Zs'>7.2.1 PROBO_EDITOR</a></li>
+</blockquote>
+</details>
+<li class='tocx'><a href='#b6CghwSHfuk'>7.3 .case.template ファイル</a></li>
+<li class='tocx'><a href='#3oevMyLJR3M'>7.4 .group.readme.template ファイル</a></li>
 </blockquote>
 </details>
 <li class='tocx'><a href='#8tTIqHSNoTg'>8 既知の問題点</a></li>
@@ -368,7 +376,7 @@ body{font-size:16px;}
 <li class='tocx'><a href='#1ewHzjI62xn'>10 索引</a></li>
 <p>　　</p>
 <h2><a name='9xk9gUVGJO0'></a>2 probo とは</h2>
-<p>　<strong>probo</strong> （ぷろーぼ）は、bash スクリプトで動作する軽量なテキスト主義のテスト管理ツールです。基本的に bash と gnuplot があれば動作します<sup><a name='footnote_ref1' href='#footnote1'>1</a></sup>。</p>
+<p>　<strong>probo</strong> （ぷろーぼ）は、bash シェル上で動作する簡素なテキスト主義のテスト管理ツールです。基本的に bash と gnuplot があれば動作します<sup><a name='footnote_ref1' href='#footnote1'>1</a></sup>。</p>
 <h2><a name='jjjXfFtPMKV'></a>3 構成</h2>
 <p>　probo では、ひとつ以上の <strong>グループ</strong> を作成してそれぞれの配下で複数の <strong>テスト</strong> を管理します。テストはグループ内で <strong>テスト ID</strong> で識別され、 <strong>テストケース</strong> と <strong>テストラン</strong> がそれぞれ別のファイルに保存されます。</p>
 <ul>
@@ -466,12 +474,19 @@ body{font-size:16px;}
  probo --addgrp GROUP...
 </pre>
 <p>　<code>.group.readme.template</code> ファイルが存在すると、その内容を使ってグループディレクトリの配下に <code>README.md</code> ファイルを作成します。このとき、 <code>.group.readme.template</code> 内部の文字列 <code>%GROUP%</code> はグループ名に置き換えられます。</p>
-<h3><a name='4saVmSQErTb'></a>6.3 --help オプション</h3>
+<h3><a name='kO1Toy1HeKM'></a>6.3 --edit オプション</h3>
+<p>　カレントディレクトリにある指定した run file または case file をエディタで開きます。</p>
+<pre>
+ probo --edit [-c] TEST
+</pre>
+<p>　<code>TEST</code> が４桁以下の数字列だった場合、 <code>-c</code> の有無に従って run file 名または case file 名に補完されます。つまり、 <code>--edit 12</code> は <code>--edit ./0012.testrun.md</code> と同じであり、 <code>--edit -c 8</code> は <code>--edit ./0008.testcase.md</code> と同じです。</p>
+<p>　エディタの指定は <a class='autolink' href='#0XW1Xqn36Zs'>PROBO_EDITOR</a> 変数に従います。</p>
+<h3><a name='4saVmSQErTb'></a>6.4 --help オプション</h3>
 <p>　標準出力に command usage を出力します。</p>
 <pre>
  probo --help
 </pre>
-<h3><a name='c09k6WLIoEN'></a>6.4 --init オプション</h3>
+<h3><a name='c09k6WLIoEN'></a>6.5 --init オプション</h3>
 <p>　カレントディレクトリを probo のテスト環境として初期化します。</p>
 <pre>
  probo --init  [-c CONF_FILE]  REPORT_TYPE
@@ -493,7 +508,7 @@ conf ファイルを名はデフォルトで <code>probo.conf</code> ですが�
 </p>
 </li>
 </ul>
-<h3><a name='fy8CiK2yYNr'></a>6.5 --log オプション</h3>
+<h3><a name='fy8CiK2yYNr'></a>6.6 --log オプション</h3>
 <p>　指定された run file のログを出力します。</p>
 <pre>
  probo --log RUNFILE...
@@ -502,24 +517,28 @@ conf ファイルを名はデフォルトで <code>probo.conf</code> ですが�
 <li><span style='background:red; color:white;'>RUNFILE の説明を書く</span></li>
 <li><span style='background:red; color:white;'>カレントディレクトリであれば、テスト ID を数値で指定することも可能</span></li>
 </ul>
-<h3><a name='ibqo8Q1548Y'></a>6.6 --ls オプション</h3>
+<h3><a name='ibqo8Q1548Y'></a>6.7 --ls オプション</h3>
 <p>　カレントディレクトリの run file の現在のステータスを一覧します。カレントディレクトリに run file が存在しない場合、グループディレクトリ群のひとつ上のディレクトリにいるものとして、配下グループ全体の run file のステータスを一覧します。</p>
 <pre>
  probo --ls
 </pre>
-<h3><a name='iLGxvGNVVb2'></a>6.7 --report オプション</h3>
+<h3><a name='iLGxvGNVVb2'></a>6.8 --report オプション</h3>
 <p>　レポートを生成します。</p>
 <pre>
  probo --report [-q] [-c CONF_FILE]
 </pre>
-<h3><a name='2D7rbHQtrFj'></a>6.8 --track オプション</h3>
+<h3><a name='2D7rbHQtrFj'></a>6.9 --track オプション</h3>
 <p>　実行時点のタイムスタンプで、指定されたファイルにステータスを記録します。</p>
 <pre>
- probo --track [-f] [-d DESCRIPTION] STATUS RUNFILE...
+ probo --track [-f] [-e] [-d DESCRIPTION] STATUS RUNFILE...
  STATUS := READY|BLOCK|PASS|FAIL|RUN|REJECT
 </pre>
 <ul>
 <li><code>-f</code> オプションを使用すると、 <code>STATUS</code> パラメータのチェックをバイパスする</li>
+<li><p><code>-e</code> オプションを使用すると、ステータスを記録した後に該当ファイルをエディタで開く
+（ただし編集したのが１ファイルだった場合のみ）
+</p>
+</li>
 </ul>
 <p>　　</p>
 <h2><a name='cNngUDCfTMJ'></a>7 設定</h2>
@@ -740,12 +759,33 @@ PROBO_SUMIMG_HEIGHT=500
 PROBO_SUMIMG_WIDTH=700
 </pre>
 <p>　　</p>
-<h3><a name='b6CghwSHfuk'></a>7.2 .case.template ファイル</h3>
+<h3><a name='eOMxsXUGejj'></a>7.2 その他の設定変数</h3>
+<h4><a name='0XW1Xqn36Zs'></a>7.2.1 PROBO_EDITOR</h4>
+<p>　probo からエディタを起動する時のコマンドを格納する変数です。<a class='autolink' href='#kO1Toy1HeKM'>--edit</a> および <a class='autolink' href='#2D7rbHQtrFj'>--track</a> -e から使用されます。これらは conf ファイルに依存しない仕様のため、 <code>.bashrc</code> などで環境変数として設定することが想定されています。</p>
+<p>　例を示します。エディタとして <code>nano</code> を使用する場合は以下のようになります。<code>~1</code> という部分がファイルで置き換えられます。</p>
+<pre>
+export PROBO_EDITOR="nano ~1 &amp;"
+</pre>
+<p>　Emacs 内部の shell-mode からシェルをブロックせずに使いたい場合は以下のようになるでしょう。</p>
+<pre>
+export PROBO_EDITOR="emacsclient ~1 &amp;"
+</pre>
+<p>　この変数が設定されていない場合、probo はデフォルト値として <code>"vi ~1"</code> を使用します。</p>
+<h3><a name='b6CghwSHfuk'></a>7.3 .case.template ファイル</h3>
 <ul>
 <li><span style='background:red; color:white;'>--addcase オプションで使用されるテストケースのテンプレートファイル</span></li>
 <li><span style='background:red; color:white;'>以下のプレースホルダが展開される</span>
 <ul>
 <li><code>%CASEID%</code> : <code>0014</code> などのテストケース ID に展開される</li>
+<li><code>%GROUP%</code> : グループ名に展開される</li>
+</ul>
+</li>
+</ul>
+<h3><a name='3oevMyLJR3M'></a>7.4 .group.readme.template ファイル</h3>
+<ul>
+<li><span style='background:red; color:white;'>--addgrp オプションで使用されるグループ README.md のテンプレートファイル</span></li>
+<li><span style='background:red; color:white;'>以下のプレースホルダが展開される</span>
+<ul>
 <li><code>%GROUP%</code> : グループ名に展開される</li>
 </ul>
 </li>
@@ -768,6 +808,7 @@ PROBO_SUMIMG_WIDTH=700
 <blockquote class='idx_x'>
 <li class='idx_x'><a class='autolink' href='#6RK38KzDT9g'>--addcase</a></li>
 <li class='idx_x'><a class='autolink' href='#aqrF7Ohm9qI'>--addgrp</a></li>
+<li class='idx_x'><a class='autolink' href='#kO1Toy1HeKM'>--edit</a></li>
 <li class='idx_x'><a class='autolink' href='#4saVmSQErTb'>--help</a></li>
 <li class='idx_x'><a class='autolink' href='#c09k6WLIoEN'>--init</a></li>
 <li class='idx_x'><a class='autolink' href='#fy8CiK2yYNr'>--log</a></li>
@@ -791,6 +832,7 @@ PROBO_SUMIMG_WIDTH=700
 <li class='idx_x'><a class='autolink' href='#jwVotybPXTo'>PROBO_BD_EXEC_PER_DAY</a></li>
 <li class='idx_x'><a class='autolink' href='#6wawBRhl1ZX'>PROBO_BD_SCHEDULE</a></li>
 <li class='idx_x'><a class='autolink' href='#8vPNaDNlb6N'>PROBO_BD_STARTDAY</a></li>
+<li class='idx_x'><a class='autolink' href='#0XW1Xqn36Zs'>PROBO_EDITOR</a></li>
 <li class='idx_x'><a class='autolink' href='#eBzEmtOlmaK'>PROBO_FULLSTAT_FILENAME</a></li>
 <li class='idx_x'><a class='autolink' href='#ftnun6HtIn8'>PROBO_FULLSTAT_INSERTION</a></li>
 <li class='idx_x'><a class='autolink' href='#knAWU3im4Hr'>PROBO_GRP_FULLSTAT_FILENAME</a></li>

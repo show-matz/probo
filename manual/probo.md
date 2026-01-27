@@ -21,7 +21,7 @@ ${BLANK_PARAGRAPH}
 
 ## probo とは
 
-　**probo** （ぷろーぼ）は、bash スクリプトで動作する軽量なテキスト主義のテスト
+　**probo** （ぷろーぼ）は、bash シェル上で動作する簡素なテキスト主義のテスト
 管理ツールです。基本的に bash と gnuplot があれば動作します
 {{fn:これを書いている時点でざっと調べた限り、probo スクリプトが内部で使用しているコマンドは \
 次の通りです。一般的な Linux 環境であれば、 `gnuplot` 以外は大体最初から使えるはず。  \
@@ -161,6 +161,22 @@ ${BLANK_PARAGRAPH}
 クトリの配下に `README.md` ファイルを作成します。このとき、 `.group.readme.template` 
 内部の文字列 `%GROUP%` はグループ名に置き換えられます。
 
+### --edit オプション
+<!-- autolink: [--edit](#--edit オプション) -->
+
+　カレントディレクトリにある指定した run file または case file をエディタで
+開きます。
+
+```
+ probo --edit [-c] TEST
+```
+
+　`TEST` が４桁以下の数字列だった場合、 `-c` の有無に従って run file 名または 
+case file 名に補完されます。つまり、 `--edit 12` は `--edit ./0012.testrun.md` と
+同じであり、 `--edit -c 8` は `--edit ./0008.testcase.md` と同じです。
+
+　エディタの指定は PROBO_EDITOR 変数に従います。
+
 ### --help オプション
 <!-- autolink: [--help](#--help オプション) -->
 
@@ -229,11 +245,13 @@ ${BLANK_PARAGRAPH}
 　実行時点のタイムスタンプで、指定されたファイルにステータスを記録します。
 
 ```
- probo --track [-f] [-d DESCRIPTION] STATUS RUNFILE...
+ probo --track [-f] [-e] [-d DESCRIPTION] STATUS RUNFILE...
  STATUS := READY|BLOCK|PASS|FAIL|RUN|REJECT
 ```
 
 * `-f` オプションを使用すると、 `STATUS` パラメータのチェックをバイパスする
+* `-e` オプションを使用すると、ステータスを記録した後に該当ファイルをエディタで開く
+  （ただし編集したのが１ファイルだった場合のみ）
 
 ${BLANK_PARAGRAPH}
 
@@ -642,11 +660,41 @@ PROBO_SUMIMG_WIDTH=700
 
 ${BLANK_PARAGRAPH}
 
+### その他の設定変数
+#### PROBO_EDITOR
+<!-- autolink: [PROBO_EDITOR](#PROBO_EDITOR) -->
+
+　probo からエディタを起動する時のコマンドを格納する変数です。--edit および 
+--track -e から使用されます。これらは conf ファイルに依存しない仕様のため、 
+`.bashrc` などで環境変数として設定することが想定されています。
+
+　例を示します。エディタとして `nano` を使用する場合は以下のようになります。
+`~1` という部分がファイルで置き換えられます。
+
+```
+export PROBO_EDITOR="nano ~1 &"
+```
+
+　Emacs 内部の shell-mode からシェルをブロックせずに使いたい場合は以下のよう
+になるでしょう。
+
+```
+export PROBO_EDITOR="emacsclient ~1 &"
+```
+
+　この変数が設定されていない場合、probo はデフォルト値として `"vi ~1"` を使用します。
+
 ### .case.template ファイル
 
 * ${{TODO}{--addcase オプションで使用されるテストケースのテンプレートファイル}}
 * ${{TODO}{以下のプレースホルダが展開される}}
     * `%CASEID%` : `0014` などのテストケース ID に展開される
+    * `%GROUP%` : グループ名に展開される
+
+### .group.readme.template ファイル
+
+* ${{TODO}{--addgrp オプションで使用されるグループ README.md のテンプレートファイル}}
+* ${{TODO}{以下のプレースホルダが展開される}}
     * `%GROUP%` : グループ名に展開される
 
 ## 既知の問題点

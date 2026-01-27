@@ -7,8 +7,9 @@ function probo-show-usage {
     echo "    probo --log RUNFILE..."
     echo "    probo --addgrp GROUP..."
     echo "    probo --addcase [COUNT]"
+    echo "    probo --edit [-c] NUMBER"
     echo "    probo --report [-q] [-c CONF_FILE]"
-    echo "    probo --track [-f] [-d DESCRIPTION] STATUS RUNFILE..."
+    echo "    probo --track [-f] [-e] [-d DESCRIPTION] STATUS RUNFILE..."
 }
 
 # 不定数のパラメータを取り、最初の存在するファイルを返す関数
@@ -38,6 +39,16 @@ function probo-fix-runfile-name {
     if [[ "$1" =~ ^[0-9]{1,4}$ ]]; then
         local TMP="0000${1}"
         echo "${TMP: -4}.testrun.md"
+    else
+        echo "$1"
+    fi
+}
+
+# casefile 名の補完：４桁以下の数字列の場合のみ、カレントディレクトリにある test ID とみなす
+function probo-fix-casefile-name {
+    if [[ "$1" =~ ^[0-9]{1,4}$ ]]; then
+        local TMP="0000${1}"
+        echo "${TMP: -4}.testcase.md"
     else
         echo "$1"
     fi
@@ -184,7 +195,7 @@ function probo-make-summary-datafile-markdown {
 
 
 function probo-make-status-tmpdata {
-	local OUT_FILE="$1"
+    local OUT_FILE="$1"
     echo "GROUP	CASE	TIMESTAMP	STATUS	DESCRIPTION" > $OUT_FILE
     for GROUP in ${PROBO_GROUPS}
     do
@@ -207,7 +218,7 @@ function probo-make-group-status-tmpdata {
     local GROUP="$2"
     local OUT_FILE="$3"
     head -1                ${RAW_FILE}                      >  ${OUT_FILE}
-	grep -E "^${GROUP}	"  ${RAW_FILE} | cut -d '	' -f 2- >> ${OUT_FILE}
+    grep -E "^${GROUP}	"  ${RAW_FILE} | cut -d '	' -f 2- >> ${OUT_FILE}
 }
 
 function probo-make-status-file-raw {
@@ -539,10 +550,11 @@ function probo-graph-burndown {
 }
 
 function probo-track-runfile-impl {
-    TIMESTAMP="$1"
-    STATUS="$2"
-    DESCRIPTION="$3"
-    COMMENT="$4"
+    local RUN_FILE="$1"
+    local TIMESTAMP="$2"
+    local STATUS="$3"
+    local DESCRIPTION="$4"
+    local COMMENT="$5"
     echo ""                                        >> "$RUN_FILE"
     echo "## ${TIMESTAMP}.${STATUS}${DESCRIPTION}" >> "$RUN_FILE"
     echo ""                                        >> "$RUN_FILE"
@@ -554,12 +566,14 @@ function probo-track-runfile-impl {
 
 function probo-track-runfile {
 
-    # -f / -d オプションの回収（あれば）
+    # -f / -d / -e オプションの回収（あれば）
     local FORCE=0
+    local EDITFILE=0
     local DESCRIPTION=""
-    while getopts "d:f" opt; do
+    while getopts "d:fe" opt; do
         case $opt in
             d) DESCRIPTION="${OPTARG}" ;;
+            e) EDITFILE=1 ;;
             f) FORCE=1 ;;
             *) echo "ERROR : invalid option."
                return 1;;
@@ -591,17 +605,23 @@ function probo-track-runfile {
 
     # 対象ファイルの反復と処理
     local FILE_COUNT=0
+    local LAST_FILENAME=""
     for RUN_FILE in $@
     do
         RUN_FILE=$(probo-fix-runfile-name "$RUN_FILE")
         if [ ! -e "$RUN_FILE" ]; then
             echo "ERROR : runfile $RUN_FILE is not found."
         else
-            probo-track-runfile-impl "${TIMESTAMP}" "${STATUS}" "${DESCRIPTION}" 1
+            probo-track-runfile-impl "$RUN_FILE" "${TIMESTAMP}" "${STATUS}" "${DESCRIPTION}" 1
             FILE_COUNT=$((FILE_COUNT + 1))
+            LAST_FILENAME="$RUN_FILE"
         fi
     done
     echo "$FILE_COUNT file(s) updated."
+
+    if [ $EDITFILE -eq 1 ] &&  [ $FILE_COUNT -eq 1 ]; then
+        probo-start-edit-impl "$RUN_FILE"
+    fi
 }
 
 function probo-enum-group-dirs {
@@ -843,8 +863,8 @@ function probo-add-case-impl {
     local TIMESTAMP="$3"
     local CASE_TMPL="$4"
     ID="${ID: -4}"
-    CASE_FILE="$ID.testcase.md"
-    RUN_FILE="$ID.testrun.md"
+    local CASE_FILE="$ID.testcase.md"
+    local RUN_FILE="$ID.testrun.md"
     echo "Adding test case $ID..."
     if [ -z "$CASE_TMPL" ]; then
         touch "$CASE_FILE"
@@ -852,7 +872,7 @@ function probo-add-case-impl {
         cat "$CASE_TMPL" | perl -pe "s/%CASEID%/${ID}/g"   \
                          | perl -pe "s/%GROUP%/${GROUP}/g" > "$CASE_FILE"
     fi   
-    probo-track-runfile-impl "$TIMESTAMP" "NEW" "" 0
+    probo-track-runfile-impl "$RUN_FILE" "$TIMESTAMP" "NEW" "" 0
 }
 
 function probo-add-case {
@@ -929,6 +949,44 @@ function probo-list-status {
     fi
 }
 
+function probo-start-edit-impl {
+    local TARGET="$1"
+    local EDITCMD=""
+    if [ -z "$PROBO_EDITOR" ]; then
+        EDITCMD="vi ~1"
+    else
+        EDITCMD="$PROBO_EDITOR"
+    fi
+    eval "${EDITCMD/~1/$TARGET}"  2> /dev/null
+}
+
+function probo-start-edit {
+    local CASEEDIT=0
+    while getopts "c" opt; do
+        case $opt in
+            c) CASEEDIT=1 ;;
+            *) echo "ERROR : invalid option."
+               return 1;;
+        esac
+    done
+    shift $((OPTIND - 1))
+    local TARGET="$1"
+    if [ -z "$TARGET" ]; then
+        echo "ERROR : Edit target missing."
+        return 1
+    fi
+    if [ $CASEEDIT -eq 0 ]; then
+        TARGET=$(probo-fix-runfile-name "$TARGET")
+    else
+        TARGET=$(probo-fix-casefile-name "$TARGET")
+    fi
+    if [ ! -e "$TARGET" ]; then
+        echo "ERROR : File $TARGET is not exists."
+        return 1
+    fi
+    probo-start-edit-impl "$TARGET"
+}
+
 function probo-progress-notifier {
     echo "$1"
 }
@@ -1001,7 +1059,7 @@ function probo-make-report-files {
         ${PROGRESS_NOTIFIER} "generating summary data..."
         probo-make-summary-datafile-${TARGET} "$PROBO_SUMDAT_FILENAME" "$PROBO_SUMDAT_INSERTION"
     fi
-	# ファイル名が指定されている場合のみグラフイメージ生成
+    # ファイル名が指定されている場合のみグラフイメージ生成
     if [ ! -z "$PROBO_BDIMG_FILENAME" ]; then
         ${PROGRESS_NOTIFIER} "generating burndown image..."
         probo-graph-burndown "$PROBO_BDIMG_FILENAME"
@@ -1018,13 +1076,13 @@ function probo-make-report-files {
         done
     fi
 
-	return 0
+    return 0
 }
 
 function probo-make-reports {
 
-    BE_QUIET=0
-    CONF_FILE="./probo.conf"
+    local BE_QUIET=0
+    local CONF_FILE="./probo.conf"
 
     # -c  -q オプションの回収（あれば）
     while getopts "c:q" opt; do
@@ -1078,6 +1136,8 @@ case "$MODE" in
     --addgrp )  probo-add-group "$@"
                 exit 0;;
     --addcase ) probo-add-case "$@"
+                exit 0;;
+    --edit )    probo-start-edit "$@"
                 exit 0;;
     --report )  probo-make-reports "$@"
                 exit 0;;
