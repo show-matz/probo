@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-function show-usage {
+function probo-show-usage {
     echo "USAGE:"
     echo "    probo --init [-c CONF_FILE] REPORT_TYPE"
     echo "    probo --ls"
@@ -12,7 +12,7 @@ function show-usage {
 }
 
 # 不定数のパラメータを取り、最初の存在するファイルを返す関数
-function first-exist-file {
+function probo-1st-exist-file {
     for FILE in "$@"; do
         if [ -e "$FILE" ]; then
             echo "$FILE"
@@ -23,7 +23,7 @@ function first-exist-file {
 }
 
 # 不定数のパラメータを取り、最初の空文字列でないものを返す関数
-function choice-first-value {
+function probo-choice-1st-value {
     for ARG in "$@"; do
         if [ ! -z "$ARG" ]; then
             echo "$ARG"
@@ -34,7 +34,7 @@ function choice-first-value {
 }
 
 # runfile 名の補完：４桁以下の数字列の場合のみ、カレントディレクトリにある test ID とみなす
-function fix-runfile-name {
+function probo-fix-runfile-name {
     if [[ "$1" =~ ^[0-9]{1,4}$ ]]; then
         local TMP="0000${1}"
         echo "${TMP: -4}.testrun.md"
@@ -43,7 +43,7 @@ function fix-runfile-name {
     fi
 }
 
-function generate-probo-schedule {
+function probo-make-schedule {
 
     local CURDATE="$PROBO_BD_STARTDAY"
     local ENDDATE="$PROBO_BD_ENDDAY"
@@ -73,7 +73,7 @@ function generate-probo-schedule {
     done
 }
 
-function insert-data-to-markdown-file {
+function probo-insert-data-to-markdown-file {
     local DAT_FILE="$1"
     local OUT_FILE="$2"
     local INS_MARK="$3"
@@ -98,7 +98,7 @@ function insert-data-to-markdown-file {
     fi
 }
 
-function generate-burndown-data-file-raw {
+function probo-make-burndown-datafile-raw {
     local DAT_FILE="$1"
     local TODAY=$(date '+%Y-%m-%d')
     local REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
@@ -122,7 +122,7 @@ function generate-burndown-data-file-raw {
     done
 }
 
-function generate-summary-data-file-raw {
+function probo-make-summary-datafile-raw {
     local OUT_FILE="$1"
     local INS_FLAG="$2"           # raw target では INS_FLAG は使用しない
     TOTALS=(0 0 0 0 0 0 0 0)      # READY,BLOCK,RUN,OTHER,FAIL,PASS,REJECT,TOTAL
@@ -145,22 +145,22 @@ function generate-summary-data-file-raw {
             esac
             COUNTS[7]=$((COUNTS[7] + 1))
         done
-        local PROGRESS=$(ins-pt $(( (COUNTS[5] + COUNTS[6]) * 1000 / COUNTS[7])) )
+        local PROGRESS=$(probo-ins-pt $(( (COUNTS[5] + COUNTS[6]) * 1000 / COUNTS[7])) )
         echo "${GROUP}	${COUNTS[0]}	${COUNTS[1]}	${COUNTS[2]}	${COUNTS[3]}	${COUNTS[4]}	${COUNTS[5]}	${COUNTS[6]}	${COUNTS[7]}	${PROGRESS}%" >> ../"${OUT_FILE}"
         for ((i=0; i<8; i++)) do
             TOTALS[i]=$((TOTALS[i] + COUNTS[i]))
         done
         popd > /dev/null
     done
-    local PROGRESS=$(ins-pt $(( (TOTALS[5] + TOTALS[6]) * 1000 / TOTALS[7])) )
+    local PROGRESS=$(probo-ins-pt $(( (TOTALS[5] + TOTALS[6]) * 1000 / TOTALS[7])) )
     echo "(total)	${TOTALS[0]}	${TOTALS[1]}	${TOTALS[2]}	${TOTALS[3]}	${TOTALS[4]}	${TOTALS[5]}	${TOTALS[6]}	${TOTALS[7]}	${PROGRESS}%" >> ./"${OUT_FILE}"
 }
 
-function generate-summary-data-file-markdown {
+function probo-make-summary-datafile-markdown {
     local OUT_FILE="$1"
     local INS_FLAG="$2"
     # 最初に一時ファイルとして raw 形式ファイルを作成
-    generate-summary-data-file-raw "$$.summary.raw.tmp"
+    probo-make-summary-datafile-raw "$$.summary.raw.tmp"
 
     # ヘッダ行は raw file を無視して固定で出しちゃう
     echo "|GROUP|READY|BLOCK|RUN|OTHER|FAIL|PASS|REJECT|TOTAL|PROGRESS|"  > "$$.summary.tmp"
@@ -174,7 +174,7 @@ function generate-summary-data-file-markdown {
     # INS_FLAG の値で分岐
     if [ "$INS_FLAG" -eq 1 ]; then
         # 1 なら差し込みを実施
-        insert-data-to-markdown-file "$$.summary.tmp" "$OUT_FILE" "probo summary"
+        probo-insert-data-to-markdown-file "$$.summary.tmp" "$OUT_FILE" "probo summary"
         rm -f "$$.summary.tmp"
     else
         # 1 以外なら単純にリネーム
@@ -183,7 +183,7 @@ function generate-summary-data-file-markdown {
 }
 
 
-function generate-status-tmpdata {
+function probo-make-status-tmpdata {
 	local OUT_FILE="$1"
     echo "GROUP	CASE	TIMESTAMP	STATUS	DESCRIPTION" > $OUT_FILE
     for GROUP in ${PROBO_GROUPS}
@@ -202,7 +202,7 @@ function generate-status-tmpdata {
     done
 }
 
-function generate-group-status-tmpdata {
+function probo-make-group-status-tmpdata {
     local RAW_FILE="$1"
     local GROUP="$2"
     local OUT_FILE="$3"
@@ -210,7 +210,7 @@ function generate-group-status-tmpdata {
 	grep -E "^${GROUP}	"  ${RAW_FILE} | cut -d '	' -f 2- >> ${OUT_FILE}
 }
 
-function generate-status-file-raw {
+function probo-make-status-file-raw {
     local FILE_MODE1="$1"    # top or group - raw target では FILE_MODE1 は使用しない
     local FILE_MODE2="$1"    # full or part
     local RAW_TMPFILE="$2"
@@ -229,7 +229,7 @@ function generate-status-file-raw {
     fi
 }
 
-function generate-status-file-markdown {
+function probo-make-status-file-markdown {
     local FILE_MODE1="$1"    # top or group
     local FILE_MODE2="$2"    # full or part
     local RAW_TMPFILE="$3"
@@ -261,7 +261,7 @@ function generate-status-file-markdown {
     # INS_FLAG の値で分岐
     if [ "$INS_FLAG" -eq 1 ]; then
         # 1 なら差し込みを実施
-        insert-data-to-markdown-file "$$.status.tmp" "$OUT_FILE" "probo status-${FILE_MODE2}"
+        probo-insert-data-to-markdown-file "$$.status.tmp" "$OUT_FILE" "probo status-${FILE_MODE2}"
         rm -f "$$.status.tmp"
     else
         # 1 以外なら単純にリネーム
@@ -269,7 +269,7 @@ function generate-status-file-markdown {
     fi
 }
 
-function get-image-type-from-filename {
+function probo-get-image-type-from-filename {
     local IMG_TYPE="${1##*.}"    # 最後のピリオドまでを削除
     case "$IMG_TYPE" in
         svg )   ;;
@@ -282,18 +282,18 @@ function get-image-type-from-filename {
     echo "$IMG_TYPE"
 }
 
-function make-burndown-gpfile {
+function probo-make-burndown-gpfile {
     local OUT_FILE="$1"
     local DAT_FILE="$2"
     local IMG_TYPE="$3"    # svg|png|jpeg|gif
     local TOP_Y1="$4"
     local TOP_Y2="$5"
-    local IMG_W=$(choice-first-value "$PROBO_BDIMG_WIDTH"  "800")
-    local IMG_H=$(choice-first-value "$PROBO_BDIMG_HEIGHT" "400")
-    local BGCLR=$(choice-first-value "$PROBO_BDIMG_BGCLR"    "white")
-    local CLR1=$(choice-first-value "$PROBO_BDIMG_CLR_GUIDE"    "gray")
-    local CLR2=$(choice-first-value "$PROBO_BDIMG_CLR_PASSLINE" "blue")
-    local CLR3=$(choice-first-value "$PROBO_BDIMG_CLR_FAILBOX"   "red")
+    local IMG_W=$(probo-choice-1st-value "$PROBO_BDIMG_WIDTH"  "800")
+    local IMG_H=$(probo-choice-1st-value "$PROBO_BDIMG_HEIGHT" "400")
+    local BGCLR=$(probo-choice-1st-value "$PROBO_BDIMG_BGCLR"    "white")
+    local CLR1=$(probo-choice-1st-value "$PROBO_BDIMG_CLR_GUIDE"    "gray")
+    local CLR2=$(probo-choice-1st-value "$PROBO_BDIMG_CLR_PASSLINE" "blue")
+    local CLR3=$(probo-choice-1st-value "$PROBO_BDIMG_CLR_FAILBOX"   "red")
     local IMG_SIZE="$IMG_W,$IMG_H"
 
     if [ "$IMG_TYPE" == "svg" ]; then
@@ -331,7 +331,7 @@ plot "${DAT_FILE}" using 1:2 with linespoints pt 5 ps 0.5 linecolor rgb "$CLR1" 
 EOF
 }
 
-function make-burndown-image {
+function probo-make-burndown-image {
     local DAT_FILE="$1"
     local OUT_FILE="$2"
     local IMG_TYPE="$3"
@@ -341,25 +341,25 @@ function make-burndown-image {
     TOP_Y1=$((TOP_Y1 + 10))
     TOP_Y2=$((TOP_Y2 * 10))
     # gnuplot 設定ファイルを作成
-    make-burndown-gpfile "$$.tmp.gp" "$DAT_FILE" ${IMG_TYPE} $TOP_Y1 $TOP_Y2
+    probo-make-burndown-gpfile "$$.tmp.gp" "$DAT_FILE" ${IMG_TYPE} $TOP_Y1 $TOP_Y2
     gnuplot "$$.tmp.gp" > "${OUT_FILE}"
     rm -f "$$.tmp.gp"
 }
 
-function make-summary-gpfile {
+function probo-make-summary-gpfile {
     local OUT_FILE="$1"
     local DAT_FILE="$2"
     local IMG_TYPE="$3"    # svg|png|jpeg|gif
-    local IMG_W=$(choice-first-value "$PROBO_SUMIMG_WIDTH"  "500")
-    local IMG_H=$(choice-first-value "$PROBO_SUMIMG_HEIGHT" "400")
-    local BGCLR=$(choice-first-value "$PROBO_SUMIMG_BGCLR"       "white")
-    local CLR1=$(choice-first-value "$PROBO_SUMIMG_CLR_READY"     "gray")
-    local CLR2=$(choice-first-value "$PROBO_SUMIMG_CLR_BLOCK"   "purple")
-    local CLR3=$(choice-first-value "$PROBO_SUMIMG_CLR_OTHER"  "#98FB98")
-    local CLR4=$(choice-first-value "$PROBO_SUMIMG_CLR_FAIL"      "pink")
-    local CLR5=$(choice-first-value "$PROBO_SUMIMG_CLR_RUN"       "blue")
-    local CLR6=$(choice-first-value "$PROBO_SUMIMG_CLR_PASS"      "cyan")
-    local CLR7=$(choice-first-value "$PROBO_SUMIMG_CLR_REJECT" "#CD9B9B")
+    local IMG_W=$(probo-choice-1st-value "$PROBO_SUMIMG_WIDTH"  "500")
+    local IMG_H=$(probo-choice-1st-value "$PROBO_SUMIMG_HEIGHT" "400")
+    local BGCLR=$(probo-choice-1st-value "$PROBO_SUMIMG_BGCLR"       "white")
+    local CLR1=$(probo-choice-1st-value "$PROBO_SUMIMG_CLR_READY"     "gray")
+    local CLR2=$(probo-choice-1st-value "$PROBO_SUMIMG_CLR_BLOCK"   "purple")
+    local CLR3=$(probo-choice-1st-value "$PROBO_SUMIMG_CLR_OTHER"  "#98FB98")
+    local CLR4=$(probo-choice-1st-value "$PROBO_SUMIMG_CLR_FAIL"      "pink")
+    local CLR5=$(probo-choice-1st-value "$PROBO_SUMIMG_CLR_RUN"       "blue")
+    local CLR6=$(probo-choice-1st-value "$PROBO_SUMIMG_CLR_PASS"      "cyan")
+    local CLR7=$(probo-choice-1st-value "$PROBO_SUMIMG_CLR_REJECT" "#CD9B9B")
     local IMG_SIZE="$IMG_W,$IMG_H"
 
     if [ "$IMG_TYPE" == "svg" ]; then
@@ -419,7 +419,7 @@ plot "${DAT_FILE}" using 1:2:3:4:5:6 with circles lc variable notitle, \\
 EOF
 }
 
-function ins-pt {
+function probo-ins-pt {
     local NUM="$1"
     if [ "${#NUM}" -eq 1 ]; then
         echo "0.$NUM"
@@ -428,7 +428,7 @@ function ins-pt {
     fi
 }
 
-function make-summary-image {
+function probo-make-summary-image {
     local OUT_FILE="$1"
     local IMG_TYPE="$2"
     local CASES=("$3" "$4" "$5" "$6" "$7" "$8" "$9") # READY,BLOCK,OTHER,FAIL,RUN,PASS,REJECT
@@ -441,19 +441,19 @@ function make-summary-image {
         local DEGREE=$((CASES[i] * 3600 / N_TOTAL))
         if [ "${CASES[i]}" -ne 0 ]; then
             local DEG2=$((DEG1 + DEGREE))
-            echo "0,0,1,$(ins-pt ${DEG1}),$(ins-pt ${DEG2}),$((i + 1)),${CASES[i]}" >> "$$.tmp.dat"
+            echo "0,0,1,$(probo-ins-pt ${DEG1}),$(probo-ins-pt ${DEG2}),$((i + 1)),${CASES[i]}" >> "$$.tmp.dat"
             DEG1=${DEG2}
         fi
     done
 
     # gnuplot 設定ファイルを作成
-    make-summary-gpfile "$$.tmp.gp" "$$.tmp.dat" ${IMG_TYPE}
+    probo-make-summary-gpfile "$$.tmp.gp" "$$.tmp.dat" ${IMG_TYPE}
     gnuplot "$$.tmp.gp" > "${OUT_FILE}"
     rm -f "$$.tmp.gp"
     rm -f "$$.tmp.dat"
 }
 
-function graph-summary {
+function probo-graph-summary {
     local OUT_FILE="$1"
     COUNTS=(0 0 0 0 0 0 0)    # READY,BLOCK,FAIL,RUN,PASS,REJECT,OTHER
     for GROUP in ${PROBO_GROUPS}
@@ -474,14 +474,14 @@ function graph-summary {
         done
         popd > /dev/null
     done
-    IMG_TYPE=$(get-image-type-from-filename "$OUT_FILE")
-    make-summary-image "$OUT_FILE" $IMG_TYPE \
-                       ${COUNTS[0]} ${COUNTS[1]} ${COUNTS[6]} \
-                       ${COUNTS[2]} ${COUNTS[3]} ${COUNTS[4]} ${COUNTS[5]}
+    IMG_TYPE=$(probo-get-image-type-from-filename "$OUT_FILE")
+    probo-make-summary-image "$OUT_FILE" $IMG_TYPE \
+                             ${COUNTS[0]} ${COUNTS[1]} ${COUNTS[6]} \
+                             ${COUNTS[2]} ${COUNTS[3]} ${COUNTS[4]} ${COUNTS[5]}
     rm -f ${DAT_FILE}
 }
 
-function graph-group-summary {
+function probo-graph-group-summary {
     local GROUP="$1"
     local OUT_FILE="$2"
     COUNTS=(0 0 0 0 0 0 0)    # READY,BLOCK,FAIL,RUN,PASS,REJECT,OTHER
@@ -500,15 +500,15 @@ function graph-group-summary {
         esac
     done
     popd > /dev/null
-    IMG_TYPE=$(get-image-type-from-filename "$OUT_FILE")
-    make-summary-image "$GROUP/$OUT_FILE" $IMG_TYPE \
-                       ${COUNTS[0]} ${COUNTS[1]} ${COUNTS[6]} \
-                       ${COUNTS[2]} ${COUNTS[3]} ${COUNTS[4]} ${COUNTS[5]}
+    IMG_TYPE=$(probo-get-image-type-from-filename "$OUT_FILE")
+    probo-make-summary-image "$GROUP/$OUT_FILE" $IMG_TYPE \
+                             ${COUNTS[0]} ${COUNTS[1]} ${COUNTS[6]} \
+                             ${COUNTS[2]} ${COUNTS[3]} ${COUNTS[4]} ${COUNTS[5]}
     rm -f ${DAT_FILE}
 }
 
-function graph-burndown {
-    # ToDo : generate-burndown-data-file-raw を利用するかたちにできそう
+function probo-graph-burndown {
+    # ToDo : probo-make-burndown-datafile-raw を利用するかたちにできそう
     local IMG_FILE="$1"
     local DAT_FILE="$$.burndown.dat"
     local TODAY=$(date '+%Y-%m-%d')
@@ -530,12 +530,12 @@ function graph-burndown {
         fi
         echo "${DATE},${REST1},${REST2},${NGCNT}" >> ${DAT_FILE}
     done
-    IMG_TYPE=$(get-image-type-from-filename "$IMG_FILE")
-    make-burndown-image "$DAT_FILE" "$IMG_FILE" $IMG_TYPE
+    IMG_TYPE=$(probo-get-image-type-from-filename "$IMG_FILE")
+    probo-make-burndown-image "$DAT_FILE" "$IMG_FILE" $IMG_TYPE
     rm -f ${DAT_FILE}
 }
 
-function track-runfile-impl {
+function probo-track-runfile-impl {
     TIMESTAMP="$1"
     STATUS="$2"
     DESCRIPTION="$3"
@@ -549,7 +549,7 @@ function track-runfile-impl {
     fi
 }
 
-function track-runfile {
+function probo-track-runfile {
 
     # -f / -d オプションの回収（あれば）
     local FORCE=0
@@ -590,18 +590,18 @@ function track-runfile {
     local FILE_COUNT=0
     for RUN_FILE in $@
     do
-        RUN_FILE=$(fix-runfile-name "$RUN_FILE")
+        RUN_FILE=$(probo-fix-runfile-name "$RUN_FILE")
         if [ ! -e "$RUN_FILE" ]; then
             echo "ERROR : runfile $RUN_FILE is not found."
         else
-            track-runfile-impl "${TIMESTAMP}" "${STATUS}" "${DESCRIPTION}" 1
+            probo-track-runfile-impl "${TIMESTAMP}" "${STATUS}" "${DESCRIPTION}" 1
             FILE_COUNT=$((FILE_COUNT + 1))
         fi
     done
     echo "$FILE_COUNT file(s) updated."
 }
 
-function enumerate-group-directories {
+function probo-enum-group-dirs {
     local COUNT=0
     for DIRECTORY in $(find . -maxdepth 1 -type d | grep -v '^\.$' | cut -d/ -f2 | grep -v '^\.' | sort)
     do
@@ -612,7 +612,7 @@ function enumerate-group-directories {
     done
 }
 
-function load-conf-file {
+function probo-load-conf-file {
     local CONF_FILE="$1"
 
     # カレントディレクトリに conf file がなければエラー終了
@@ -626,11 +626,11 @@ function load-conf-file {
     # PROBO_GROUPS が空ならディレクトリを走査して生成
     # MEMO : 「PROBO_GROUPS を conf file に書いておけばそれが使われる」のは undocumented な仕様だよ
     if [ -z "$PROBO_GROUPS" ]; then
-        PROBO_GROUPS=$(enumerate-group-directories)
+        PROBO_GROUPS=$(probo-enum-group-dirs)
     fi
     # PROBO_BD_SCHEDULE が空なら生成
     if [ -z "${PROBO_BD_SCHEDULE}" ]; then
-        PROBO_BD_SCHEDULE=$(generate-probo-schedule)
+        PROBO_BD_SCHEDULE=$(probo-make-schedule)
         if [ $? -ne 0 ]; then
             echo "ERROR : Schedule generation failed."
             return 1
@@ -644,16 +644,16 @@ function load-conf-file {
            return 1;;
     esac
 
-    PROBO_FULLSTAT_INSERTION=$(choice-first-value     "$PROBO_FULLSTAT_INSERTION"     "0")
-    PROBO_PARTSTAT_INSERTION=$(choice-first-value     "$PROBO_PARTSTAT_INSERTION"     "0")
-    PROBO_SUMDAT_INSERTION=$(choice-first-value       "$PROBO_SUMDAT_INSERTION"       "0")
-    PROBO_GRP_FULLSTAT_INSERTION=$(choice-first-value "$PROBO_GRP_FULLSTAT_INSERTION" "0")
-    PROBO_GRP_PARTSTAT_INSERTION=$(choice-first-value "$PROBO_GRP_PARTSTAT_INSERTION" "0")
+    PROBO_FULLSTAT_INSERTION=$(probo-choice-1st-value     "$PROBO_FULLSTAT_INSERTION"     "0")
+    PROBO_PARTSTAT_INSERTION=$(probo-choice-1st-value     "$PROBO_PARTSTAT_INSERTION"     "0")
+    PROBO_SUMDAT_INSERTION=$(probo-choice-1st-value       "$PROBO_SUMDAT_INSERTION"       "0")
+    PROBO_GRP_FULLSTAT_INSERTION=$(probo-choice-1st-value "$PROBO_GRP_FULLSTAT_INSERTION" "0")
+    PROBO_GRP_PARTSTAT_INSERTION=$(probo-choice-1st-value "$PROBO_GRP_PARTSTAT_INSERTION" "0")
 
     return 0
 }
 
-function generate-probo-conf-file {
+function probo-make-conf-file {
     local CONF_FILE="$1"
     local REPORT_TYPE="$2"
     local GNUPLOT_FLAG="$3"
@@ -732,7 +732,7 @@ EOF
 
 }
 
-function generate-case-template-file {
+function probo-make-case-template-file {
     cat <<EOF > "./.case.template"
 ## %GROUP%/%CASEID%
 
@@ -742,7 +742,7 @@ function generate-case-template-file {
 EOF
 }
 
-function generate-group-readme-template-file {
+function probo-make-group-readme-template-file {
     cat <<EOF > "./.group.readme.template"
 # %GROUP%
 
@@ -769,7 +769,7 @@ function generate-group-readme-template-file {
 EOF
 }
 
-function initialize-probo {
+function probo-initialize {
 
     # -c オプションの回収（あれば）
     local CONF_FILE="probo.conf"
@@ -802,16 +802,16 @@ function initialize-probo {
     esac
     shift 1
 
-    generate-probo-conf-file "$CONF_FILE" "$REPORT_TYPE" $(which gnuplot | wc -l)
-    generate-case-template-file
+    probo-make-conf-file "$CONF_FILE" "$REPORT_TYPE" $(which gnuplot | wc -l)
+    probo-make-case-template-file
 
     if [ "${ORG_TYPE}" == "gitlab" ] || [ "${ORG_TYPE}" == "github" ]; then
-        generate-group-readme-template-file
+        probo-make-group-readme-template-file
     fi
 
 }
 
-function add-group {
+function probo-add-group {
 
     local README_FILE="README.md"
     local TMPL_FILE="./.group.readme.template"
@@ -834,7 +834,7 @@ function add-group {
     
 }
 
-function add-test-case-impl {
+function probo-add-case-impl {
     local ID="0000${1}"
     local GROUP="$2"
     local TIMESTAMP="$3"
@@ -849,10 +849,10 @@ function add-test-case-impl {
         cat "$CASE_TMPL" | perl -pe "s/%CASEID%/${ID}/g"   \
                          | perl -pe "s/%GROUP%/${GROUP}/g" > "$CASE_FILE"
     fi   
-    track-runfile-impl "$TIMESTAMP" "NEW" "" 0
+    probo-track-runfile-impl "$TIMESTAMP" "NEW" "" 0
 }
 
-function add-test-case {
+function probo-add-case {
     local COUNT="$1"
     if [ -z "$COUNT" ]; then
         COUNT=1
@@ -861,7 +861,7 @@ function add-test-case {
         echo "ERROR : invalid parameter \"$COUNT\"."
         return 1
     fi
-    local CASE_TMPL=$(first-exist-file "./.case.template" "../.case.template")
+    local CASE_TMPL=$(probo-1st-exist-file "./.case.template" "../.case.template")
     local GROUP=$(basename $(pwd))
     local TIMESTAMP=$(date '+%Y-%m-%d-%H-%M')
     local CURTAIL=0
@@ -871,14 +871,14 @@ function add-test-case {
     local COUNT=$((10#$COUNT))
     CURTAIL=$((10#$CURTAIL))
     for ((i=0; i<$COUNT; i++)) do
-        add-test-case-impl $((CURTAIL + 1 + i)) "$GROUP" "$TIMESTAMP" "$CASE_TMPL"
+        probo-add-case-impl $((CURTAIL + 1 + i)) "$GROUP" "$TIMESTAMP" "$CASE_TMPL"
     done
 }
 
-function dump-runfile-log {
+function probo-dump-log {
     for RUN_FILE in $@
     do
-        RUN_FILE=$(fix-runfile-name "$RUN_FILE")
+        RUN_FILE=$(probo-fix-runfile-name "$RUN_FILE")
         if [ ! -e "$RUN_FILE" ]; then
             echo "ERROR : runfile $RUN_FILE is not found."
         else
@@ -893,7 +893,7 @@ function dump-runfile-log {
     done
 }
 
-function dump-current-group-status {
+function probo-list-group-status {
     local GROUP="$1"
     if [ ! -z "$GROUP" ]; then
         GROUP="$GROUP	"
@@ -909,18 +909,18 @@ function dump-current-group-status {
     done
 }
 
-function list-status {
+function probo-list-status {
     local COUNT=$(ls *.testrun.md 2> /dev/null | wc -l)
     if [ $COUNT -ne 0 ]; then
         echo "CASE	TIMESTAMP	STATUS	DESCRIPTION"
-        dump-current-group-status
+        probo-list-group-status
     else
         echo "GROUP	CASE	TIMESTAMP	STATUS	DESCRIPTION"
-        local GRPS=$(enumerate-group-directories)
+        local GRPS=$(probo-enum-group-dirs)
         for GROUP in ${GRPS}
         do
             pushd "$GROUP" > /dev/null
-            dump-current-group-status "$GROUP"
+            probo-list-group-status "$GROUP"
             popd > /dev/null
         done
     fi
@@ -934,7 +934,7 @@ function probo-progress-notifier-none {
     echo "$1" > /dev/null
 }
 
-function generate-report-files {
+function probo-make-report-files {
 
     local TARGET="$1"
     local BE_QUIET="$2"
@@ -945,20 +945,20 @@ function generate-report-files {
     # 必要ならステータス一覧の一時ファイルを最初に作成
     if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ]     || [ ! -z "${PROBO_PARTSTAT_FILENAME}" ] || \
        [ ! -z "${PROBO_GRP_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_GRP_PARTSTAT_FILENAME}" ]; then
-        generate-status-tmpdata "$$.status.rawdata"
+        probo-make-status-tmpdata "$$.status.rawdata"
     fi
     # stop status file 指定があれば生成
     if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
         ${PROGRESS_NOTIFIER} "generating status data..."
         # part ファイルが指定されていれば作成
         if [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
-            generate-status-file-${TARGET} 'top' 'part' "$$.status.rawdata" \
-                                           "$PROBO_PARTSTAT_FILENAME" "$PROBO_PARTSTAT_INSERTION"
+            probo-make-status-file-${TARGET} 'top' 'part' "$$.status.rawdata" \
+                                             "$PROBO_PARTSTAT_FILENAME" "$PROBO_PARTSTAT_INSERTION"
         fi
         # full ファイルが指定されていれば作成
         if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ]; then
-            generate-status-file-${TARGET} 'top' 'full' "$$.status.rawdata" \
-                                           "$PROBO_FULLSTAT_FILENAME" "$PROBO_FULLSTAT_INSERTION"
+            probo-make-status-file-${TARGET} 'top' 'full' "$$.status.rawdata" \
+                                             "$PROBO_FULLSTAT_FILENAME" "$PROBO_FULLSTAT_INSERTION"
         fi
     fi
     # stop status file 指定があれば生成
@@ -966,20 +966,20 @@ function generate-report-files {
         ${PROGRESS_NOTIFIER} "generating group status data..."
         for GROUP in ${PROBO_GROUPS}
         do
-            generate-group-status-tmpdata "$$.status.rawdata" "$GROUP" "$$.grp.status.rawdata"
+            probo-make-group-status-tmpdata "$$.status.rawdata" "$GROUP" "$$.grp.status.rawdata"
             # part ファイルが指定されていれば作成
             if [ ! -z "${PROBO_GRP_PARTSTAT_FILENAME}" ]; then
-                generate-status-file-${TARGET} 'group' 'part' \
-                                               "$$.grp.status.rawdata" \
-                                               "$GROUP/$PROBO_GRP_PARTSTAT_FILENAME" \
-                                               "$PROBO_GRP_PARTSTAT_INSERTION"
+                probo-make-status-file-${TARGET} 'group' 'part' \
+                                                 "$$.grp.status.rawdata" \
+                                                 "$GROUP/$PROBO_GRP_PARTSTAT_FILENAME" \
+                                                 "$PROBO_GRP_PARTSTAT_INSERTION"
             fi
             # full ファイルが指定されていれば作成
             if [ ! -z "${PROBO_GRP_FULLSTAT_FILENAME}" ]; then
-                generate-status-file-${TARGET} 'group' 'full' \
-                                               "$$.grp.status.rawdata" \
-                                               "$GROUP/$PROBO_GRP_FULLSTAT_FILENAME" \
-                                               "$PROBO_GRP_FULLSTAT_INSERTION"
+                probo-make-status-file-${TARGET} 'group' 'full' \
+                                                 "$$.grp.status.rawdata" \
+                                                 "$GROUP/$PROBO_GRP_FULLSTAT_FILENAME" \
+                                                 "$PROBO_GRP_FULLSTAT_INSERTION"
             fi
             rm -f "$$.grp.status.rawdata"
         done
@@ -991,34 +991,34 @@ function generate-report-files {
     # burn-down data file 指定があれば生成（これは常に raw 形式）
     if [ ! -z "${PROBO_BDDAT_FILENAME}" ]; then
         ${PROGRESS_NOTIFIER} "generating burndown data..."
-        generate-burndown-data-file-raw "${PROBO_BDDAT_FILENAME}"
+        probo-make-burndown-datafile-raw "${PROBO_BDDAT_FILENAME}"
     fi
     # summary data file 指定があれば生成
     if [ ! -z "${PROBO_SUMDAT_FILENAME}" ]; then
         ${PROGRESS_NOTIFIER} "generating summary data..."
-        generate-summary-data-file-${TARGET} "$PROBO_SUMDAT_FILENAME" "$PROBO_SUMDAT_INSERTION"
+        probo-make-summary-datafile-${TARGET} "$PROBO_SUMDAT_FILENAME" "$PROBO_SUMDAT_INSERTION"
     fi
 	# ファイル名が指定されている場合のみグラフイメージ生成
     if [ ! -z "$PROBO_BDIMG_FILENAME" ]; then
         ${PROGRESS_NOTIFIER} "generating burndown image..."
-        graph-burndown "$PROBO_BDIMG_FILENAME"
+        probo-graph-burndown "$PROBO_BDIMG_FILENAME"
     fi
     if [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
         ${PROGRESS_NOTIFIER} "generating summary image..."
-        graph-summary "$PROBO_SUMIMG_FILENAME"
+        probo-graph-summary "$PROBO_SUMIMG_FILENAME"
     fi
     if [ ! -z "$PROBO_GRP_SUMIMG_FILENAME" ]; then
         ${PROGRESS_NOTIFIER} "generating group summary image..."
         for GROUP in ${PROBO_GROUPS}
         do
-            graph-group-summary "$GROUP" "$PROBO_GRP_SUMIMG_FILENAME"
+            probo-graph-group-summary "$GROUP" "$PROBO_GRP_SUMIMG_FILENAME"
         done
     fi
 
 	return 0
 }
 
-function generate-reports {
+function probo-make-reports {
 
     BE_QUIET=0
     CONF_FILE="./probo.conf"
@@ -1035,7 +1035,7 @@ function generate-reports {
     shift $((OPTIND - 1))
 
     # loading conf file 
-    load-conf-file "$CONF_FILE"
+    probo-load-conf-file "$CONF_FILE"
     if [ $? -ne 0 ]; then
         return 1
     fi
@@ -1047,7 +1047,7 @@ function generate-reports {
             return 1
         fi
     fi
-    generate-report-files ${PROBO_REPORT_TYPE} $BE_QUIET
+    probo-make-report-files ${PROBO_REPORT_TYPE} $BE_QUIET
     return 0
 }
 
@@ -1056,31 +1056,31 @@ shift
 
 # モード指定がなければ show-usage して終わり
 if [ -z "$MODE" ]; then
-    show-usage
+    probo-show-usage
     exit 1
 fi
 
 # モード指定で分岐
 case "$MODE" in
-    --help )    show-usage
+    --help )    probo-show-usage
                 exit 0;;
-    --init )    initialize-probo "$@"
+    --init )    probo-initialize "$@"
                 exit 0;;
-    --ls )      list-status
+    --ls )      probo-list-status
                 exit 0;;
-    --log )     dump-runfile-log "$@"
+    --log )     probo-dump-log "$@"
                 exit 0;;
-    --track )   track-runfile "$@"
+    --track )   probo-track-runfile "$@"
                 exit 0;;
-    --addgrp )  add-group "$@"
+    --addgrp )  probo-add-group "$@"
                 exit 0;;
-    --addcase ) add-test-case "$@"
+    --addcase ) probo-add-case "$@"
                 exit 0;;
-    --report )  generate-reports "$@"
+    --report )  probo-make-reports "$@"
                 exit 0;;
     * )         echo "ERROR: Invalid option \"$MODE\"."
                 echo ""
-                show-usage
+                probo-show-usage
                 exit 1;;
 esac
 
