@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [35/41]
+* tasks [36/41]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -104,6 +104,13 @@
 	* 問題は、「レポートでの表示順序制御」かな。
 		* undocumented な挙動として PROBO_GROUPS を残すのはアリかも
 
+** DONE --find で特定ステータスのケースを検索、って有用かな？ ⇒ --ls の拡張へ
+
+	* report 生成すればいいんだけど、それが面倒な時に。
+	* 汎用的な検索は grep 使いやがれ、でいいと思う。
+	* 結局、--ls を groups のひとつ上のディレクトリでも実行できるようにした。
+		* でもこれけっこう遅い‥‥‥。
+
 ** TODO --init での conf file 生成をもっと細かく制御する
 
 	* 以下の３通りかな
@@ -115,11 +122,6 @@
 
 	* probo --init git(hub|lab) の場合かな
 	* probo --init turnup の場合はどうする？  report.md とか？
-
-** TODO --find で特定ステータスのケースを検索、って有用かな？
-
-	* report 生成すればいいんだけど、それが面倒な時に。
-	* 汎用的な検索は grep 使いやがれ、でいいと思う。
 
 ** TODO PASS が複数ある場合の扱いを考える
 

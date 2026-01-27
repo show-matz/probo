@@ -894,7 +894,10 @@ function dump-runfile-log {
 }
 
 function dump-current-group-status {
-    echo "CASE	TIMESTAMP	STATUS	DESCRIPTION"
+    local GROUP="$1"
+    if [ ! -z "$GROUP" ]; then
+        GROUP="$GROUP	"
+    fi
     for RUN_FILE in $(ls *.testrun.md)
     do
         NUMBER=$(echo "$RUN_FILE" | cut -d. -f1)
@@ -902,8 +905,25 @@ function dump-current-group-status {
         TIMESTAMP=$(echo ${TAIL:3} | cut -d. -f1 | perl -pe 's@^(....)-(..)-(..)-(..)-(..)@\1/\2/\3 \4:\5@')
         STATUS=$(     echo ${TAIL} | cut -d. -f2)
         DESCRIPTION=$(echo ${TAIL} | cut -d. -f3)
-        echo "${NUMBER}	${TIMESTAMP}	${STATUS}	${DESCRIPTION}"
+        echo "${GROUP}${NUMBER}	${TIMESTAMP}	${STATUS}	${DESCRIPTION}"
     done
+}
+
+function list-status {
+    local COUNT=$(ls *.testrun.md 2> /dev/null | wc -l)
+    if [ $COUNT -ne 0 ]; then
+        echo "CASE	TIMESTAMP	STATUS	DESCRIPTION"
+        dump-current-group-status
+    else
+        echo "GROUP	CASE	TIMESTAMP	STATUS	DESCRIPTION"
+        local GRPS=$(enumerate-group-directories)
+        for GROUP in ${GRPS}
+        do
+            pushd "$GROUP" > /dev/null
+            dump-current-group-status "$GROUP"
+            popd > /dev/null
+        done
+    fi
 }
 
 function probo-progress-notifier {
@@ -1046,7 +1066,7 @@ case "$MODE" in
                 exit 0;;
     --init )    initialize-probo "$@"
                 exit 0;;
-    --ls )      dump-current-group-status
+    --ls )      list-status
                 exit 0;;
     --log )     dump-runfile-log "$@"
                 exit 0;;
