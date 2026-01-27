@@ -907,9 +907,7 @@ function probo-dump-log {
         else
             TEST_ID=$(echo "$RUN_FILE" | perl -pe 's/^(.+?)\.testrun\.md$/\1/')
             while IFS= read -r LINE; do
-                TIMESTAMP=$(  echo "${LINE:3}" | cut -d. -f1)
-                STATUS=$(     echo "${LINE:3}" | cut -d. -f2)
-                DESCRIPTION=$(echo "${LINE:3}" | cut -d. -f3)
+                IFS=. read -r TIMESTAMP STATUS DESCRIPTION <<<"${LINE:3}"
                 echo "${TEST_ID}	${TIMESTAMP}	${STATUS}	${DESCRIPTION}"
             done < <(grep -E '^## ....-..-..-..-..\..+' "$RUN_FILE" )
         fi
