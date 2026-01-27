@@ -923,11 +923,10 @@ function probo-list-group-status {
     fi
     for RUN_FILE in $(ls *.testrun.md)
     do
-        NUMBER=$(echo "$RUN_FILE" | cut -d. -f1)
+        IFS=. read -r NUMBER FTYPE SUFFIX <<<"$RUN_FILE"
         TAIL=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1)
-        TIMESTAMP=$(echo ${TAIL:3} | cut -d. -f1 | perl -pe 's@^(....)-(..)-(..)-(..)-(..)@\1/\2/\3 \4:\5@')
-        STATUS=$(     echo ${TAIL} | cut -d. -f2)
-        DESCRIPTION=$(echo ${TAIL} | cut -d. -f3)
+        IFS=. read -r TIMESTAMP STATUS DESCRIPTION <<<"${TAIL:3}"
+        TIMESTAMP=$(echo "$TIMESTAMP" | perl -pe 's@^(....)-(..)-(..)-(..)-(..)@\1/\2/\3 \4:\5@')
         echo "${GROUP}${NUMBER}	${TIMESTAMP}	${STATUS}	${DESCRIPTION}"
     done
 }

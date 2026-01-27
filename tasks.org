@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [37/42]
+* tasks [40/47]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -128,7 +128,7 @@
      gnuplot "$$.tmp.gp" > "${OUT_FILE}"
 #+END_SRC
 
-** TODO --edit で runfile とか casefile を編集する
+** DONE --edit で runfile とか casefile を編集する
 
 	* probo --edit [-c] FILE-OR-NUMBER
 		* -c で case file、なければ run file
@@ -140,7 +140,7 @@
 		* これは .bashrc で定義してもらうことに
 	* 動くようにはなった。あとはマニュアル。
 
-** TODO --track -e で編集も可能にする
+** DONE --track -e で編集も可能にする
 
 	* ただし、編集したのが 1 file だった場合のみね。
 	* 動くようにはなった。あとはマニュアル。
@@ -170,3 +170,6 @@
 
 	* 今やってます‥‥‥
 
+** DONE --ls が遅い
+** TODO --log が遅い
+** TODO --report が遅い
