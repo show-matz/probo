@@ -297,9 +297,9 @@ function probo-make-burndown-gpfile {
     local IMG_SIZE="$IMG_W,$IMG_H"
 
     if [ "$IMG_TYPE" == "svg" ]; then
-        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"${PROBO_BDIMG_BGCLR}\"" > ${OUT_FILE}
+        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"${BGCLR}\"" > ${OUT_FILE}
     else
-        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} background rgb \"${PROBO_BDIMG_BGCLR}\"" > ${OUT_FILE}
+        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} background rgb \"${BGCLR}\"" > ${OUT_FILE}
     fi
     
     cat >> "${OUT_FILE}" <<EOF
@@ -340,6 +340,9 @@ function probo-make-burndown-image {
     local TOP_Y2=$(cat $DAT_FILE | cut -d, -f4 | sort -g | tail -1)    # Fail
     TOP_Y1=$((TOP_Y1 + 10))
     TOP_Y2=$((TOP_Y2 * 10))
+    if [ $TOP_Y2 -eq 0 ]; then
+        TOP_Y2=10
+    fi
     # gnuplot 設定ファイルを作成
     probo-make-burndown-gpfile "$$.tmp.gp" "$DAT_FILE" ${IMG_TYPE} $TOP_Y1 $TOP_Y2
     gnuplot "$$.tmp.gp" > "${OUT_FILE}"
@@ -363,9 +366,9 @@ function probo-make-summary-gpfile {
     local IMG_SIZE="$IMG_W,$IMG_H"
 
     if [ "$IMG_TYPE" == "svg" ]; then
-        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"${PROBO_SUMIMG_BGCLR}\"" > ${OUT_FILE}
+        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} fixed background rgb \"${BGCLR}\"" > ${OUT_FILE}
     else
-        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} background rgb \"${PROBO_SUMIMG_BGCLR}\"" > ${OUT_FILE}
+        echo "set terminal ${IMG_TYPE} size ${IMG_SIZE} background rgb \"${BGCLR}\"" > ${OUT_FILE}
     fi
     
     cat >> "${OUT_FILE}" <<EOF

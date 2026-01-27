@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [36/41]
+* tasks [37/42]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -110,6 +110,23 @@
 	* 汎用的な検索は grep 使いやがれ、でいいと思う。
 	* 結局、--ls を groups のひとつ上のディレクトリでも実行できるようにした。
 		* でもこれけっこう遅い‥‥‥。
+
+** DONE --report で FAIL が一件もないと burndown image 生成できない
+
+　以下で直った。
+
+#+BEGIN_SRC diff
+@@ -340,6 +340,9 @@ function probo-make-burndown-image {
+     local TOP_Y2=$(cat $DAT_FILE | cut -d, -f4 | sort -g | tail -1)    # Fail
+     TOP_Y1=$((TOP_Y1 + 10))
+     TOP_Y2=$((TOP_Y2 * 10))
++    if [ $TOP_Y2 -eq 0 ]; then
++        TOP_Y2=10
++    fi
+     # gnuplot 設定ファイルを作成
+     probo-make-burndown-gpfile "$$.tmp.gp" "$DAT_FILE" ${IMG_TYPE} $TOP_Y1 $TOP_Y2
+     gnuplot "$$.tmp.gp" > "${OUT_FILE}"
+#+END_SRC
 
 ** TODO --init での conf file 生成をもっと細かく制御する
 
