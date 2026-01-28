@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [42/47]
+* tasks [43/47]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -155,7 +155,7 @@
 		* github/gitlab
 		* turnup
 
-** TODO --init で README.md ファイルを生成する
+** DONE --init で README.md ファイルを生成する ⇒ 一応やった
 
 	* probo --init git(hub|lab) の場合かな
 	* probo --init turnup の場合はどうする？  report.md とか？

@@ -769,6 +769,81 @@ function probo-make-case-template-file {
 EOF
 }
 
+function probo-make-readme-file-gitlab {
+    cat <<EOF > "./README.md"
+
+## Burn-down chart
+
+![](burndown.svg)
+
+## Summary
+
+![](summary.svg)
+
+<!-- begin probo summary -->
+<!-- end probo summary -->
+
+## Case status
+
+<!-- begin probo status-part -->
+<!-- end probo status-part -->
+
+<details><summary>Full list is here.</summary>
+
+<!-- begin probo status-full -->
+<!-- end probo status-full -->
+
+</details>
+
+EOF
+}
+
+function probo-make-readme-file-github {
+    probo-make-readme-file-gitlab
+}
+
+function probo-make-readme-file-turnup {
+    cat <<EOF > "./report.md"
+
+# Test report
+
+## Burn-down chart
+
+~~~raw
+<dev align='center'>
+<!-- include: burndown.svg -->
+</dev>
+~~~
+
+## Summary
+
+~~~raw
+<dev align='center'>
+<!-- include: summary.svg -->
+</dev>
+~~~
+
+<!-- stack:push tr style="font-size: 14;" -->
+<!-- include: summary.data -->
+<!-- stack:pop tr -->
+
+## Status
+
+<!-- stack:push tr style="font-size: 14;" -->
+ 
+<!-- include: status.pickup.data -->
+
+<!-- collapse:close -->
+Full list is here.
+
+<!-- include: status.full.data -->
+<!-- collapse:end -->
+
+<!-- stack:pop tr -->
+
+EOF
+}
+
 function probo-make-group-readme-template-file {
     cat <<EOF > "./.group.readme.template"
 # %GROUP%
@@ -833,7 +908,11 @@ function probo-initialize {
     probo-make-case-template-file
 
     if [ "${ORG_TYPE}" == "gitlab" ] || [ "${ORG_TYPE}" == "github" ]; then
+        probo-make-readme-file-${ORG_TYPE}
         probo-make-group-readme-template-file
+    fi
+    if [ "${ORG_TYPE}" == "turnup" ]; then
+        probo-make-readme-file-${ORG_TYPE}
     fi
 
 }
