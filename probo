@@ -909,7 +909,7 @@ function probo-dump-log {
         if [ ! -e "$RUN_FILE" ]; then
             echo "ERROR : runfile $RUN_FILE is not found."
         else
-            TEST_ID=$(echo "$RUN_FILE" | perl -pe 's/^(.+?)\.testrun\.md$/\1/')
+            IFS=. read -r TEST_ID FTYPE SUFFIX <<<"$RUN_FILE"
             while IFS= read -r LINE; do
                 IFS=. read -r TIMESTAMP STATUS DESCRIPTION <<<"${LINE:3}"
                 echo "${TEST_ID}	${TIMESTAMP}	${STATUS}	${DESCRIPTION}"
