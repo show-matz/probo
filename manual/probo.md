@@ -4,6 +4,12 @@
 <!-- config:embed-stylesheet -->
 <!-- config:header-numbering 2 4 -->
 
+<!-- filter:attach   = bash ./turnup-filters.sh attach    %in %out dat -->
+<!-- filter:embed    = bash ./turnup-filters.sh embed_img %in %out dat -->
+<!-- filter:gnuplot  = bash ./turnup-filters.sh gnuplot   %in %out svg -->
+<!-- filter:kaavio   = bash ./turnup-filters.sh kaavio    %in %out svg -->
+<!-- filter:plantuml = bash ./turnup-filters.sh plantuml  %in %out svg -->
+
 <!-- define: DOLLER = $ -->
 <!-- define: BLANK_PARAGRAPH = '　　' -->
 <!-- define: TODO = '@((background:red; color:white;)(%1))' -->
@@ -90,6 +96,34 @@ ${BLANK_PARAGRAPH}
 * `FAIL   :` 実施し、Fail
 * `PASS   :` 実施し、Pass
 * `REJECT :` 実施対象外に変更
+
+${BLANK_PARAGRAPH}
+
+```kaavio
+(diagram (620 260)
+; (grid)
+  (with-theme (:uml-statemachine-default)
+    (with-options (:font '(:width-spice 0.8))
+      (uml-state-begin (xy+ canvas.tl 20 40) :id :start)
+      (uml-state (x+ $1.cc  140) "new"    :id :new   :width 80)
+      (uml-state (x+ $1.cc  170) "ready"  :id :ready :width 80)
+      (uml-state (y+ $1.cc   90) "run"    :id :run   :width 80)
+      (uml-state (y+ $1.cc   90) "pass"   :id :pass  :width 80)
+      (uml-state (x+ $2.cc  170) "fail"   :id :fail  :width 80)
+      (uml-state (y+ $1.cc  -90) "block"  :id :block :width 80)
+      (uml-state-end   (x+ $3.cc 160)    :id :end)
+      (uml-transition :start :new   :spec "新規作成")
+      (uml-transition :new   :ready :spec "仕様記述")
+      (uml-transition :ready :run   :spec '(:trigger "テスト開始" :offset (15 0)))
+      (uml-transition :run   :pass  :spec '(:trigger "成功" :offset (10 0)))
+      (uml-transition :run   :fail  :spec "失敗")
+      (uml-transition :fail  :block :spec '(:trigger "調査・修正開始" :offset (80 0)))
+      (uml-transition :block :ready :spec '(:trigger "作業完了"      :offset (5 -24)))
+      (uml-transition :pass  :end))))
+```
+Figure. テストの基本的なステータス遷移
+
+${BLANK_PARAGRAPH}
 
 　後述するレポートの生成では、スクリプトが各 test-run ファイルにおける上記
 形式の行を全て抽出し、最後の行をそのテストケースの「現在のステータス」とし
