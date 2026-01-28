@@ -134,6 +134,7 @@ function probo-make-burndown-datafile-raw {
         fi
         echo "${DATE}	${ESTIMATED}	${COUNT}	${NGCNT}	${REST1}	${REST2}" >> "${DAT_FILE}"
     done
+    rm -f ${TMP_FILE}
 }
 
 function probo-make-summary-datafile-raw {
@@ -208,8 +209,9 @@ function probo-make-status-tmpdata {
             IFS=. read -r NUMBER FTYPE SUFFIX <<<"$RUN_FILE"
             TAIL=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1)
             IFS=. read -r TIMESTAMP STATUS DESCRIPTION <<<"${TAIL:3}"
-            TIMESTAMP=$(echo "$TIMESTAMP" | perl -pe 's@^(....)-(..)-(..)-(..)-(..)@\1/\2/\3 \4:\5@')
-            echo "${GROUP}	${NUMBER}	${TIMESTAMP}	${STATUS}	${DESCRIPTION}" >> ../$OUT_FILE
+            IFS=- read -r YEAR MONTH DATE HOUR MINUTES <<<"$TIMESTAMP"
+            TIMESTAMP="$YEAR/$MONTH/$DATE $HOUR:$MINUTES"
+            echo "$GROUP	$NUMBER	$TIMESTAMP	$STATUS	$DESCRIPTION" >> ../$OUT_FILE
         done
         popd > /dev/null
     done
@@ -232,9 +234,7 @@ function probo-make-status-file-raw {
 
     # part ファイルが指定されていれば grep -v chain で作成
     if [ "$FILE_MODE2" == "part" ]; then
-        cat "${RAW_TMPFILE}" | grep -v '	PASS	' \
-                             | grep -v '	REJECT	' \
-                             | grep -v '	READY	' >  "${OUT_FILE}"
+        cat "${RAW_TMPFILE}" | grep -E -v '	(PASS|REJECT|READY)	' >  "${OUT_FILE}"
     fi
     # full ファイルが指定されていれば一時ファイルを単純にコピー
     if [ "$FILE_MODE2" == "full" ]; then
@@ -260,9 +260,7 @@ function probo-make-status-file-markdown {
 
     # ２行目以降は markdown の表形式に変換（FILE_MODE2 に応じて分岐）
     if [ "$FILE_MODE2" == "part" ]; then
-        tail -n +2 "$RAW_TMPFILE" | grep -v '	PASS	' \
-                                  | grep -v '	READY	' \
-                                  | grep -v '	REJECT	' \
+        tail -n +2 "$RAW_TMPFILE" | grep -E -v '	(PASS|REJECT|READY)	' \
                                   | perl -pe 's/	/ | /g' \
                                   | perl -pe 's/^/| /'  \
                                   | perl -pe 's/$/ |/'       >>  "$$.status.tmp"
@@ -930,8 +928,9 @@ function probo-list-group-status {
         IFS=. read -r NUMBER FTYPE SUFFIX <<<"$RUN_FILE"
         TAIL=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1)
         IFS=. read -r TIMESTAMP STATUS DESCRIPTION <<<"${TAIL:3}"
-        TIMESTAMP=$(echo "$TIMESTAMP" | perl -pe 's@^(....)-(..)-(..)-(..)-(..)@\1/\2/\3 \4:\5@')
-        echo "${GROUP}${NUMBER}	${TIMESTAMP}	${STATUS}	${DESCRIPTION}"
+        IFS=- read -r YEAR MONTH DATE HOUR MINUTES <<<"$TIMESTAMP"
+        TIMESTAMP="$YEAR/$MONTH/$DATE $HOUR:$MINUTES"
+        echo "${GROUP}${NUMBER}	$TIMESTAMP	$STATUS	$DESCRIPTION"
     done
 }
 
