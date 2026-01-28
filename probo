@@ -111,22 +111,25 @@ function probo-insert-data-to-markdown-file {
 
 function probo-make-burndown-datafile-raw {
     local DAT_FILE="$1"
+    local TMP_FILE="$$.bd.tmp"
     local TODAY=$(date '+%Y-%m-%d')
     local REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
     local REST2=$REST1                                     # 実績用残数
     echo "日付	期待値	PASS数	FAIL数	基準線	実績" > "${DAT_FILE}"
+    find . -name '*.testrun.md' | xargs grep "## ....-..-..-" > "$TMP_FILE"
     for LINE in ${PROBO_BD_SCHEDULE}
     do
-        local DATE=$(echo      "$LINE" | cut -d , -f 1)
-        local ESTIMATED=$(echo "$LINE" | cut -d , -f 2)
+        local DATE=""
+        local ESTIMATED=""
+        IFS=, read -r DATE ESTIMATED <<<"$LINE"
         local COUNT=""
         local NGCNT=""
         REST1=$((REST1 - ESTIMATED))
         if [ "$TODAY" "<" "$DATE" ]; then
             REST2=""
         else
-            COUNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.\(PASS\|REJECT\)" | wc -l)
-            NGCNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.FAIL" | wc -l)
+            COUNT=$(cat $TMP_FILE | grep "## ${DATE}-.*\.\(PASS\|REJECT\)" | wc -l)
+            NGCNT=$(cat $TMP_FILE | grep "## ${DATE}-.*\.FAIL" | wc -l)
             REST2=$((REST2 - COUNT))
         fi
         echo "${DATE}	${ESTIMATED}	${COUNT}	${NGCNT}	${REST1}	${REST2}" >> "${DAT_FILE}"
@@ -202,11 +205,10 @@ function probo-make-status-tmpdata {
         pushd ${GROUP} > /dev/null
         for RUN_FILE in $(ls *.testrun.md)
         do
-            NUMBER=$(echo "$RUN_FILE" | cut -d. -f1)
+            IFS=. read -r NUMBER FTYPE SUFFIX <<<"$RUN_FILE"
             TAIL=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1)
-            TIMESTAMP=$(echo ${TAIL:3} | cut -d. -f1 | perl -pe 's@^(....)-(..)-(..)-(..)-(..)@\1/\2/\3 \4:\5@')
-            STATUS=$(echo ${TAIL} | cut -d. -f2)
-            DESCRIPTION=$(echo ${TAIL} | cut -d. -f3)
+            IFS=. read -r TIMESTAMP STATUS DESCRIPTION <<<"${TAIL:3}"
+            TIMESTAMP=$(echo "$TIMESTAMP" | perl -pe 's@^(....)-(..)-(..)-(..)-(..)@\1/\2/\3 \4:\5@')
             echo "${GROUP}	${NUMBER}	${TIMESTAMP}	${STATUS}	${DESCRIPTION}" >> ../$OUT_FILE
         done
         popd > /dev/null
@@ -524,22 +526,25 @@ function probo-graph-group-summary {
 function probo-graph-burndown {
     # ToDo : probo-make-burndown-datafile-raw を利用するかたちにできそう
     local IMG_FILE="$1"
+    local TMP_FILE="$$.bd.tmp"
     local DAT_FILE="$$.burndown.dat"
     local TODAY=$(date '+%Y-%m-%d')
     local REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
     local REST2=$REST1                                     # 実績用残数
+    find . -name '*.testrun.md' | xargs grep "## ....-..-..-" > "$TMP_FILE"
     for LINE in ${PROBO_BD_SCHEDULE}
     do
-        local DATE=$(echo      "$LINE" | cut -d , -f 1)
-        local ESTIMATED=$(echo "$LINE" | cut -d , -f 2)
+        local DATE=""
+        local ESTIMATED=""
+        IFS=, read -r DATE ESTIMATED <<<"$LINE"
         local COUNT=""
         local NGCNT=""
         REST1=$((REST1 - ESTIMATED))
         if [ "$TODAY" "<" "$DATE" ]; then
             REST2=""
         else
-            COUNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.\(PASS\|REJECT\)" | wc -l)
-            NGCNT=$(find . -name '*.testrun.md' | xargs grep "## ${DATE}-.*\.FAIL" | wc -l)
+            COUNT=$(cat $TMP_FILE | grep "## ${DATE}-.*\.\(PASS\|REJECT\)" | wc -l)
+            NGCNT=$(cat $TMP_FILE | grep "## ${DATE}-.*\.FAIL" | wc -l)
             REST2=$((REST2 - COUNT))
         fi
         echo "${DATE},${REST1},${REST2},${NGCNT}" >> ${DAT_FILE}
@@ -547,6 +552,7 @@ function probo-graph-burndown {
     IMG_TYPE=$(probo-get-image-type-from-filename "$IMG_FILE")
     probo-make-burndown-image "$DAT_FILE" "$IMG_FILE" $IMG_TYPE
     rm -f ${DAT_FILE}
+    rm -f ${TMP_FILE}
 }
 
 function probo-track-runfile-impl {
@@ -1003,9 +1009,10 @@ function probo-make-report-files {
     # 必要ならステータス一覧の一時ファイルを最初に作成
     if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ]     || [ ! -z "${PROBO_PARTSTAT_FILENAME}" ] || \
        [ ! -z "${PROBO_GRP_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_GRP_PARTSTAT_FILENAME}" ]; then
+        ${PROGRESS_NOTIFIER} "preparing status list..."
         probo-make-status-tmpdata "$$.status.rawdata"
     fi
-    # stop status file 指定があれば生成
+    # top status file 指定があれば生成
     if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
         ${PROGRESS_NOTIFIER} "generating status data..."
         # part ファイルが指定されていれば作成
@@ -1019,7 +1026,7 @@ function probo-make-report-files {
                                              "$PROBO_FULLSTAT_FILENAME" "$PROBO_FULLSTAT_INSERTION"
         fi
     fi
-    # stop status file 指定があれば生成
+    # group status file 指定があれば生成
     if [ ! -z "${PROBO_GRP_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_GRP_PARTSTAT_FILENAME}" ]; then
         ${PROGRESS_NOTIFIER} "generating group status data..."
         for GROUP in ${PROBO_GROUPS}
