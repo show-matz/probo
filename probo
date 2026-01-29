@@ -34,6 +34,28 @@ function probo-choice-1st-value {
     return 1
 }
 
+# "$1" == "$2" なら $3 を、それ以外の場合は $4 を返す関数
+function probo-iif {
+    if [ "$1" == "$2" ]; then
+        echo "$3"
+    else
+        echo "$4"
+    fi
+}
+
+function probo-sel {
+    local VALUE="$1"
+    shift
+    while :
+    do
+        if [ -z "$1" ] || [ "$VALUE" == "$1" ]; then
+            echo "$2"
+            return 0
+        fi
+        shift 2
+    done
+}
+
 # runfile 名の補完：４桁以下の数字列の場合のみ、カレントディレクトリにある test ID とみなす
 function probo-fix-runfile-name {
     if [[ "$1" =~ ^[0-9]{1,4}$ ]]; then
@@ -682,79 +704,87 @@ function probo-load-conf-file {
 
 function probo-make-conf-file {
     local CONF_FILE="$1"
-    local REPORT_TYPE="$2"
-    local GNUPLOT_FLAG="$3"
+    local REPORT_TYPE="$2"    # raw|markdown|gitlab|github|turnup
+    local GNUPLOT="$3"
 
-    local FULLSTAT_FILE=""
-    local PARTSTAT_FILE=""
-    local BDDAT_FILE=""
-    local SUMDAT_FILE=""
-    local BDIMG_FILE=""
-    local SUMIMG_FILE=""
+    local GITX=0
+    local GITXIMG=0
+    if [ "$REPORT_TYPE" == "gitlab" ] || [ "$REPORT_TYPE" == "github" ]; then
+        GITX=1
+        GITXIMG=$GNUPLOT
+    fi
+
+    local BDDAT_P=0
+    if [ "$REPORT_TYPE" == "raw" ] || [ "$GNUPLOT" == "0" ]; then
+        BDDAT_P=1
+    fi
+
     local DAY1=$(date -d "$(date +%Y-%m-01) +1 month"         +%Y-%m-%d)    # 翌月の初日
     local DAY2=$(date -d "$(date +%Y-%m-01) +2 month -1 days" +%Y-%m-%d)    # 翌月の末日
 
-    if [ "$REPORT_TYPE" == "raw" ]; then
-        FULLSTAT_FILE="full_stat.txt"
-        PARTSTAT_FILE="part_stat.txt"
-        BDDAT_FILE="burndown_data.txt"
-        SUMDAT_FILE="summary.txt"
-    else
-        FULLSTAT_FILE="full_stat.md"
-        PARTSTAT_FILE="part_stat.md"
-        BDDAT_FILE=""
-        SUMDAT_FILE="summary.md"
-    fi
-    if [ $GNUPLOT_FLAG -eq 1 ]; then
-        BDIMG_FILE="burndown.svg"
-        SUMIMG_FILE="summary.svg"
-    fi
-
     cat <<EOF > "$CONF_FILE"
-PROBO_REPORT_TYPE="$REPORT_TYPE"
+PROBO_REPORT_TYPE="$(probo-iif "$REPORT_TYPE" "raw" "raw" "markdown")"
 
-PROBO_FULLSTAT_FILENAME="$FULLSTAT_FILE"
-PROBO_FULLSTAT_INSERTION=0
+PROBO_FULLSTAT_FILENAME="$(probo-sel "$REPORT_TYPE" "raw"      "status.txt" \
+                                                    "markdown" "report.md" \
+                                                    "turnup"   "status.full.data" \
+                                                    ""         "README.md")"
+PROBO_FULLSTAT_INSERTION=$(probo-sel "$REPORT_TYPE" "raw"      0 \
+                                                    "markdown" 1 \
+                                                    "turnup"   0 \
+                                                    ""         1)
 
-PROBO_PARTSTAT_FILENAME="$PARTSTAT_FILE"
-PROBO_PARTSTAT_INSERTION=0
+PROBO_PARTSTAT_FILENAME="$(probo-sel "$REPORT_TYPE" "raw"      "" \
+                                                    "markdown" "report.md" \
+                                                    "turnup"   "status.part.data" \
+                                                    ""         "README.md")"
+PROBO_PARTSTAT_INSERTION=$(probo-sel "$REPORT_TYPE" "raw"      0 \
+                                                    "markdown" 1 \
+                                                    "turnup"   0 \
+                                                    ""         1)
 
-PROBO_BDDAT_FILENAME="$BDDAT_FILE"
+PROBO_BDDAT_FILENAME="$(probo-iif "$BDDAT_P" "1" "burndown.data.txt" "")"
 
-PROBO_SUMDAT_FILENAME="$SUMDAT_FILE"
-PROBO_SUMDAT_INSERTION=0
+PROBO_SUMDAT_FILENAME="$(probo-sel "$REPORT_TYPE" "raw"      "summary.data.txt" \
+                                                  "markdown" "report.md" \
+                                                  "turnup"   "summary.data" \
+                                                  ""         "README.md")"
+PROBO_SUMDAT_INSERTION=$(probo-sel "$REPORT_TYPE" "raw"      0 \
+                                                  "markdown" 1 \
+                                                  "turnup"   0 \
+                                                  ""         1)
 
-PROBO_BDIMG_FILENAME="$BDIMG_FILE"
-PROBO_BDIMG_WIDTH=
-PROBO_BDIMG_HEIGHT=
-PROBO_BDIMG_BGCLR=
-PROBO_BDIMG_CLR_GUIDE=
-PROBO_BDIMG_CLR_PASSLINE=
-PROBO_BDIMG_CLR_FAILBOX=
+PROBO_BDIMG_FILENAME="$(    probo-iif "$GNUPLOT" "1" "burndown.svg" "")"
+PROBO_BDIMG_WIDTH=$(        probo-iif "$GNUPLOT" "1" "800"          "")
+PROBO_BDIMG_HEIGHT=$(       probo-iif "$GNUPLOT" "1" "400"          "")
+PROBO_BDIMG_BGCLR="$(       probo-iif "$GNUPLOT" "1" "white"        "")"
+PROBO_BDIMG_CLR_GUIDE="$(   probo-iif "$GNUPLOT" "1" "gray"         "")"
+PROBO_BDIMG_CLR_PASSLINE="$(probo-iif "$GNUPLOT" "1" "blue"         "")"
+PROBO_BDIMG_CLR_FAILBOX="$( probo-iif "$GNUPLOT" "1" "red"          "")"
 
-PROBO_SUMIMG_FILENAME="$SUMIMG_FILE"
-PROBO_SUMIMG_WIDTH=
-PROBO_SUMIMG_HEIGHT=
-PROBO_SUMIMG_BGCLR=
-PROBO_SUMIMG_CLR_READY=
-PROBO_SUMIMG_CLR_BLOCK=
-PROBO_SUMIMG_CLR_RUN=
-PROBO_SUMIMG_CLR_PASS=
-PROBO_SUMIMG_CLR_FAIL=
-PROBO_SUMIMG_CLR_REJECT=
-PROBO_SUMIMG_CLR_OTHER=
+PROBO_SUMIMG_FILENAME="$(   probo-iif "$GNUPLOT" "1" "summary.svg"  "")"
+PROBO_SUMIMG_WIDTH=$(       probo-iif "$GNUPLOT" "1" "800"          "")
+PROBO_SUMIMG_HEIGHT=$(      probo-iif "$GNUPLOT" "1" "400"          "")
+PROBO_SUMIMG_BGCLR="$(      probo-iif "$GNUPLOT" "1" "white"        "")"
+PROBO_SUMIMG_CLR_READY="$(  probo-iif "$GNUPLOT" "1" "#F5F5F5"      "")"
+PROBO_SUMIMG_CLR_BLOCK="$(  probo-iif "$GNUPLOT" "1" "#D2B48C"      "")"
+PROBO_SUMIMG_CLR_RUN="$(    probo-iif "$GNUPLOT" "1" "#B0C4DE"      "")"
+PROBO_SUMIMG_CLR_PASS="$(   probo-iif "$GNUPLOT" "1" "#B0E0E6"      "")"
+PROBO_SUMIMG_CLR_FAIL="$(   probo-iif "$GNUPLOT" "1" "#FFC1C1"      "")"
+PROBO_SUMIMG_CLR_REJECT="$( probo-iif "$GNUPLOT" "1" "#CD9B9B"      "")"
+PROBO_SUMIMG_CLR_OTHER="$(  probo-iif "$GNUPLOT" "1" "#EEEED1"      "")"
 
-PROBO_GRP_FULLSTAT_FILENAME=
-PROBO_GRP_FULLSTAT_INSERTION=
-PROBO_GRP_PARTSTAT_FILENAME=
-PROBO_GRP_PARTSTAT_INSERTION=
-PROBO_GRP_SUMIMG_FILENAME=
+PROBO_GRP_FULLSTAT_FILENAME="$( probo-iif "$GITX"    "1" "README.md"   "")"
+PROBO_GRP_FULLSTAT_INSERTION=$( probo-iif "$GITX"    "1" "1"           "")
+PROBO_GRP_PARTSTAT_FILENAME="$( probo-iif "$GITX"    "1" "README.md"   "")"
+PROBO_GRP_PARTSTAT_INSERTION=$( probo-iif "$GITX"    "1" "1"           "")
+PROBO_GRP_SUMIMG_FILENAME="$(   probo-iif "$GITXIMG" "1" "summary.svg" "")"
 
 PROBO_BD_STARTDAY="$DAY1"
 PROBO_BD_ENDDAY="$DAY2"
-PROBO_BD_EXEC_PER_DAY=5
+PROBO_BD_EXEC_PER_DAY=10
 
-PROBO_BD_SCHEDULE=
+PROBO_BD_SCHEDULE=""
 EOF
 
 }
@@ -771,6 +801,8 @@ EOF
 
 function probo-make-readme-file-gitlab {
     cat <<EOF > "./README.md"
+
+# Test report
 
 ## Burn-down chart
 
@@ -800,6 +832,34 @@ EOF
 
 function probo-make-readme-file-github {
     probo-make-readme-file-gitlab
+}
+
+function probo-make-readme-file-markdown {
+    cat <<EOF > "./report.md"
+
+# Test report
+
+## Burn-down chart
+
+![](burndown.svg)
+
+## Summary
+
+![](summary.svg)
+
+<!-- begin probo summary -->
+<!-- end probo summary -->
+
+## Case status(pickup)
+
+<!-- begin probo status-part -->
+<!-- end probo status-part -->
+
+## Case status(full)
+
+<!-- begin probo status-full -->
+<!-- end probo status-full -->
+EOF
 }
 
 function probo-make-readme-file-turnup {
@@ -890,15 +950,14 @@ function probo-initialize {
         exit 1
     fi
 
-    local ORG_TYPE="${1,,}"
     local REPORT_TYPE="${1,,}"
     # REPORT_TYPE の正当性チェック
-    case "${ORG_TYPE}" in
+    case "${REPORT_TYPE}" in
         raw)      ;;
         markdown) ;;
-        gitlab)   REPORT_TYPE="markdown";;
-        github)   REPORT_TYPE="markdown";;
-        turnup)   REPORT_TYPE="markdown";;
+        gitlab)   ;;
+        github)   ;;
+        turnup)   ;;
         *) echo "ERROR : invalid REPORT_TYPE parameter."
            return 1;;
     esac
@@ -907,12 +966,11 @@ function probo-initialize {
     probo-make-conf-file "$CONF_FILE" "$REPORT_TYPE" $(which gnuplot | wc -l)
     probo-make-case-template-file
 
-    if [ "${ORG_TYPE}" == "gitlab" ] || [ "${ORG_TYPE}" == "github" ]; then
-        probo-make-readme-file-${ORG_TYPE}
+    if [ "${REPORT_TYPE}" == "gitlab" ] || [ "${REPORT_TYPE}" == "github" ]; then
         probo-make-group-readme-template-file
     fi
-    if [ "${ORG_TYPE}" == "turnup" ]; then
-        probo-make-readme-file-${ORG_TYPE}
+    if [ ! "${REPORT_TYPE}" == "raw" ]; then
+        probo-make-readme-file-${REPORT_TYPE}
     fi
 
 }

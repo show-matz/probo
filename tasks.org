@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [43/47]
+* tasks [44/47]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -148,7 +148,7 @@
 ** DONE --ls が遅い
 ** DONE --log が遅い
 ** DONE --report が遅い ⇒ まだ改善の余地はあるかもだけど 17sec->11sec の改善
-** TODO --init での conf file 生成をもっと細かく制御する
+** DONE --init での conf file 生成をもっと細かく制御する
 
 	* 以下の３通りかな
 		* raw
