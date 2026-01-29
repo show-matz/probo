@@ -315,7 +315,8 @@ body{font-size:16px;}
 <li class='tocx'><a href='#fy8CiK2yYNr'>6.6 --log オプション</a></li>
 <li class='tocx'><a href='#ibqo8Q1548Y'>6.7 --ls オプション</a></li>
 <li class='tocx'><a href='#iLGxvGNVVb2'>6.8 --report オプション</a></li>
-<li class='tocx'><a href='#2D7rbHQtrFj'>6.9 --track オプション</a></li>
+<li class='tocx'><a href='#feNsJ4OPnXg'>6.9 --run オプション</a></li>
+<li class='tocx'><a href='#2D7rbHQtrFj'>6.10 --track オプション</a></li>
 </blockquote>
 </details>
 <details class='tocx' open>
@@ -616,7 +617,22 @@ conf ファイルを名はデフォルトで <code>probo.conf</code> ですが�
 <pre>
  probo --report [-q] [-c CONF_FILE]
 </pre>
-<h3><a name='2D7rbHQtrFj'></a>6.9 --track オプション</h3>
+<h3><a name='feNsJ4OPnXg'></a>6.9 --run オプション</h3>
+<p>　テストケースを実行します。case file と run file のあるディレクトリで実行してください。</p>
+<pre>
+ probo --run [NUMBER...]
+</pre>
+<p>　特定のテストケースを実行したい場合、 <code>probo --run 4 5 8 9 10</code> のようにテスト ID を明示的に指定してください。 <code>probo --run</code> のように指定なしの場合、カレントディレクトリにあるすべてのテストケースが対象となります。</p>
+<p>　ただし、この機能で実行されるのは READY 状態のテストケースだけです。また、この機能での実行には case file に実行スクリプトの埋め込みをしておく必要があります。以下に例を示します。</p>
+<pre>
+&lt;!-- probo test script : begin --&gt;
+```sh
+# test script here...
+```
+&lt;!-- probo test script : end --&gt;
+</pre>
+<p>　<code># test script here...</code> の部分にテストを実行するスクリプトを記述してください。このスクリプトは成功すれば exit 0 で、失敗の場合は exit 1 で終了するようにしてください。 <code>probo</code> はその値で成否を判定して <a class='autolink' href='#2D7rbHQtrFj'>--track</a> 相当の記録を取って run file に記録します。また、スクリプトが標準出力に書き出した内容も run file に転記されます。</p>
+<h3><a name='2D7rbHQtrFj'></a>6.10 --track オプション</h3>
 <p>　実行時点のタイムスタンプで、指定されたファイルにステータスを記録します。</p>
 <pre>
  probo --track [-f] [-e] [-d DESCRIPTION] STATUS RUNFILE...
@@ -853,7 +869,7 @@ PROBO_SUMIMG_WIDTH=700
 <p>　probo からエディタを起動する時のコマンドを格納する変数です。<a class='autolink' href='#kO1Toy1HeKM'>--edit</a> および <a class='autolink' href='#2D7rbHQtrFj'>--track</a> -e から使用されます。これらは conf ファイルに依存しない仕様のため、 <code>.bashrc</code> などで環境変数として設定することが想定されています。</p>
 <p>　例を示します。エディタとして <code>nano</code> を使用する場合は以下のようになります。<code>~1</code> という部分がファイルで置き換えられます。</p>
 <pre>
-export PROBO_EDITOR="nano ~1 &amp;"
+export PROBO_EDITOR="nano ~1"
 </pre>
 <p>　Emacs 内部の shell-mode からシェルをブロックせずに使いたい場合は以下のようになるでしょう。</p>
 <pre>
@@ -903,6 +919,7 @@ export PROBO_EDITOR="emacsclient ~1 &amp;"
 <li class='idx_x'><a class='autolink' href='#fy8CiK2yYNr'>--log</a></li>
 <li class='idx_x'><a class='autolink' href='#ibqo8Q1548Y'>--ls</a></li>
 <li class='idx_x'><a class='autolink' href='#iLGxvGNVVb2'>--report</a></li>
+<li class='idx_x'><a class='autolink' href='#feNsJ4OPnXg'>--run</a></li>
 <li class='idx_x'><a class='autolink' href='#2D7rbHQtrFj'>--track</a></li>
 </blockquote>
 </details>

@@ -273,6 +273,38 @@ case file 名に補完されます。つまり、 `--edit 12` は `--edit ./0012
  probo --report [-q] [-c CONF_FILE]
 ```
 
+### --run オプション
+<!-- autolink: [--run](#--run オプション) -->
+
+　テストケースを実行します。case file と run file のあるディレクトリで実行して
+ください。
+
+```
+ probo --run [NUMBER...]
+```
+
+　特定のテストケースを実行したい場合、 `probo --run 4 5 8 9 10` のようにテスト 
+ID を明示的に指定してください。 `probo --run` のように指定なしの場合、カレント
+ディレクトリにあるすべてのテストケースが対象となります。
+
+　ただし、この機能で実行されるのは READY 状態のテストケースだけです。また、この
+機能での実行には case file に実行スクリプトの埋め込みをしておく必要があります。
+以下に例を示します。
+
+~~~
+<!-- probo test script : begin -->
+```sh
+# test script here...
+```
+<!-- probo test script : end -->
+~~~
+
+　`# test script here...` の部分にテストを実行するスクリプトを記述してください。
+このスクリプトは成功すれば exit 0 で、失敗の場合は exit 1 で終了するようにして
+ください。 `probo` はその値で成否を判定して --track 相当の記録を取って run file に
+記録します。また、スクリプトが標準出力に書き出した内容も run file に転記されます。
+
+
 ### --track オプション
 <!-- autolink: [--track](#--track オプション) -->
 
@@ -706,7 +738,7 @@ ${BLANK_PARAGRAPH}
 `~1` という部分がファイルで置き換えられます。
 
 ```
-export PROBO_EDITOR="nano ~1 &"
+export PROBO_EDITOR="nano ~1"
 ```
 
 　Emacs 内部の shell-mode からシェルをブロックせずに使いたい場合は以下のよう

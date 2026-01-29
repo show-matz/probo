@@ -8,6 +8,7 @@ function probo-show-usage {
     echo "    probo --addgrp GROUP..."
     echo "    probo --addcase [COUNT]"
     echo "    probo --edit [-c] NUMBER"
+    echo "    probo --run [NUMBER...]"
     echo "    probo --report [-q] [-c CONF_FILE]"
     echo "    probo --track [-f] [-e] [-d DESCRIPTION] STATUS RUNFILE..."
 }
@@ -1126,6 +1127,80 @@ function probo-start-edit {
     probo-start-edit-impl "$TARGET"
 }
 
+function probo-run-test-impl {
+    local NUMBER="$1"
+    local CASE_FILE=$(probo-fix-casefile-name $NUMBER)
+    local RUN_FILE="${CASE_FILE/testcase/testrun}"
+    local SCRIPT_FILE="$$.runscript.tmp"
+    local RESULT_FILE="$$.runresult.tmp"
+    local RET_CODE=0
+    local LINE1=$(cat "$CASE_FILE" | grep -n '<!-- probo test script : begin -->' | cut -d: -f1)
+    local LINE2=$(cat "$CASE_FILE" | grep -n '<!-- probo test script : end -->'   | cut -d: -f1)
+
+	# script block が見当たらなければ return 2 で終わり
+    if [ -z "$LINE1" ] || [ -z "$LINE2" ]; then
+        return 2
+    fi
+
+    echo -n "run  $NUMBER ... "
+    probo-track-runfile-impl "$RUN_FILE" "$(date '+%Y-%m-%d-%H-%M')" 'RUN' "" 0
+
+    head -$((LINE2 - 1)) "$CASE_FILE" | tail -n +$((LINE1 + 1)) \
+                                      | grep -E -v '^(```|~~~)' > $SCRIPT_FILE
+    bash $SCRIPT_FILE > $RESULT_FILE
+    RET_CODE=$?
+
+    echo "~~~"       >> $RUN_FILE
+    cat $RESULT_FILE >> $RUN_FILE
+    echo "~~~"       >> $RUN_FILE
+
+    local RESULT=$(probo-iif "$RET_CODE" "0" "PASS" "FAIL")
+    probo-track-runfile-impl "$RUN_FILE" "$(date '+%Y-%m-%d-%H-%M')" "$RESULT" "" 0
+    echo "${RESULT}."
+
+    rm -f $SCRIPT_FILE
+    rm -f $RESULT_FILE
+
+    return $RET_CODE
+}
+
+function probo-run-test {
+
+    local LST_FILE="$$.list.tmp"
+
+    if [ -z "$1" ]; then
+        # test number 指定なしならカレントディレクトリ配下の ready なものを列挙
+        probo-list-group-status | grep '	READY	' | cut -d '	' -f1 > $LST_FILE
+    else
+        # test number 指定ありならループで回して ready かチェック
+        while [ ! -z "$1" ]
+        do
+            local RUN_FILE=$(probo-fix-runfile-name "$1")
+            IFS=. read -r NUMBER FTYPE SUFFIX <<<"$RUN_FILE"
+            TAIL=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1)
+            IFS=. read -r TIMESTAMP STATUS DESCRIPTION <<<"${TAIL:3}"
+            if [ "$STATUS" == "READY" ]; then
+                echo "${NUMBER}" >> $LST_FILE
+	        else
+                echo "skip ${NUMBER} ... not ready."
+            fi
+            shift
+        done
+    fi
+
+    while read -r NUMBER
+    do
+        probo-run-test-impl "$NUMBER"
+        case "$?" in
+            0 )  ;;
+            1 )  ;;
+            2 )  echo "skip $NUMBER ... script block is not exist.";;
+        esac
+    done < <(cat $LST_FILE)
+    
+    rm -f $LST_FILE
+}
+
 function probo-progress-notifier {
     echo "$1"
 }
@@ -1278,6 +1353,8 @@ case "$MODE" in
     --addcase ) probo-add-case "$@"
                 exit 0;;
     --edit )    probo-start-edit "$@"
+                exit 0;;
+    --run )     probo-run-test "$@"
                 exit 0;;
     --report )  probo-make-reports "$@"
                 exit 0;;

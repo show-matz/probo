@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [44/47]
+* tasks [45/47]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -160,14 +160,29 @@
 	* probo --init git(hub|lab) の場合かな
 	* probo --init turnup の場合はどうする？  report.md とか？
 
+** DONE testcase.md ファイルからテストを自動実行するような仕組みを検討する
+
+	* それは probo の埒外な気もするが。
+	* testcase.md に以下のような記述があれば良い気が。
+
+<!-- probo test script : begin -->
+```sh
+# ここにテストスクリプトを記述する
+# 最後は exit 0 または exit 1 してもらう（ゼロなら PASS、それ以外は FAIL）
+```
+<!-- probo test script : end -->
+
+	* probo --run NUMBER かな
+		* 内部で probo --track run NUMBER してくれる
+		* 上記の内容が見付からなければエラー
+		* あれば取出して bash で実行。
+		* 標準出力はリダイレクトして runfile に転帰してくれる
+		* $? で結果も見て probo --track (pass|fail) NUMBER してくれる
+
 ** TODO PASS が複数ある場合の扱いを考える
 
 	* 「最後の FAIL」以降で「最初の PASS」を唯一の PASS として数える、かな
 	* しかし、ケース更新とかで READY に戻ってるとかは？ ⇒ やはり「最後が PASS」かどうかだけでよい？
-
-** TODO testcase.md ファイルからテストを自動実行するような仕組みを検討する
-
-	* それは probo の埒外な気もするが。
 
 ** TODO マニュアルを書け
 
