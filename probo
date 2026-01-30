@@ -132,14 +132,14 @@ function probo-insert-data-to-markdown-file {
     fi
 }
 
-function probo-make-burndown-datafile-raw {
-    local DAT_FILE="$1"
-    local TMP_FILE="$$.bd.tmp"
+function probo-make-burndown-datafile {
+    local OUT_FILE="$1"
+    local STAT_FILE="$2"
+    local FAIL_FILE="$$.fail.tmp"
     local TODAY=$(date '+%Y-%m-%d')
     local REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
     local REST2=$REST1                                     # 実績用残数
-    echo "日付	期待値	PASS数	FAIL数	基準線	実績" > "${DAT_FILE}"
-    find . -name '*.testrun.md' | xargs grep "## ....-..-..-" > "$TMP_FILE"
+    find . -name '*.testrun.md' | xargs grep -h -E "## ....-..-..-.+\.FAIL" > "$FAIL_FILE"
     for LINE in ${PROBO_BD_SCHEDULE}
     do
         local DATE=""
@@ -151,13 +151,13 @@ function probo-make-burndown-datafile-raw {
         if [ "$TODAY" "<" "$DATE" ]; then
             REST2=""
         else
-            COUNT=$(cat $TMP_FILE | grep "## ${DATE}-.*\.\(PASS\|REJECT\)" | wc -l)
-            NGCNT=$(cat $TMP_FILE | grep "## ${DATE}-.*\.FAIL" | wc -l)
+            COUNT=$(cat $STAT_FILE | grep "	${DATE//-//}.*	\(PASS\|REJECT\)" | wc -l)
+            NGCNT=$(cat $FAIL_FILE | grep "^## ${DATE}" | wc -l)
             REST2=$((REST2 - COUNT))
         fi
-        echo "${DATE}	${ESTIMATED}	${COUNT}	${NGCNT}	${REST1}	${REST2}" >> "${DAT_FILE}"
+        echo "${DATE}	${REST1}	${REST2}	${NGCNT}	${COUNT}	${ESTIMATED}" >> "${OUT_FILE}"
     done
-    rm -f ${TMP_FILE}
+    rm -f ${FAIL_FILE}
 }
 
 function probo-make-summary-datafile-raw {
@@ -545,35 +545,13 @@ function probo-graph-group-summary {
 }
 
 function probo-graph-burndown {
-    # ToDo : probo-make-burndown-datafile-raw を利用するかたちにできそう
-    local IMG_FILE="$1"
-    local TMP_FILE="$$.bd.tmp"
-    local DAT_FILE="$$.burndown.dat"
-    local TODAY=$(date '+%Y-%m-%d')
-    local REST1=$(find . -name '*.testcase.md' | wc -l)    # 基準線用残数
-    local REST2=$REST1                                     # 実績用残数
-    find . -name '*.testrun.md' | xargs grep "## ....-..-..-" > "$TMP_FILE"
-    for LINE in ${PROBO_BD_SCHEDULE}
-    do
-        local DATE=""
-        local ESTIMATED=""
-        IFS=, read -r DATE ESTIMATED <<<"$LINE"
-        local COUNT=""
-        local NGCNT=""
-        REST1=$((REST1 - ESTIMATED))
-        if [ "$TODAY" "<" "$DATE" ]; then
-            REST2=""
-        else
-            COUNT=$(cat $TMP_FILE | grep "## ${DATE}-.*\.\(PASS\|REJECT\)" | wc -l)
-            NGCNT=$(cat $TMP_FILE | grep "## ${DATE}-.*\.FAIL" | wc -l)
-            REST2=$((REST2 - COUNT))
-        fi
-        echo "${DATE},${REST1},${REST2},${NGCNT}" >> ${DAT_FILE}
-    done
-    IMG_TYPE=$(probo-get-image-type-from-filename "$IMG_FILE")
-    probo-make-burndown-image "$DAT_FILE" "$IMG_FILE" $IMG_TYPE
-    rm -f ${DAT_FILE}
-    rm -f ${TMP_FILE}
+    local OUT_FILE="$1"
+    local TEMP_FILE="$2"
+    local DATA_FILE="$$.burndown.dat"
+    local IMG_TYPE=$(probo-get-image-type-from-filename "$OUT_FILE")
+    cat "$TEMP_FILE" | cut -d '	' -f1-4 | tr '	' , > ${DATA_FILE}
+    probo-make-burndown-image "$DATA_FILE" "$OUT_FILE" $IMG_TYPE
+    rm -f ${DATA_FILE}
 }
 
 function probo-track-runfile-impl {
@@ -1217,23 +1195,29 @@ function probo-make-report-files {
     if [ $BE_QUIET -eq 1 ]; then
         PROGRESS_NOTIFIER=probo-progress-notifier-none
     fi
-    # 必要ならステータス一覧の一時ファイルを最初に作成
-    if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ]     || [ ! -z "${PROBO_PARTSTAT_FILENAME}" ] || \
-       [ ! -z "${PROBO_GRP_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_GRP_PARTSTAT_FILENAME}" ]; then
-        ${PROGRESS_NOTIFIER} "preparing status list..."
-        probo-make-status-tmpdata "$$.status.rawdata"
+    local STAT_FILE="$$.status.rawdata"
+    local BDDAT_FILE="$$.burndown.rawdata"
+
+    # ステータス一覧の一時ファイルを最初に作成（これは --ls 相当の内容）
+    ${PROGRESS_NOTIFIER} "preparing status list..."
+    probo-make-status-tmpdata $STAT_FILE
+
+    # burndown data/image file いずれかの指定があればデータ生成
+    if [ ! -z "${PROBO_BDDAT_FILENAME}" ] || [ ! -z "$PROBO_BDIMG_FILENAME" ]; then
+        ${PROGRESS_NOTIFIER} "preparing burndown data..."
+        probo-make-burndown-datafile "$BDDAT_FILE" "$STAT_FILE"
     fi
     # top status file 指定があれば生成
     if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ] || [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
         ${PROGRESS_NOTIFIER} "generating status data..."
         # part ファイルが指定されていれば作成
         if [ ! -z "${PROBO_PARTSTAT_FILENAME}" ]; then
-            probo-make-status-file-${TARGET} 'top' 'part' "$$.status.rawdata" \
+            probo-make-status-file-${TARGET} 'top' 'part' $STAT_FILE \
                                              "$PROBO_PARTSTAT_FILENAME" "$PROBO_PARTSTAT_INSERTION"
         fi
         # full ファイルが指定されていれば作成
         if [ ! -z "${PROBO_FULLSTAT_FILENAME}" ]; then
-            probo-make-status-file-${TARGET} 'top' 'full' "$$.status.rawdata" \
+            probo-make-status-file-${TARGET} 'top' 'full' $STAT_FILE \
                                              "$PROBO_FULLSTAT_FILENAME" "$PROBO_FULLSTAT_INSERTION"
         fi
     fi
@@ -1242,7 +1226,7 @@ function probo-make-report-files {
         ${PROGRESS_NOTIFIER} "generating group status data..."
         for GROUP in ${PROBO_GROUPS}
         do
-            probo-make-group-status-tmpdata "$$.status.rawdata" "$GROUP" "$$.grp.status.rawdata"
+            probo-make-group-status-tmpdata $STAT_FILE "$GROUP" "$$.grp.status.rawdata"
             # part ファイルが指定されていれば作成
             if [ ! -z "${PROBO_GRP_PARTSTAT_FILENAME}" ]; then
                 probo-make-status-file-${TARGET} 'group' 'part' \
@@ -1260,14 +1244,11 @@ function probo-make-report-files {
             rm -f "$$.grp.status.rawdata"
         done
     fi
-    # 一時ファイルが存在していれば削除
-    if [ -e "$$.status.rawdata" ]; then
-        rm -f "$$.status.rawdata"
-    fi
     # burn-down data file 指定があれば生成（これは常に raw 形式）
     if [ ! -z "${PROBO_BDDAT_FILENAME}" ]; then
         ${PROGRESS_NOTIFIER} "generating burndown data..."
-        probo-make-burndown-datafile-raw "${PROBO_BDDAT_FILENAME}"
+        echo "日付	基準線	実績	PASS数	FAIL数	期待値" >  "${PROBO_BDDAT_FILENAME}"
+        cat "$BDDAT_FILE"                                   >> "${PROBO_BDDAT_FILENAME}"
     fi
     # summary data file 指定があれば生成
     if [ ! -z "${PROBO_SUMDAT_FILENAME}" ]; then
@@ -1277,7 +1258,7 @@ function probo-make-report-files {
     # ファイル名が指定されている場合のみグラフイメージ生成
     if [ ! -z "$PROBO_BDIMG_FILENAME" ]; then
         ${PROGRESS_NOTIFIER} "generating burndown image..."
-        probo-graph-burndown "$PROBO_BDIMG_FILENAME"
+        probo-graph-burndown "$PROBO_BDIMG_FILENAME" "$BDDAT_FILE"
     fi
     if [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
         ${PROGRESS_NOTIFIER} "generating summary image..."
@@ -1290,6 +1271,9 @@ function probo-make-report-files {
             probo-graph-group-summary "$GROUP" "$PROBO_GRP_SUMIMG_FILENAME"
         done
     fi
+    # 一時ファイルを削除
+    rm -f $STAT_FILE
+    rm -f $BDDAT_FILE
 
     return 0
 }
@@ -1317,7 +1301,8 @@ function probo-make-reports {
     fi
 
     # gnuplot 要否、および存在チェック
-    if [ ! -z "$PROBO_BDIMG_FILENAME" ] || [ ! -z "$PROBO_SUMIMG_FILENAME" ]; then
+    if [ ! -z "$PROBO_BDIMG_FILENAME" ] || \
+       [ ! -z "$PROBO_SUMIMG_FILENAME" ] || [ ! -z "$PROBO_GRP_SUMIMG_FILENAME" ]; then
         if [ $(which gnuplot | wc -l) -eq 0 ]; then
             echo "ERROR : gnuplot is missing."
             return 1

@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [45/47]
+* tasks [46/47]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -179,10 +179,15 @@
 		* 標準出力はリダイレクトして runfile に転帰してくれる
 		* $? で結果も見て probo --track (pass|fail) NUMBER してくれる
 
-** TODO PASS が複数ある場合の扱いを考える
+** DONE PASS が複数ある場合の扱いを考える
 
 	* 「最後の FAIL」以降で「最初の PASS」を唯一の PASS として数える、かな
 	* しかし、ケース更新とかで READY に戻ってるとかは？ ⇒ やはり「最後が PASS」かどうかだけでよい？
+	* やはり、以下のルールかな
+		* 「最後（つまり現在）のステータス」が PASS のものだけを PASS と数える
+		* 当然、そのテストケースが PASS したのは最後の PASS の日付
+		* だから、burndown chart での扱いは --ls のイメージで得た一覧で日付別の PASS 数を数えれば良い
+		* これに対して、FAIL は日付別の発生数を調べるので従来通り
 
 ** TODO マニュアルを書け
 
