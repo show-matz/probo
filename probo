@@ -2,7 +2,7 @@
 
 function probo-show-usage {
     echo "USAGE:"
-    echo "    probo --init [-c CONF_FILE] REPORT_TYPE"
+    echo "    probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE]]"
     echo "    probo --ls"
     echo "    probo --log RUNFILE..."
     echo "    probo --addgrp GROUP..."
@@ -685,6 +685,8 @@ function probo-make-conf-file {
     local CONF_FILE="$1"
     local REPORT_TYPE="$2"    # raw|markdown|gitlab|github|turnup
     local GNUPLOT="$3"
+    local DAY1="$4"
+    local DAY2="$5"
 
     local GITX=0
     local GITXIMG=0
@@ -697,9 +699,6 @@ function probo-make-conf-file {
     if [ "$REPORT_TYPE" == "raw" ] || [ "$GNUPLOT" == "0" ]; then
         BDDAT_P=1
     fi
-
-    local DAY1=$(date -d "$(date +%Y-%m-01) +1 month"         +%Y-%m-%d)    # 翌月の初日
-    local DAY2=$(date -d "$(date +%Y-%m-01) +2 month -1 days" +%Y-%m-%d)    # 翌月の末日
 
     cat <<EOF > "$CONF_FILE"
 PROBO_REPORT_TYPE="$(probo-iif "$REPORT_TYPE" "raw" "raw" "markdown")"
@@ -910,6 +909,20 @@ function probo-make-group-readme-template-file {
 EOF
 }
 
+function probo-fix-date {
+    local THE_DATE="$1"
+    local DEFAULT_DATE="$2"
+    if [ -z "$THE_DATE" ]; then
+        THE_DATE="$DEFAULT_DATE"
+    else
+        THE_DATE=$(date -d "$THE_DATE" +%Y-%m-%d 2> /dev/null)
+        if [ $? -ne 0 ]; then
+            THE_DATE=""
+        fi
+    fi
+    echo "$THE_DATE"
+}
+
 function probo-initialize {
 
     # -c オプションの回収（あれば）
@@ -942,7 +955,21 @@ function probo-initialize {
     esac
     shift 1
 
-    probo-make-conf-file "$CONF_FILE" "$REPORT_TYPE" $(which gnuplot | wc -l)
+    # Burndown chart の開始日（デフォルト値は当日の日付）
+    local START_DATE=$(probo-fix-date "$1" $(date +%Y-%m-%d))
+    if [ -z "$START_DATE" ]; then
+        echo "ERROR : invalid START_DATE parameter."
+        return 1;
+    fi
+    # Burndown chart の終了日（デフォルト値は START_DATE の１ヶ月後）
+    local END_DATE=$(probo-fix-date "$2" $(date -d "$START_DATE +1 month" +%Y-%m-%d))
+    if [ -z "$END_DATE" ]; then
+        echo "ERROR : invalid END_DATE parameter."
+        return 1;
+    fi
+
+    probo-make-conf-file "$CONF_FILE" "$REPORT_TYPE" \
+                         $(which gnuplot | wc -l) "$START_DATE" "$END_DATE"
     probo-make-case-template-file
 
     if [ "${REPORT_TYPE}" == "gitlab" ] || [ "${REPORT_TYPE}" == "github" ]; then
@@ -1115,7 +1142,7 @@ function probo-run-test-impl {
     local LINE1=$(cat "$CASE_FILE" | grep -n '<!-- probo test script : begin -->' | cut -d: -f1)
     local LINE2=$(cat "$CASE_FILE" | grep -n '<!-- probo test script : end -->'   | cut -d: -f1)
 
-	# script block が見当たらなければ return 2 で終わり
+    # script block が見当たらなければ return 2 で終わり
     if [ -z "$LINE1" ] || [ -z "$LINE2" ]; then
         return 2
     fi
@@ -1202,7 +1229,7 @@ function probo-run-test {
                 IFS=. read -r TIMESTAMP STATUS DESCRIPTION <<<"${TAIL:3}"
                 if [ "$STATUS" == "READY" ]; then
                     echo "${NUMBER}" >> $LST_FILE
-    	        else
+                else
                     echo "skip ${NUMBER} ... not ready."
                 fi
             fi

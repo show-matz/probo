@@ -226,14 +226,18 @@ case file 名に補完されます。つまり、 `--edit 12` は `--edit ./0012
 　カレントディレクトリを probo のテスト環境として初期化します。
 
 ```
- probo --init  [-c CONF_FILE]  REPORT_TYPE
+ probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE]]
 ```
 
 　probo --init は、以下のことを行ないます。
 
-* `REPORT_TYPE` で指定されたレポート種別で conf ファイルを作成します。
-  conf ファイルを名はデフォルトで `probo.conf` ですが、 `-c` オプションで
-  変更できます。
+* `REPORT_TYPE` の指定に応じた conf ファイルを作成します。 `REPORT_TYPE` には 
+  `raw markdown gitlab github turnup` のいずれかを指定できます。
+* conf ファイル名はデフォルトで `probo.conf` ですが、 `-c` オプションで変更
+  できます。
+* conf ファイルに記載される Burndown chart の開始日／終了日は `START_DATE` と 
+  `END_DATE` で指定します。省略した場合、開始日は現在日付に、終了日は開始日の
+  １ヶ月後になります。
 * `.case.template` ファイルを生成します。これは probo --addcase でテスト
   ケースファイルを作成する時のテンプレートとなるファイルです。
 * `REPORT_TYPE` が `gitlab` または `github` の場合に限り、 `group.readme.template` 

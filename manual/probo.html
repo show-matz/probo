@@ -579,13 +579,21 @@ body{font-size:16px;}
 <h3><a name='c09k6WLIoEN'></a>6.5 --init オプション</h3>
 <p>　カレントディレクトリを probo のテスト環境として初期化します。</p>
 <pre>
- probo --init  [-c CONF_FILE]  REPORT_TYPE
+ probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE]]
 </pre>
 <p>　probo <a class='autolink' href='#c09k6WLIoEN'>--init</a> は、以下のことを行ないます。</p>
 <ul>
-<li><p><code>REPORT_TYPE</code> で指定されたレポート種別で conf ファイルを作成します。
-conf ファイルを名はデフォルトで <code>probo.conf</code> ですが、 <code>-c</code> オプションで
-変更できます。
+<li><p><code>REPORT_TYPE</code> の指定に応じた conf ファイルを作成します。 <code>REPORT_TYPE</code> には 
+<code>raw markdown gitlab github turnup</code> のいずれかを指定できます。
+</p>
+</li>
+<li><p>conf ファイル名はデフォルトで <code>probo.conf</code> ですが、 <code>-c</code> オプションで変更
+できます。
+</p>
+</li>
+<li><p>conf ファイルに記載される Burndown chart の開始日／終了日は <code>START_DATE</code> と 
+<code>END_DATE</code> で指定します。省略した場合、開始日は現在日付に、終了日は開始日の
+１ヶ月後になります。
 </p>
 </li>
 <li><p><code>.case.template</code> ファイルを生成します。これは probo <a class='autolink' href='#6RK38KzDT9g'>--addcase</a> でテスト

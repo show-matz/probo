@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [48/49]
+* tasks [49/50]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -197,6 +197,11 @@ skip 0010 ... not ready.
 cat: 50541.list.tmp: そのようなファイルやディレクトリはありません
 
 ** DONE --run で --ls と同じようにグループ横断処理をする
+** DONE --init で生成する conf ファイルの burndown start/end を指定可能にする
+
+	* デフォルトで当日開始、1 month 後に終了
+	* probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE]] 
+
 ** TODO マニュアルを書け
 
 	* 今やってます‥‥‥
