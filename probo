@@ -1142,14 +1142,54 @@ function probo-run-test-impl {
     return $RET_CODE
 }
 
+function probo-run-test-iterate-listfile {
+    local LST_FILE="$1"
+    if [ -e "$LST_FILE" ]; then
+        while read -r NUMBER
+        do
+            probo-run-test-impl "$NUMBER"
+            case "$?" in
+                0 )  ;;
+                1 )  ;;
+                2 )  echo "skip $NUMBER ... script block is not exist.";;
+            esac
+        done < <(cat $LST_FILE)
+    fi    
+}
+
+function probo-run-test-of-curdir {
+    local LST_FILE="$$.list.tmp"
+    probo-list-group-status | grep '	READY	' | cut -d '	' -f1 > $LST_FILE
+    probo-run-test-iterate-listfile $LST_FILE
+    rm -f $LST_FILE
+}
+
 function probo-run-test {
 
-    local LST_FILE="$$.list.tmp"
-
+    # test number 指定なしの場合
     if [ -z "$1" ]; then
-        # test number 指定なしならカレントディレクトリ配下の ready なものを列挙
-        probo-list-group-status | grep '	READY	' | cut -d '	' -f1 > $LST_FILE
+        local COUNT=$(ls *.testrun.md 2> /dev/null | wc -l)
+        # カレントディレクトリ配下に runfile がある場合
+        if [ $COUNT -ne 0 ]; then
+            probo-run-test-of-curdir
+
+        # カレントディレクトリ配下に runfile がない場合
+        else
+            # 配下のグループディレクトリを反復処理
+            local GRPS=$(probo-enum-group-dirs)
+            for GROUP in ${GRPS}
+            do
+                pushd "$GROUP" > /dev/null
+                echo "Entering $GROUP group ..."
+                probo-run-test-of-curdir
+                echo ""
+                popd > /dev/null
+            done
+        fi
+
+    # test number 指定ありの場合
     else
+        local LST_FILE="$$.list.tmp"
         # test number 指定ありならループで回して ready かチェック
         while [ ! -z "$1" ]
         do
@@ -1168,20 +1208,9 @@ function probo-run-test {
             fi
             shift
         done
+        probo-run-test-iterate-listfile $LST_FILE
+        rm -f $LST_FILE
     fi
-
-    if [ -e "$LST_FILE" ]; then
-        while read -r NUMBER
-        do
-            probo-run-test-impl "$NUMBER"
-            case "$?" in
-                0 )  ;;
-                1 )  ;;
-                2 )  echo "skip $NUMBER ... script block is not exist.";;
-            esac
-        done < <(cat $LST_FILE)
-    fi    
-    rm -f $LST_FILE
 }
 
 function probo-progress-notifier {

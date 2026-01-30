@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [47/49]
+* tasks [48/49]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -196,7 +196,7 @@ grep: 0010.testrun.md: そのようなファイルやディレクトリはあり
 skip 0010 ... not ready.
 cat: 50541.list.tmp: そのようなファイルやディレクトリはありません
 
-** TODO --run で --ls と同じようにグループ横断処理をする？
+** DONE --run で --ls と同じようにグループ横断処理をする
 ** TODO マニュアルを書け
 
 	* 今やってます‥‥‥

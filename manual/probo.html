@@ -618,12 +618,13 @@ conf ファイルを名はデフォルトで <code>probo.conf</code> ですが�
  probo --report [-q] [-c CONF_FILE]
 </pre>
 <h3><a name='feNsJ4OPnXg'></a>6.9 --run オプション</h3>
-<p>　テストケースを実行します。case file と run file のあるディレクトリで実行してください。</p>
+<p>　テストケースを実行します。</p>
 <pre>
  probo --run [NUMBER...]
 </pre>
-<p>　特定のテストケースを実行したい場合、 <code>probo --run 4 5 8 9 10</code> のようにテスト ID を明示的に指定してください。 <code>probo --run</code> のように指定なしの場合、カレントディレクトリにあるすべてのテストケースが対象となります。</p>
-<p>　ただし、この機能で実行されるのは READY 状態のテストケースだけです。また、この機能での実行には case file に実行スクリプトの埋め込みをしておく必要があります。以下に例を示します。</p>
+<p>　特定のテストケースを実行したい場合、 <code>probo --run 4 5 8 9 10</code> のようにテスト ID を明示的にパラメータとして指定してください。この場合、カレントディレクトリにある指定されたテスト ID のテストケースを実行します。</p>
+<p>　<code>probo --run</code> のようにパラメータ指定なしの場合、カレントディレクトリにあるすべてのテストケースが対象となります。カレントディレクトリにテストケースが存在しない場合、配下ディレクトリがグループであるとみなしてすべてのグループを処理します。</p>
+<p>　いずれの場合でも、この機能で実行されるのは READY 状態のテストケースだけです。また、この機能での実行には case file に実行スクリプトの埋め込みをしておく必要があります。以下に例を示します。</p>
 <pre>
 &lt;!-- probo test script : begin --&gt;
 ```sh
@@ -631,7 +632,7 @@ conf ファイルを名はデフォルトで <code>probo.conf</code> ですが�
 ```
 &lt;!-- probo test script : end --&gt;
 </pre>
-<p>　<code># test script here...</code> の部分にテストを実行するスクリプトを記述してください。このスクリプトは成功すれば exit 0 で、失敗の場合は exit 1 で終了するようにしてください。 <code>probo</code> はその値で成否を判定して <a class='autolink' href='#2D7rbHQtrFj'>--track</a> 相当の記録を取って run file に記録します。また、スクリプトが標準出力に書き出した内容も run file に転記されます。</p>
+<p>　<code># test script here...</code> の部分にテストを実行するスクリプトを記述してください。このスクリプトは成功すれば exit 0 で、失敗の場合は exit 1 で終了するようにしてください。 <code>probo</code> はその値で成否を判定して <a class='autolink' href='#2D7rbHQtrFj'>--track</a> 相当の処理を実行して run file に記録します。また、スクリプトが標準出力に書き出した内容も run file に転記されます。</p>
 <h3><a name='2D7rbHQtrFj'></a>6.10 --track オプション</h3>
 <p>　実行時点のタイムスタンプで、指定されたファイルにステータスを記録します。</p>
 <pre>
