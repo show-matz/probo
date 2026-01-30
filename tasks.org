@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [46/47]
+* tasks [47/49]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -189,6 +189,14 @@
 		* だから、burndown chart での扱いは --ls のイメージで得た一覧で日付別の PASS 数を数えれば良い
 		* これに対して、FAIL は日付別の発生数を調べるので従来通り
 
+** DONE --run でありもしない番号を指定した場合の出力が美しくない
+
+$ probo --run 10
+grep: 0010.testrun.md: そのようなファイルやディレクトリはありません
+skip 0010 ... not ready.
+cat: 50541.list.tmp: そのようなファイルやディレクトリはありません
+
+** TODO --run で --ls と同じようにグループ横断処理をする？
 ** TODO マニュアルを書け
 
 	* 今やってます‥‥‥

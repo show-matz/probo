@@ -1039,7 +1039,7 @@ function probo-list-group-status {
     if [ ! -z "$GROUP" ]; then
         GROUP="$GROUP	"
     fi
-    for RUN_FILE in $(ls *.testrun.md)
+    for RUN_FILE in $(ls *.testrun.md 2> /dev/null)
     do
         IFS=. read -r NUMBER FTYPE SUFFIX <<<"$RUN_FILE"
         TAIL=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1)
@@ -1155,27 +1155,32 @@ function probo-run-test {
         do
             local RUN_FILE=$(probo-fix-runfile-name "$1")
             IFS=. read -r NUMBER FTYPE SUFFIX <<<"$RUN_FILE"
-            TAIL=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1)
-            IFS=. read -r TIMESTAMP STATUS DESCRIPTION <<<"${TAIL:3}"
-            if [ "$STATUS" == "READY" ]; then
-                echo "${NUMBER}" >> $LST_FILE
-	        else
-                echo "skip ${NUMBER} ... not ready."
+            if [ ! -e "$RUN_FILE" ]; then
+                echo "skip ${NUMBER} ... run file is not exist."
+            else
+                TAIL=$(grep '^## ....-..-..-' ${RUN_FILE} | tail -1)
+                IFS=. read -r TIMESTAMP STATUS DESCRIPTION <<<"${TAIL:3}"
+                if [ "$STATUS" == "READY" ]; then
+                    echo "${NUMBER}" >> $LST_FILE
+    	        else
+                    echo "skip ${NUMBER} ... not ready."
+                fi
             fi
             shift
         done
     fi
 
-    while read -r NUMBER
-    do
-        probo-run-test-impl "$NUMBER"
-        case "$?" in
-            0 )  ;;
-            1 )  ;;
-            2 )  echo "skip $NUMBER ... script block is not exist.";;
-        esac
-    done < <(cat $LST_FILE)
-    
+    if [ -e "$LST_FILE" ]; then
+        while read -r NUMBER
+        do
+            probo-run-test-impl "$NUMBER"
+            case "$?" in
+                0 )  ;;
+                1 )  ;;
+                2 )  echo "skip $NUMBER ... script block is not exist.";;
+            esac
+        done < <(cat $LST_FILE)
+    fi    
     rm -f $LST_FILE
 }
 
