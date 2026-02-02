@@ -34,6 +34,19 @@ ${BLANK_PARAGRAPH}
 `cat cut date echo find gnuplot grep head ls mv perl pwd rm sort tail touch wc which` }}。
 
 
+## ウォークスルー
+
+### インストール
+### --init でテストディレクトリを初期化
+### --addgrp でグループを作成
+### --addcase でテストケースを作成
+### --edit で編集
+### --track でステータスを変更
+### --ls で一覧表示
+### --log でステータス変更履歴を表示
+### --report でレポートを作成
+### --run でテストの自動実行
+
 ## 構成
 
 　probo では、ひとつ以上の **グループ** を作成してそれぞれの配下で複数の **テスト** 
@@ -130,15 +143,12 @@ ${BLANK_PARAGRAPH}
 て認識します。また、 `FAIL` に関しては古い情報もカウントの対象となります。
 詳細はこのディレクトリにあるスクリプトファイルを参照してください。
 
-## 使い方
-
-
 ## 機能
+
+<!-- ToDo : この章はまるごと 「起動オプション」と統合して良い気がする -->
 
 ### レポート生成
 <!-- autolink: [$$](#レポート生成) -->
-
-#### 
 
 #### burndown-chart 生成
 
@@ -319,13 +329,14 @@ ID を明示的にパラメータとして指定してください。この場�
 　実行時点のタイムスタンプで、指定されたファイルにステータスを記録します。
 
 ```
- probo --track [-f] [-e] [-d DESCRIPTION] STATUS RUNFILE...
+ probo --track [-f] [-e] [-d DESCRIPTION] [-t TIMESTAMP] STATUS RUNFILE...
  STATUS := READY|BLOCK|PASS|FAIL|RUN|REJECT
 ```
 
 * `-f` オプションを使用すると、 `STATUS` パラメータのチェックをバイパスする
 * `-e` オプションを使用すると、ステータスを記録した後に該当ファイルをエディタで開く
   （ただし編集したのが１ファイルだった場合のみ）
+* `-t` オプションでタイムスタンプを明示的に指定可能（省略した場合はシステム日時）
 
 ${BLANK_PARAGRAPH}
 

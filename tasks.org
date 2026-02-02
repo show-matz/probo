@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [49/50]
+* tasks [50/51]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -201,6 +201,11 @@ cat: 50541.list.tmp: そのようなファイルやディレクトリはあり�
 
 	* デフォルトで当日開始、1 month 後に終了
 	* probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE]] 
+
+** DONE --track でタイムスタンプを明示的に指定可能にする
+
+	* probo --track [-f] [-e] [-d DESCRIPTION] [-t TIMESTAMP] STATUS RUNFILE...
+	* うーん、やりすぎかな
 
 ** TODO マニュアルを書け
 

@@ -10,7 +10,7 @@ function probo-show-usage {
     echo "    probo --edit [-c] NUMBER"
     echo "    probo --run [NUMBER...]"
     echo "    probo --report [-q] [-c CONF_FILE]"
-    echo "    probo --track [-f] [-e] [-d DESCRIPTION] STATUS RUNFILE..."
+    echo "    probo --track [-f] [-e] [-d DESCRIPTION] [-t TIMESTAMP] STATUS RUNFILE..."
 }
 
 # 不定数のパラメータを取り、最初の存在するファイルを返す関数
@@ -571,15 +571,17 @@ function probo-track-runfile-impl {
 
 function probo-track-runfile {
 
-    # -f / -d / -e オプションの回収（あれば）
+    # -f / -d / -e / -t オプションの回収（あれば）
     local FORCE=0
     local EDITFILE=0
     local DESCRIPTION=""
-    while getopts "d:fe" opt; do
+    local TIMESTAMP=""
+    while getopts "d:t:fe" opt; do
         case $opt in
             d) DESCRIPTION="${OPTARG}" ;;
             e) EDITFILE=1 ;;
             f) FORCE=1 ;;
+            t) TIMESTAMP="${OPTARG}" ;;
             *) echo "ERROR : invalid option."
                return 1;;
         esac
@@ -605,7 +607,15 @@ function probo-track-runfile {
     if [ ! -z "$DESCRIPTION" ]; then
         DESCRIPTION=".$DESCRIPTION"
     fi
-    local TIMESTAMP=$(date '+%Y-%m-%d-%H-%M')
+    if [ -z "$TIMESTAMP" ]; then
+        TIMESTAMP=$(date '+%Y-%m-%d-%H-%M')
+    else
+        TIMESTAMP=$(date -d "$TIMESTAMP" '+%Y-%m-%d-%H-%M' 2> /dev/null)
+        if [ $? -ne 0 ]; then
+            echo "ERROR : invalid TIMESTAMP parameter."
+            return 1
+        fi
+    fi
     local NEW_LINE="## ${TIMESTAMP}.${STATUS}${DESCRIPTION}"
 
     # 対象ファイルの反復と処理
