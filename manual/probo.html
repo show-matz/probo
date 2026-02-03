@@ -292,7 +292,7 @@ body{font-size:16px;}
 <details class='tocx' open>
 <summary class='tocx'><a href='#aqnuCs04oww'>3 ウォークスルー</a></summary>
 <blockquote class='tocx'>
-<li class='tocx'><a href='#jmXRzUWYW1r'>3.1 インストール</a></li>
+<li class='tocx'><a href='#6NkcypzVVgW'>3.1 インストールと設定</a></li>
 <li class='tocx'><a href='#60ixnGE0YTK'>3.2 --init でテストディレクトリを初期化</a></li>
 <li class='tocx'><a href='#42myJ9K2rbD'>3.3 --addgrp でグループを作成</a></li>
 <li class='tocx'><a href='#beW2k1q1HaA'>3.4 --addcase でテストケースを作成</a></li>
@@ -392,10 +392,74 @@ body{font-size:16px;}
 <h2><a name='9xk9gUVGJO0'></a>2 probo とは</h2>
 <p>　<strong>probo</strong> （ぷろーぼ）は、bash シェル上で動作する簡素なテキスト主義のテスト管理ツールです。基本的に bash と gnuplot があれば動作します<sup><a name='footnote_ref1' href='#footnote1'>1</a></sup>。</p>
 <h2><a name='aqnuCs04oww'></a>3 ウォークスルー</h2>
-<h3><a name='jmXRzUWYW1r'></a>3.1 インストール</h3>
+<h3><a name='6NkcypzVVgW'></a>3.1 インストールと設定</h3>
+<p>　probo を動かすのに必要なのは、パッケージに含まれる <code>probo</code> という名前のシェルスクリプトひとつだけです。これをパスの通ったディレクトリに配置するか、あるいは適当な場所に置いて <code>.bashrc</code> でエイリアス設定をしてください。ここではより面倒の少ないエイリアスで済ませてしまいましょう。</p>
+<pre>
+alias probo='/PATH/TO/probo'
+</pre>
+<p>　そしてこれは必須ではありませんが、probo からエディタを起動してファイルを編集する場合、シェル変数 <code>PROBO_EDITOR</code> を設定しておくと良いでしょう。以下の要領で指定してください（ <code>~1</code> という部分が編集ファイル名で置き換えられます）。</p>
+<pre>
+export PROBO_EDITOR="vim ~1"
+</pre>
 <h3><a name='60ixnGE0YTK'></a>3.2 --init でテストディレクトリを初期化</h3>
+<pre>
+$ mkdir sample-test
+$ cd sample-test
+$ probo --init gitlab
+$ 
+$ ls -la
+合計 24
+drwxrwxr-x 2 user42 user42 4096  2月  2 17:29 .
+drwxrwxr-x 6 user42 user42 4096  2月  2 17:29 ..
+-rw-rw-r-- 1 user42 user42   69  2月  2 17:29 .case.template
+-rw-rw-r-- 1 user42 user42  260  2月  2 17:29 .group.readme.template
+-rw-rw-r-- 1 user42 user42  348  2月  2 17:29 README.md
+-rw-rw-r-- 1 user42 user42 1071  2月  2 17:29 probo.conf
+$ 
+</pre>
 <h3><a name='42myJ9K2rbD'></a>3.3 --addgrp でグループを作成</h3>
+<pre>
+$ probo --addgrp  group1 group2
+$ 
+$ ls -l
+合計 20
+-rw-rw-r-- 1 user42 user42  348  2月  2 17:29 README.md
+drwxrwxr-x 2 user42 user42 4096  2月  2 17:37 group1
+drwxrwxr-x 2 user42 user42 4096  2月  2 17:37 group2
+-rw-rw-r-- 1 user42 user42 1071  2月  2 17:29 probo.conf
+$ 
+</pre>
 <h3><a name='beW2k1q1HaA'></a>3.4 --addcase でテストケースを作成</h3>
+<pre>
+$ cd group1
+$ probo --addcase 10
+Adding test case 0001...
+Adding test case 0002...
+   :
+   :
+Adding test case 0009...
+Adding test case 0010...
+$ 
+$ cd ../group2
+$ probo --addcase 10
+Adding test case 0001...
+Adding test case 0002...
+   :
+   :
+Adding test case 0009...
+Adding test case 0010...
+$ 
+$ cd .. 
+$
+</pre>
+<pre>
+$ cd group1
+$ ls -l 0001*
+-rw-rw-r-- 1 user42 user42 59  2月  2 17:40 0001.testcase.md
+-rw-rw-r-- 1 user42 user42 26  2月  2 17:40 0001.testrun.md
+$ 
+</pre>
+<p>　４桁の番号が <strong>テスト ID</strong> で、それに <code>.testcase.md</code> が続くファイルが<strong>ケースファイル</strong> 、 <code>.testrun.md</code> が続くファイルが <strong>ランファイル</strong> です。ケースファイルはテストの仕様を記述するもので、ランファイルはテストの実施結果を記録するものです。</p>
 <h3><a name='7YNhKZnOqE7'></a>3.5 --edit で編集</h3>
 <h3><a name='3Yzz8fFMLDY'></a>3.6 --track でステータスを変更</h3>
 <h3><a name='46iRNTvs8cP'></a>3.7 --ls で一覧表示</h3>
@@ -601,7 +665,7 @@ body{font-size:16px;}
 <h3><a name='c09k6WLIoEN'></a>6.5 --init オプション</h3>
 <p>　カレントディレクトリを probo のテスト環境として初期化します。</p>
 <pre>
- probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE]]
+ probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE [CASE_PER_DAY]]]
 </pre>
 <p>　probo <a class='autolink' href='#c09k6WLIoEN'>--init</a> は、以下のことを行ないます。</p>
 <ul>
@@ -615,7 +679,8 @@ body{font-size:16px;}
 </li>
 <li><p>conf ファイルに記載される Burndown chart の開始日／終了日は <code>START_DATE</code> と 
 <code>END_DATE</code> で指定します。省略した場合、開始日は現在日付に、終了日は開始日の
-１ヶ月後になります。
+１ヶ月後になります。また、Burndown chart が想定する「１日あたりのテストケース
+消化想定数」を <code>CASE_PER_DAY</code> で与えることができます。デフォルト値は 10 です。
 </p>
 </li>
 <li><p><code>.case.template</code> ファイルを生成します。これは probo <a class='autolink' href='#6RK38KzDT9g'>--addcase</a> でテスト

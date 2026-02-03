@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [50/51]
+* tasks [51/52]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -206,6 +206,11 @@ cat: 50541.list.tmp: そのようなファイルやディレクトリはあり�
 
 	* probo --track [-f] [-e] [-d DESCRIPTION] [-t TIMESTAMP] STATUS RUNFILE...
 	* うーん、やりすぎかな
+
+** DONE --init で生成する conf ファイルの burndown case per day を指定可能にする
+
+	* デフォルトで 10
+	* probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE [CASE_PER_DAY]]] 
 
 ** TODO マニュアルを書け
 

@@ -2,7 +2,7 @@
 
 function probo-show-usage {
     echo "USAGE:"
-    echo "    probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE]]"
+    echo "    probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE [CASE_PER_DAY]]]"
     echo "    probo --ls"
     echo "    probo --log RUNFILE..."
     echo "    probo --addgrp GROUP..."
@@ -697,6 +697,7 @@ function probo-make-conf-file {
     local GNUPLOT="$3"
     local DAY1="$4"
     local DAY2="$5"
+    local CASE_PER_DAY="$6"
 
     local GITX=0
     local GITXIMG=0
@@ -770,7 +771,7 @@ PROBO_GRP_SUMIMG_FILENAME="$(   probo-iif "$GITXIMG" "1" "summary.svg" "")"
 
 PROBO_BD_STARTDAY="$DAY1"
 PROBO_BD_ENDDAY="$DAY2"
-PROBO_BD_EXEC_PER_DAY=10
+PROBO_BD_EXEC_PER_DAY=$CASE_PER_DAY
 
 PROBO_BD_SCHEDULE=""
 EOF
@@ -977,9 +978,18 @@ function probo-initialize {
         echo "ERROR : invalid END_DATE parameter."
         return 1;
     fi
+    # Burndown chart の日別消化想定数（デフォルト値は 10）
+    local CASE_PER_DAY="$3"
+    if [ -z "$CASE_PER_DAY" ]; then
+        CASE_PER_DAY=10
+    fi
+    if [[ ! "$CASE_PER_DAY" =~ ^[1-9][0-9]*$ ]]; then
+        echo "ERROR : invalid parameter \"$CASE_PER_DAY\"."
+        return 1
+    fi
 
     probo-make-conf-file "$CONF_FILE" "$REPORT_TYPE" \
-                         $(which gnuplot | wc -l) "$START_DATE" "$END_DATE"
+                         $(which gnuplot | wc -l) "$START_DATE" "$END_DATE" $CASE_PER_DAY
     probo-make-case-template-file
 
     if [ "${REPORT_TYPE}" == "gitlab" ] || [ "${REPORT_TYPE}" == "github" ]; then

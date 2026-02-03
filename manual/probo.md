@@ -36,10 +36,95 @@ ${BLANK_PARAGRAPH}
 
 ## ウォークスルー
 
-### インストール
+### インストールと設定
+
+　probo を動かすのに必要なのは、パッケージに含まれる `probo` という名前の
+シェルスクリプトひとつだけです。これをパスの通ったディレクトリに配置するか、
+あるいは適当な場所に置いて `.bashrc` でエイリアス設定をしてください。ここ
+ではより面倒の少ないエイリアスで済ませてしまいましょう。
+
+```
+alias probo='/PATH/TO/probo'
+```
+
+　そしてこれは必須ではありませんが、probo からエディタを起動してファイルを
+編集する場合、シェル変数 `PROBO_EDITOR` を設定しておくと良いでしょう。以下の
+要領で指定してください（ `~1` という部分が編集ファイル名で置き換えられます）。
+
+```
+export PROBO_EDITOR="vim ~1"
+```
+
 ### --init でテストディレクトリを初期化
+
+```
+$ mkdir sample-test
+$ cd sample-test
+$ probo --init gitlab
+$ 
+$ ls -la
+合計 24
+drwxrwxr-x 2 user42 user42 4096  2月  2 17:29 .
+drwxrwxr-x 6 user42 user42 4096  2月  2 17:29 ..
+-rw-rw-r-- 1 user42 user42   69  2月  2 17:29 .case.template
+-rw-rw-r-- 1 user42 user42  260  2月  2 17:29 .group.readme.template
+-rw-rw-r-- 1 user42 user42  348  2月  2 17:29 README.md
+-rw-rw-r-- 1 user42 user42 1071  2月  2 17:29 probo.conf
+$ 
+```
+
 ### --addgrp でグループを作成
+
+```
+$ probo --addgrp  group1 group2
+$ 
+$ ls -l
+合計 20
+-rw-rw-r-- 1 user42 user42  348  2月  2 17:29 README.md
+drwxrwxr-x 2 user42 user42 4096  2月  2 17:37 group1
+drwxrwxr-x 2 user42 user42 4096  2月  2 17:37 group2
+-rw-rw-r-- 1 user42 user42 1071  2月  2 17:29 probo.conf
+$ 
+```
+
 ### --addcase でテストケースを作成
+
+```
+$ cd group1
+$ probo --addcase 10
+Adding test case 0001...
+Adding test case 0002...
+   :
+   :
+Adding test case 0009...
+Adding test case 0010...
+$ 
+$ cd ../group2
+$ probo --addcase 10
+Adding test case 0001...
+Adding test case 0002...
+   :
+   :
+Adding test case 0009...
+Adding test case 0010...
+$ 
+$ cd .. 
+$
+```
+
+```
+$ cd group1
+$ ls -l 0001*
+-rw-rw-r-- 1 user42 user42 59  2月  2 17:40 0001.testcase.md
+-rw-rw-r-- 1 user42 user42 26  2月  2 17:40 0001.testrun.md
+$ 
+```
+
+　４桁の番号が **テスト ID** で、それに `.testcase.md` が続くファイルが
+**ケースファイル** 、 `.testrun.md` が続くファイルが **ランファイル** です。
+ケースファイルはテストの仕様を記述するもので、ランファイルはテストの実施結果
+を記録するものです。
+
 ### --edit で編集
 ### --track でステータスを変更
 ### --ls で一覧表示
@@ -236,7 +321,7 @@ case file 名に補完されます。つまり、 `--edit 12` は `--edit ./0012
 　カレントディレクトリを probo のテスト環境として初期化します。
 
 ```
- probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE]]
+ probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE [CASE_PER_DAY]]]
 ```
 
 　probo --init は、以下のことを行ないます。
@@ -247,7 +332,8 @@ case file 名に補完されます。つまり、 `--edit 12` は `--edit ./0012
   できます。
 * conf ファイルに記載される Burndown chart の開始日／終了日は `START_DATE` と 
   `END_DATE` で指定します。省略した場合、開始日は現在日付に、終了日は開始日の
-  １ヶ月後になります。
+  １ヶ月後になります。また、Burndown chart が想定する「１日あたりのテストケース
+  消化想定数」を `CASE_PER_DAY` で与えることができます。デフォルト値は 10 です。
 * `.case.template` ファイルを生成します。これは probo --addcase でテスト
   ケースファイルを作成する時のテンプレートとなるファイルです。
 * `REPORT_TYPE` が `gitlab` または `github` の場合に限り、 `group.readme.template` 
