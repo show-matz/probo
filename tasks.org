@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [51/52]
+* tasks [52/54]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -211,6 +211,16 @@ cat: 50541.list.tmp: そのようなファイルやディレクトリはあり�
 
 	* デフォルトで 10
 	* probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE [CASE_PER_DAY]]] 
+
+** DONE --addcase でタイムスタンプを明示的に指定可能にする
+
+	* probo --addcase [-t TIMESTAMP] [COUNT]
+
+** TODO --report で生成するレポートの「報告日」を指定可能にする
+
+	* 過去日でも未来日でも指定できるようにしたい（当日縛りからの奪却）
+	* よく考えてみたらこれ burndown chart だけの話じゃねぇぞ厄介だな。
+	* 頑張ればイケるけど、多分遅くなる‥‥‥そこまでしてやる価値あるかな？
 
 ** TODO マニュアルを書け
 

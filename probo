@@ -6,7 +6,7 @@ function probo-show-usage {
     echo "    probo --ls"
     echo "    probo --log RUNFILE..."
     echo "    probo --addgrp GROUP..."
-    echo "    probo --addcase [COUNT]"
+    echo "    probo --addcase [-t TIMESTAMP] [COUNT]"
     echo "    probo --edit [-c] NUMBER"
     echo "    probo --run [NUMBER...]"
     echo "    probo --report [-q] [-c CONF_FILE]"
@@ -1043,6 +1043,27 @@ function probo-add-case-impl {
 }
 
 function probo-add-case {
+
+    # -t オプションの回収（あれば）
+    local TIMESTAMP=""
+    while getopts "t:" opt; do
+        case $opt in
+            t) TIMESTAMP="${OPTARG}" ;;
+            *) echo "ERROR : invalid option."
+               return 1;;
+        esac
+    done
+    shift $((OPTIND - 1))
+    if [ -z "$TIMESTAMP" ]; then
+        TIMESTAMP=$(date '+%Y-%m-%d-%H-%M')
+    else
+        TIMESTAMP=$(date -d "$TIMESTAMP" '+%Y-%m-%d-%H-%M' 2> /dev/null)
+        if [ $? -ne 0 ]; then
+            echo "ERROR : invalid TIMESTAMP parameter."
+            return 1
+        fi
+    fi
+
     local COUNT="$1"
     if [ -z "$COUNT" ]; then
         COUNT=1
@@ -1053,7 +1074,6 @@ function probo-add-case {
     fi
     local CASE_TMPL=$(probo-1st-exist-file "./.case.template" "../.case.template")
     local GROUP=$(basename $(pwd))
-    local TIMESTAMP=$(date '+%Y-%m-%d-%H-%M')
     local CURTAIL=0
     if [ $(ls *.testcase.md 2> /dev/null | wc -l) -ne 0 ]; then
         CURTAIL=$(ls *.testcase.md | sort | tail -1 | cut -d. -f1)
