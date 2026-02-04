@@ -6,7 +6,7 @@ function probo-show-usage {
     echo "    probo --ls"
     echo "    probo --log RUNFILE..."
     echo "    probo --addgrp GROUP..."
-    echo "    probo --addcase [-t TIMESTAMP] [COUNT]"
+    echo "    probo --addcase [-q] [-t TIMESTAMP] [COUNT]"
     echo "    probo --edit [-c] NUMBER"
     echo "    probo --run [NUMBER...]"
     echo "    probo --report [-q] [-c CONF_FILE]"
@@ -1029,10 +1029,13 @@ function probo-add-case-impl {
     local GROUP="$2"
     local TIMESTAMP="$3"
     local CASE_TMPL="$4"
+    local BE_QUIET="$5"
     ID="${ID: -4}"
     local CASE_FILE="$ID.testcase.md"
     local RUN_FILE="$ID.testrun.md"
-    echo "Adding test case $ID..."
+    if [ $BE_QUIET -eq 0 ]; then
+        echo "Adding test case $ID..."
+    fi
     if [ -z "$CASE_TMPL" ]; then
         touch "$CASE_FILE"
     else
@@ -1045,9 +1048,11 @@ function probo-add-case-impl {
 function probo-add-case {
 
     # -t オプションの回収（あれば）
+    local BE_QUIET=0
     local TIMESTAMP=""
-    while getopts "t:" opt; do
+    while getopts "t:q" opt; do
         case $opt in
+            q) BE_QUIET=1 ;;
             t) TIMESTAMP="${OPTARG}" ;;
             *) echo "ERROR : invalid option."
                return 1;;
@@ -1081,7 +1086,7 @@ function probo-add-case {
     local COUNT=$((10#$COUNT))
     CURTAIL=$((10#$CURTAIL))
     for ((i=0; i<$COUNT; i++)) do
-        probo-add-case-impl $((CURTAIL + 1 + i)) "$GROUP" "$TIMESTAMP" "$CASE_TMPL"
+        probo-add-case-impl $((CURTAIL + 1 + i)) "$GROUP" "$TIMESTAMP" "$CASE_TMPL" $BE_QUIET
     done
 }
 

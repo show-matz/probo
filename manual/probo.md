@@ -355,9 +355,10 @@ ${BLANK_PARAGRAPH}
 　カレントディレクトリにテストケースを追加します。個数を指定することも可能です。
 
 ```
- probo --addcase [-t TIMESTAMP] [COUNT]
+ probo --addcase [-q] [-t TIMESTAMP] [COUNT]
 ```
 
+* `-q` で標準出力への出力を抑止します。
 * `-t` オプションでタイムスタンプを明示的に指定可能（省略した場合はシステム日時）
 
 ### --addgrp オプション
