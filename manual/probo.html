@@ -394,7 +394,7 @@ body{font-size:16px;}
 <h2><a name='aqnuCs04oww'></a>3 ウォークスルー</h2>
 <p>　ここでは、一般的な使い方を説明します。</p>
 <h3><a name='6NkcypzVVgW'></a>3.1 インストールと設定</h3>
-<p>　probo を動かすのに必要なのは、パッケージに含まれる <code>probo</code> という名前のシェルスクリプトひとつだけです。これをパスの通ったディレクトリに配置するか、あるいは適当な場所に置いて <code>.bashrc</code> でエイリアス設定をしてください。ここではより面倒の少ないエイリアスで済ませてしまいましょう。</p>
+<p>　probo を動かすのに必要なのは、パッケージに含まれる <code>probo</code> という名前のシェルスクリプトひとつだけです。これをパスの通ったディレクトリに配置するか、あるいは適当な場所に置いて <code>.bashrc</code> でエイリアス設定をしてください。ここではより面倒の少ないエイリアスで済ませてしまいましょう<sup><a name='footnote_ref2' href='#footnote2'>2</a></sup>。</p>
 <pre style="font-size: 13;">
 alias probo='/PATH/TO/probo'
 </pre>
@@ -490,10 +490,60 @@ $ probo --edit -c 1
 * DESCRIPTION: 
 
 </pre>
-<p>　今はこのファイルの内容はあまり重要ではないので、テスト仕様を記述したことにしてファイルを閉じてしまいましょう。</p>
+<p>　このファイルの内容は （今は）あまり重要ではないので、テスト仕様を記述したことにしてファイルを閉じてしまいましょう。</p>
 <h3><a name='3Yzz8fFMLDY'></a>3.6 --track でステータスを変更</h3>
+<p>　前のステップで <code>group1</code> の最初のテストの仕様を記述したので、テストケースとして実行可能になりました。そこで、 <code>probo --track</code> コマンドでステータスを変更しましょう。以下のように、ステータスとして <code>ready</code> を、テストID として 1 を指定して実行します。</p>
+<pre style="font-size: 13;">
+$ probo --track ready 1
+1 file(s) updated.
+$ 
+</pre>
+<p>　これでランファイルが変更されました。続いて、テストのステータスを確認する方法を見ていきましょう。</p>
 <h3><a name='46iRNTvs8cP'></a>3.7 --ls で一覧表示</h3>
+<p>　テストのステータスを確認する方法のひとつとして <code>probo --ls</code> があります。これは、現在のグループにあるすべてのテストの「現在のステータス」を一覧表示するものです。</p>
+<pre style="font-size: 13;">
+$ probo --ls
+CASE	TIMESTAMP	STATUS	DESCRIPTION
+0001	2026/02/04 15:59	READY	
+0002	2026/02/04 15:19	NEW	
+0003	2026/02/04 15:19	NEW	
+0004	2026/02/04 15:19	NEW	
+0005	2026/02/04 15:19	NEW	
+0006	2026/02/04 15:19	NEW	
+0007	2026/02/04 15:19	NEW	
+0008	2026/02/04 15:19	NEW	
+0009	2026/02/04 15:19	NEW	
+0010	2026/02/04 15:19	NEW	
+$ 
+</pre>
+<p>　グループの上位ディレクトリ（ <a class='autolink' href='#c09k6WLIoEN'>--init</a> を実行した場所）で <code>probo --ls</code> を実行した場合、すべてのグループ配下のテストを一覧します。これはテスト全体の規模によっては少し時間がかかるかもしれません。</p>
+<pre style="font-size: 13;">
+$ cd ..
+$ probo --ls
+GROUP	CASE	TIMESTAMP	STATUS	DESCRIPTION
+group1	0001	2026/02/04 15:59	READY	
+group1	0002	2026/02/04 15:19	NEW	
+         :
+         :
+group1	0009	2026/02/04 15:19	NEW	
+group1	0010	2026/02/04 15:19	NEW	
+group2	0001	2026/02/04 15:20	NEW	
+group2	0002	2026/02/04 15:20	NEW	
+         :
+         :
+group2	0009	2026/02/04 15:20	NEW	
+group2	0010	2026/02/04 15:20	NEW	
+$ 
+</pre>
 <h3><a name='0KvzijYF51h'></a>3.8 --log でステータス変更履歴を表示</h3>
+<p>　テストのステータスを参照する別の方法として <code>probo --log</code> があります。これは、指定したテストのステータス変化の履歴を見るものです。</p>
+<pre style="font-size: 13;">
+$ cd group1
+$ probo --log 1
+0001	2026-02-04-15-19	NEW	
+0001	2026-02-04-15-59	READY	
+$
+</pre>
 <h3><a name='6EH69Orov9X'></a>3.9 --report でレポートを作成</h3>
 <h3><a name='i4V5jiuhcYw'></a>3.10 --run でテストの自動実行</h3>
 <h2><a name='jjjXfFtPMKV'></a>4 構成</h2>
@@ -1668,5 +1718,6 @@ export PROBO_EDITOR="emacsclient ~1 &amp;"
 <p>　　</p>
 <hr>
 <p class='footnote'><a name='footnote1' href='#footnote_ref1'>1</a> : これを書いている時点でざっと調べた限り、probo スクリプトが内部で使用しているコマンドは次の通りです。一般的な Linux 環境であれば、 <code>gnuplot</code> 以外は大体最初から使えるはず。 <code>cat cut date echo find gnuplot grep head ls mv perl pwd rm sort tail touch wc which</code> </p>
+<p class='footnote'><a name='footnote2' href='#footnote_ref2'>2</a> : エイリアスの場合、シェルスクリプトから利用できないなどの問題があります。完全にコマンドとして利用したい場合、パスの通ったディレクトリに置く方が良いでしょう。</p>
 </body>
 </html>
