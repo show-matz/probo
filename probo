@@ -1100,6 +1100,8 @@ function probo-dump-log {
             IFS=. read -r TEST_ID FTYPE SUFFIX <<<"$RUN_FILE"
             while IFS= read -r LINE; do
                 IFS=. read -r TIMESTAMP STATUS DESCRIPTION <<<"${LINE:3}"
+                IFS=- read -r YEAR MONTH DATE HOUR MINUTES <<<"$TIMESTAMP"
+                TIMESTAMP="$YEAR/$MONTH/$DATE $HOUR:$MINUTES"
                 echo "${TEST_ID}	${TIMESTAMP}	${STATUS}	${DESCRIPTION}"
             done < <(grep -E '^## ....-..-..-..-..\..+' "$RUN_FILE" )
         fi
