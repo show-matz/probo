@@ -390,23 +390,31 @@ body{font-size:16px;}
 <li class='tocx'><a href='#1ewHzjI62xn'>10 索引</a></li>
 <p>　　</p>
 <h2><a name='9xk9gUVGJO0'></a>2 probo とは</h2>
-<p>　<strong>probo</strong> （ぷろーぼ）は、bash シェル上で動作する簡素なテキスト主義のテスト管理ツールです。基本的に bash と gnuplot があれば動作します<sup><a name='footnote_ref1' href='#footnote1'>1</a></sup>。</p>
+<p>　<strong>probo</strong> （ぷろーぼ）は、 <code>bash</code> シェル上で動作する簡素なテキスト主義のテスト管理ツールです。基本的に <code>bash</code> と <code>gnuplot</code> があれば動作します<sup><a name='footnote_ref1' href='#footnote1'>1</a></sup>。<code>gnuplot</code> がない場合は<a class='autolink' href='#ddPuOYtb1Nh'>レポート生成</a>機能で Burndown chart やサマリのグラフイメージの出力ができませんが、生成されるレポートデータを使用して表計算ソフトでグラフを作成することができます。</p>
 <h2><a name='aqnuCs04oww'></a>3 ウォークスルー</h2>
+<p>　ここでは、一般的な使い方を説明します。</p>
 <h3><a name='6NkcypzVVgW'></a>3.1 インストールと設定</h3>
 <p>　probo を動かすのに必要なのは、パッケージに含まれる <code>probo</code> という名前のシェルスクリプトひとつだけです。これをパスの通ったディレクトリに配置するか、あるいは適当な場所に置いて <code>.bashrc</code> でエイリアス設定をしてください。ここではより面倒の少ないエイリアスで済ませてしまいましょう。</p>
-<pre>
+<pre style="font-size: 13;">
 alias probo='/PATH/TO/probo'
 </pre>
-<p>　そしてこれは必須ではありませんが、probo からエディタを起動してファイルを編集する場合、シェル変数 <code>PROBO_EDITOR</code> を設定しておくと良いでしょう。以下の要領で指定してください（ <code>~1</code> という部分が編集ファイル名で置き換えられます）。</p>
-<pre>
+<p>　　</p>
+<p>　そしてこれは必須ではありませんが、probo からエディタを起動してファイルを編集する機能を利用したい場合、シェル変数 <code>PROBO_EDITOR</code> を設定しておくと良いでしょう。以下の要領で指定してください（ <code>~1</code> という部分が編集ファイル名で置き換えられます）。</p>
+<pre style="font-size: 13;">
 export PROBO_EDITOR="vim ~1"
 </pre>
 <h3><a name='60ixnGE0YTK'></a>3.2 --init でテストディレクトリを初期化</h3>
-<pre>
+<p>　probo でのテスト管理を始めるには、ディレクトリを作成してその中で <code>probo --init</code> を実行します。</p>
+<pre style="font-size: 13;">
 $ mkdir sample-test
 $ cd sample-test
+$ 
 $ probo --init gitlab
 $ 
+</pre>
+<p>　上記では、 <code>probo --init</code> のパラメータとして <code>gitlab</code> を指定しています。これは初期化の方法を指定するもので、ここでは GitLab 向けの設定で初期化することを指示しています。詳細は <a class='autolink' href='#c09k6WLIoEN'>--init</a> オプションの項を参照してください。</p>
+<p>　<code>probo --init</code> の実行によって、実行ディレクトリ配下には以下のようなファイルが生成されます。これらのファイルは今は気にする必要はありません（後で説明します）。</p>
+<pre style="font-size: 13;">
 $ ls -la
 合計 24
 drwxrwxr-x 2 user42 user42 4096  2月  2 17:29 .
@@ -418,9 +426,13 @@ drwxrwxr-x 6 user42 user42 4096  2月  2 17:29 ..
 $ 
 </pre>
 <h3><a name='42myJ9K2rbD'></a>3.3 --addgrp でグループを作成</h3>
-<pre>
+<p>　続いて、グループを作成しましょう。probo ではテストケースを複数のグループにわけて管理します。これには、以下のように <code>probo --addgrp</code> に続けてグループ名を並べます。</p>
+<pre style="font-size: 13;">
 $ probo --addgrp  group1 group2
 $ 
+</pre>
+<p>　これによって、以下のようにグループのためのディレクトリ作成されます。</p>
+<pre style="font-size: 13;">
 $ ls -l
 合計 20
 -rw-rw-r-- 1 user42 user42  348  2月  2 17:29 README.md
@@ -429,8 +441,10 @@ drwxrwxr-x 2 user42 user42 4096  2月  2 17:37 group2
 -rw-rw-r-- 1 user42 user42 1071  2月  2 17:29 probo.conf
 $ 
 </pre>
+<p>　<code>mkdir</code> でいいじゃんと思われるかもしれませんが、設定によっては作成したディレクトリ配下に必要なファイルが作成される場合があります。なので、グループは <code>probo --addgrp</code> で作成するようにしましょう。</p>
 <h3><a name='beW2k1q1HaA'></a>3.4 --addcase でテストケースを作成</h3>
-<pre>
+<p>　では、作成したグループにテストケースを追加しましょう。以下のように、グループのディレクトリに移動し、 <code>probo --addcase</code> と言います。パラメータとして追加するテストケースの数を指定します。</p>
+<pre style="font-size: 13;">
 $ cd group1
 $ probo --addcase 10
 Adding test case 0001...
@@ -452,7 +466,8 @@ $
 $ cd .. 
 $
 </pre>
-<pre>
+<p>　これによって、指定した数のテストケースに対応するファイル（の雛型）が作成されます。ここでは、 <code>group1</code> の最初のテストケースだけを見てみましょう。</p>
+<pre style="font-size: 13;">
 $ cd group1
 $ ls -l 0001*
 -rw-rw-r-- 1 user42 user42 59  2月  2 17:40 0001.testcase.md
@@ -461,6 +476,21 @@ $
 </pre>
 <p>　４桁の番号が <strong>テスト ID</strong> で、それに <code>.testcase.md</code> が続くファイルが<strong>ケースファイル</strong> 、 <code>.testrun.md</code> が続くファイルが <strong>ランファイル</strong> です。ケースファイルはテストの仕様を記述するもので、ランファイルはテストの実施結果を記録するものです。</p>
 <h3><a name='7YNhKZnOqE7'></a>3.5 --edit で編集</h3>
+<p>　前のステップで作成したテストケースは（当然ですが）実質的に空っぽです。テストをするためには、テストの仕様を記述しなければなりません。probo では、テストの仕様はケースファイルに記述します。これはテキストファイルなので好きな方法で編集することができますが、<a href='#6NkcypzVVgW'>最初のステップ</a>で変数 <a class='autolink' href='#0XW1Xqn36Zs'>PROBO_EDITOR</a> を設定していれば、 <code>probo --edit</code> コマンドで編集を開始することができます。以下では、 <code>group1</code> で番号 1 のテストケースの編集を開始しています。</p>
+<pre style="font-size: 13;">
+$ cd group1
+$ probo --edit -c 1
+</pre>
+<p>　<code>probo --edit</code> は通常ランファイルの編集をします。ここでは <code>-c</code> オプションを指定することでケースファイルの編集を指示しています。開いたファイルの内容は以下のようなものでした。これは <a class='autolink' href='#c09k6WLIoEN'>--init</a> で作成された .case.template ファイルからきています。</p>
+<pre style="font-size: 13;">
+## group1/0001
+
+* GROUP: group1
+* ID: 0001
+* DESCRIPTION: 
+
+</pre>
+<p>　今はこのファイルの内容はあまり重要ではないので、テスト仕様を記述したことにしてファイルを閉じてしまいましょう。</p>
 <h3><a name='3Yzz8fFMLDY'></a>3.6 --track でステータスを変更</h3>
 <h3><a name='46iRNTvs8cP'></a>3.7 --ls で一覧表示</h3>
 <h3><a name='0KvzijYF51h'></a>3.8 --log でステータス変更履歴を表示</h3>
@@ -508,7 +538,7 @@ $
 <li><code>probo.conf</code></li>
 </ul>
 <p>　test-run ファイルは、テストに実施履歴を記録するためのファイルです。基本的には markdown 形式で自由に記述可能ですが、ひとつだけルールがあります。以下の形式の見出し行が、後述する<a class='autolink' href='#ddPuOYtb1Nh'>レポート生成</a>のスクリプトにより参照されます。</p>
-<pre>
+<pre style="font-size: 13;">
  ## YYYY-MM-DD-hh-mm.STATUS[.DESCRIPTION]
 </pre>
 <p>　ここで、上記における <code>YYYY-MM-DD-hh-mm</code> はタイムスタンプ（年月日時分）、<code>STATUS</code> は基本的に <code>READY|BLOCK|RUN|FAIL|PASS|REJECT</code> のいずれか、 <code>[.DESCRIPTION]</code> は任意で追加情報を記述できます。 <code>STATUS</code> の使い方は以下の通り。</p>
@@ -613,6 +643,348 @@ $
 <h2><a name='1k2s83jlT9a'></a>5 機能</h2>
 <h3><a name='ddPuOYtb1Nh'></a>5.1 レポート生成</h3>
 <h4><a name='i7AphzYnVLt'></a>5.1.1 burndown-chart 生成</h4>
+<?xml version="1.0" encoding="utf-8"  standalone="no"?>
+<svg 
+ width="800" height="400"
+ viewBox="0 0 800 400"
+ xmlns="http://www.w3.org/2000/svg"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+>
+
+<title>Gnuplot</title>
+<desc>Produced by GNUPLOT 6.0 patchlevel 0 </desc>
+
+<g id="gnuplot_canvas">
+
+<rect x="0" y="0" width="800" height="400" fill="#ffffff"/>
+<defs>
+
+	<circle id='gpDot' r='0.5' stroke-width='0.5' stroke='currentColor'/>
+	<path id='gpPt0' stroke-width='0.222' stroke='currentColor' d='M-1,0 h2 M0,-1 v2'/>
+	<path id='gpPt1' stroke-width='0.222' stroke='currentColor' d='M-1,-1 L1,1 M1,-1 L-1,1'/>
+	<path id='gpPt2' stroke-width='0.222' stroke='currentColor' d='M-1,0 L1,0 M0,-1 L0,1 M-1,-1 L1,1 M-1,1 L1,-1'/>
+	<rect id='gpPt3' stroke-width='0.222' stroke='currentColor' x='-1' y='-1' width='2' height='2'/>
+	<rect id='gpPt4' stroke-width='0.222' stroke='currentColor' fill='currentColor' x='-1' y='-1' width='2' height='2'/>
+	<circle id='gpPt5' stroke-width='0.222' stroke='currentColor' cx='0' cy='0' r='1'/>
+	<use xlink:href='#gpPt5' id='gpPt6' fill='currentColor' stroke='none'/>
+	<path id='gpPt7' stroke-width='0.222' stroke='currentColor' d='M0,-1.33 L-1.33,0.67 L1.33,0.67 z'/>
+	<use xlink:href='#gpPt7' id='gpPt8' fill='currentColor' stroke='none'/>
+	<use xlink:href='#gpPt7' id='gpPt9' stroke='currentColor' transform='rotate(180)'/>
+	<use xlink:href='#gpPt9' id='gpPt10' fill='currentColor' stroke='none'/>
+	<use xlink:href='#gpPt3' id='gpPt11' stroke='currentColor' transform='rotate(45)'/>
+	<use xlink:href='#gpPt11' id='gpPt12' fill='currentColor' stroke='none'/>
+	<path id='gpPt13' stroke-width='0.222' stroke='currentColor' d='M0,1.330 L1.265,0.411 L0.782,-1.067 L-0.782,-1.076 L-1.265,0.411 z'/>
+	<use xlink:href='#gpPt13' id='gpPt14' fill='currentColor' stroke='none'/>
+	<filter id='textbox' filterUnits='objectBoundingBox' x='0' y='0' height='1' width='1'>
+	  <feFlood flood-color='#FFFFFF' flood-opacity='1' result='bgnd'/>
+	  <feComposite in='SourceGraphic' in2='bgnd' operator='atop'/>
+	</filter>
+	<filter id='greybox' filterUnits='objectBoundingBox' x='0' y='0' height='1' width='1'>
+	  <feFlood flood-color='lightgrey' flood-opacity='1' result='grey'/>
+	  <feComposite in='SourceGraphic' in2='grey' operator='atop'/>
+	</filter>
+</defs>
+<g fill="none" color="#FFFFFF" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="gray" stroke="currentColor" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='gray' stroke-dasharray='2,4' class="gridline"  d='M54.53,364.00 L732.87,364.00  '/></g>
+<g fill="none" color="gray" stroke="gray" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M54.53,364.00 L63.53,364.00  '/>	<g transform="translate(46.14,367.90)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" > 0</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="gray" stroke="currentColor" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='gray' stroke-dasharray='2,4' class="gridline"  d='M54.53,298.10 L732.87,298.10  '/></g>
+<g fill="none" color="gray" stroke="gray" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M54.53,298.10 L63.53,298.10  '/>	<g transform="translate(46.14,302.00)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" > 20</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="gray" stroke="currentColor" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='gray' stroke-dasharray='2,4' class="gridline"  d='M54.53,232.19 L732.87,232.19  '/></g>
+<g fill="none" color="gray" stroke="gray" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M54.53,232.19 L63.53,232.19  '/>	<g transform="translate(46.14,236.09)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" > 40</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="gray" stroke="currentColor" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='gray' stroke-dasharray='2,4' class="gridline"  d='M54.53,166.29 L732.87,166.29  '/></g>
+<g fill="none" color="gray" stroke="gray" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M54.53,166.29 L63.53,166.29  '/>	<g transform="translate(46.14,170.19)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" > 60</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="gray" stroke="currentColor" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='gray' stroke-dasharray='2,4' class="gridline"  d='M54.53,100.39 L732.87,100.39  '/></g>
+<g fill="none" color="gray" stroke="gray" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M54.53,100.39 L63.53,100.39  '/>	<g transform="translate(46.14,104.29)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" > 80</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="gray" stroke="currentColor" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='gray' stroke-dasharray='2,4' class="gridline"  d='M54.53,34.49 L589.63,34.49 M724.48,34.49 L732.87,34.49  '/></g>
+<g fill="none" color="gray" stroke="gray" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M54.53,34.49 L63.53,34.49  '/>	<g transform="translate(46.14,38.39)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" > 100</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="gray" stroke="currentColor" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='gray' stroke-dasharray='2,4' class="gridline"  d='M54.53,364.00 L54.53,18.01  '/></g>
+<g fill="none" color="gray" stroke="gray" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M54.53,364.00 L54.53,355.00 M54.53,18.01 L54.53,27.01  '/>	<g transform="translate(54.53,385.90)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="middle">
+		<text><tspan font-family="Arial" >01/15</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="gray" stroke="currentColor" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='gray' stroke-dasharray='2,4' class="gridline"  d='M190.20,364.00 L190.20,18.01  '/></g>
+<g fill="none" color="gray" stroke="gray" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M190.20,364.00 L190.20,355.00 M190.20,18.01 L190.20,27.01  '/>	<g transform="translate(190.20,385.90)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="middle">
+		<text><tspan font-family="Arial" >01/22</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="gray" stroke="currentColor" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='gray' stroke-dasharray='2,4' class="gridline"  d='M325.87,364.00 L325.87,18.01  '/></g>
+<g fill="none" color="gray" stroke="gray" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M325.87,364.00 L325.87,355.00 M325.87,18.01 L325.87,27.01  '/>	<g transform="translate(325.87,385.90)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="middle">
+		<text><tspan font-family="Arial" >01/29</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="gray" stroke="currentColor" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='gray' stroke-dasharray='2,4' class="gridline"  d='M461.53,364.00 L461.53,18.01  '/></g>
+<g fill="none" color="gray" stroke="gray" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M461.53,364.00 L461.53,355.00 M461.53,18.01 L461.53,27.01  '/>	<g transform="translate(461.53,385.90)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="middle">
+		<text><tspan font-family="Arial" >02/05</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="gray" stroke="currentColor" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='gray' stroke-dasharray='2,4' class="gridline"  d='M597.20,364.00 L597.20,81.01 M597.20,27.01 L597.20,18.01  '/></g>
+<g fill="none" color="gray" stroke="gray" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M597.20,364.00 L597.20,355.00 M597.20,18.01 L597.20,27.01  '/>	<g transform="translate(597.20,385.90)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="middle">
+		<text><tspan font-family="Arial" >02/12</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="gray" stroke="currentColor" stroke-width="0.50" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='gray' stroke-dasharray='2,4' class="gridline"  d='M732.87,364.00 L732.87,18.01  '/></g>
+<g fill="none" color="gray" stroke="gray" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M732.87,364.00 L732.87,355.00 M732.87,18.01 L732.87,27.01  '/>	<g transform="translate(732.87,385.90)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="middle">
+		<text><tspan font-family="Arial" >02/19</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M732.87,364.00 L723.87,364.00  '/>	<g transform="translate(741.26,367.90)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="start">
+		<text><tspan font-family="Arial" > 0</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M732.87,277.50 L723.87,277.50  '/>	<g transform="translate(741.26,281.40)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="start">
+		<text><tspan font-family="Arial" > 5</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M732.87,191.00 L723.87,191.00  '/>	<g transform="translate(741.26,194.90)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="start">
+		<text><tspan font-family="Arial" > 10</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M732.87,104.51 L723.87,104.51  '/>	<g transform="translate(741.26,108.41)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="start">
+		<text><tspan font-family="Arial" > 15</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M732.87,18.01 L723.87,18.01  '/>	<g transform="translate(741.26,21.91)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="start">
+		<text><tspan font-family="Arial" > 20</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M54.53,18.01 L54.53,364.00 L732.87,364.00 L732.87,18.01 L54.53,18.01 Z  '/></g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+	<g id="gnuplot_plot_1" ><title>GuideLine</title>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g transform="translate(665.14,39.91)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" >GuideLine</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='rgb(190, 190, 190)'  d='M673.53,36.01 L716.09,36.01 M132.05,50.96 L151.44,67.44 L170.82,83.91 L190.20,100.39 L209.58,116.86 L228.96,133.34
+		L248.34,149.82 L267.72,166.29 L287.10,182.77 L306.48,199.24 L325.87,215.72 L345.25,232.19 L364.63,248.67 L384.01,265.15
+		L403.39,281.62 L422.77,298.10 L442.15,314.57 L461.53,331.05 L480.92,347.52 L500.30,364.00 L519.68,364.00 L539.06,364.00
+		L558.44,364.00 L577.82,364.00 L597.20,364.00 L616.58,364.00  '/>	<use xlink:href='#gpPt4' transform='translate(132.05,50.96) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(151.44,67.44) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(170.82,83.91) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(190.20,100.39) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(209.58,116.86) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(228.96,133.34) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(248.34,149.82) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(267.72,166.29) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(287.10,182.77) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(306.48,199.24) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(325.87,215.72) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(345.25,232.19) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(364.63,248.67) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(384.01,265.15) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(403.39,281.62) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(422.77,298.10) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(442.15,314.57) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(461.53,331.05) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(480.92,347.52) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(500.30,364.00) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(519.68,364.00) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(539.06,364.00) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(558.44,364.00) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(577.82,364.00) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(597.20,364.00) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(616.58,364.00) scale(2.25)' color='rgb(190, 190, 190)'/>
+	<use xlink:href='#gpPt4' transform='translate(694.81,36.01) scale(2.25)' color='rgb(190, 190, 190)'/>
+</g>
+	</g>
+	<g id="gnuplot_plot_2" ><title>Pass</title>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g transform="translate(665.14,57.91)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" >Pass</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='rgb(  0,   0, 255)'  d='M673.53,54.01 L716.09,54.01 M132.05,44.37 L151.44,64.14 L170.82,80.62 L190.20,100.39 L209.58,126.75 L228.96,130.04
+		L248.34,139.93 L267.72,153.11 L287.10,176.18 L306.48,202.54 L325.87,219.01 L345.25,238.78 L364.63,248.67 L384.01,271.74
+		L403.39,288.21 L422.77,301.39  '/>	<use xlink:href='#gpPt6' transform='translate(132.05,44.37) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(151.44,64.14) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(170.82,80.62) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(190.20,100.39) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(209.58,126.75) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(228.96,130.04) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(248.34,139.93) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(267.72,153.11) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(287.10,176.18) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(306.48,202.54) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(325.87,219.01) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(345.25,238.78) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(364.63,248.67) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(384.01,271.74) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(403.39,288.21) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(422.77,301.39) scale(2.25)' color='rgb(  0,   0, 255)'/>
+	<use xlink:href='#gpPt6' transform='translate(694.81,54.01) scale(2.25)' color='rgb(  0,   0, 255)'/>
+</g>
+	</g>
+	<g id="gnuplot_plot_3" ><title>Fail</title>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g transform="translate(665.14,75.91)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" >Fail</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(255,   0,   0)' fill-opacity = '0.750000' points = '673.53,76.51 716.09,76.51 716.09,67.51 673.53,67.51 '/>
+	</g>
+	<path stroke='rgb(255,   0,   0)'  d='M673.53,76.51 L716.09,76.51 L716.09,67.51 L673.53,67.51 L673.53,76.51 Z  '/></g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(255,   0,   0)' fill-opacity = '0.750000' points = '130.12,364.00 134.00,364.00 134.00,346.69 130.12,346.69 '/>
+	</g>
+	<path stroke='rgb(255,   0,   0)'  d='M130.12,364.00 L130.12,346.70 L133.99,346.70 L133.99,364.00 L130.12,364.00 Z  '/>	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(255,   0,   0)' fill-opacity = '0.750000' points = '168.88,364.00 172.76,364.00 172.76,329.39 168.88,329.39 '/>
+	</g>
+	<path stroke='rgb(255,   0,   0)'  d='M168.88,364.00 L168.88,329.40 L172.75,329.40 L172.75,364.00 L168.88,364.00 Z  '/>	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(255,   0,   0)' fill-opacity = '0.750000' points = '227.02,364.00 230.91,364.00 230.91,329.39 227.02,329.39 '/>
+	</g>
+	<path stroke='rgb(255,   0,   0)'  d='M227.02,364.00 L227.02,329.40 L230.90,329.40 L230.90,364.00 L227.02,364.00 Z  '/>	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(255,   0,   0)' fill-opacity = '0.750000' points = '246.40,364.00 250.29,364.00 250.29,346.69 246.40,346.69 '/>
+	</g>
+	<path stroke='rgb(255,   0,   0)'  d='M246.40,364.00 L246.40,346.70 L250.28,346.70 L250.28,364.00 L246.40,364.00 Z  '/>	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(255,   0,   0)' fill-opacity = '0.750000' points = '362.69,364.00 366.58,364.00 366.58,346.69 362.69,346.69 '/>
+	</g>
+	<path stroke='rgb(255,   0,   0)'  d='M362.69,364.00 L362.69,346.70 L366.57,346.70 L366.57,364.00 L362.69,364.00 Z  '/>	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(255,   0,   0)' fill-opacity = '0.750000' points = '420.83,364.00 424.72,364.00 424.72,346.69 420.83,346.69 '/>
+	</g>
+	<path stroke='rgb(255,   0,   0)'  d='M420.83,364.00 L420.83,346.70 L424.71,346.70 L424.71,364.00 L420.83,364.00 Z  '/></g>
+	</g>
+<g fill="none" color="#FFFFFF" stroke="rgb(255,   0,   0)" stroke-width="2.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="2.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='black'  d='M54.53,18.01 L54.53,364.00 L732.87,364.00 L732.87,18.01 L54.53,18.01 Z  '/></g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+</g>
+</svg>
+
 <p>　以下の設定変数が関与しています。</p>
 <table align='center'>
 <tr><th>設定変数</th><th>説明</th></tr>
@@ -624,6 +996,226 @@ $
 <tr><td align='left'><a class='autolink' href='#cKVexCSejOY'>PROBO_BDIMG_CLR_FAILBOX</a></td><td align='left'>Fail 棒グラフの色を指定します。</td></tr>
 </table>
 <h4><a name='0mVxd9E6hjH'></a>5.1.2 summary-graph 生成</h4>
+<?xml version="1.0" encoding="utf-8"  standalone="no"?>
+<svg 
+ width="800" height="400"
+ viewBox="0 0 800 400"
+ xmlns="http://www.w3.org/2000/svg"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+>
+
+<title>Gnuplot</title>
+<desc>Produced by GNUPLOT 6.0 patchlevel 0 </desc>
+
+<g id="gnuplot_canvas">
+
+<rect x="0" y="0" width="800" height="400" fill="#ffffff"/>
+<defs>
+
+	<circle id='gpDot' r='0.5' stroke-width='0.5' stroke='currentColor'/>
+	<path id='gpPt0' stroke-width='0.222' stroke='currentColor' d='M-1,0 h2 M0,-1 v2'/>
+	<path id='gpPt1' stroke-width='0.222' stroke='currentColor' d='M-1,-1 L1,1 M1,-1 L-1,1'/>
+	<path id='gpPt2' stroke-width='0.222' stroke='currentColor' d='M-1,0 L1,0 M0,-1 L0,1 M-1,-1 L1,1 M-1,1 L1,-1'/>
+	<rect id='gpPt3' stroke-width='0.222' stroke='currentColor' x='-1' y='-1' width='2' height='2'/>
+	<rect id='gpPt4' stroke-width='0.222' stroke='currentColor' fill='currentColor' x='-1' y='-1' width='2' height='2'/>
+	<circle id='gpPt5' stroke-width='0.222' stroke='currentColor' cx='0' cy='0' r='1'/>
+	<use xlink:href='#gpPt5' id='gpPt6' fill='currentColor' stroke='none'/>
+	<path id='gpPt7' stroke-width='0.222' stroke='currentColor' d='M0,-1.33 L-1.33,0.67 L1.33,0.67 z'/>
+	<use xlink:href='#gpPt7' id='gpPt8' fill='currentColor' stroke='none'/>
+	<use xlink:href='#gpPt7' id='gpPt9' stroke='currentColor' transform='rotate(180)'/>
+	<use xlink:href='#gpPt9' id='gpPt10' fill='currentColor' stroke='none'/>
+	<use xlink:href='#gpPt3' id='gpPt11' stroke='currentColor' transform='rotate(45)'/>
+	<use xlink:href='#gpPt11' id='gpPt12' fill='currentColor' stroke='none'/>
+	<path id='gpPt13' stroke-width='0.222' stroke='currentColor' d='M0,1.330 L1.265,0.411 L0.782,-1.067 L-0.782,-1.076 L-1.265,0.411 z'/>
+	<use xlink:href='#gpPt13' id='gpPt14' fill='currentColor' stroke='none'/>
+	<filter id='textbox' filterUnits='objectBoundingBox' x='0' y='0' height='1' width='1'>
+	  <feFlood flood-color='#FFFFFF' flood-opacity='1' result='bgnd'/>
+	  <feComposite in='SourceGraphic' in2='bgnd' operator='atop'/>
+	</filter>
+	<filter id='greybox' filterUnits='objectBoundingBox' x='0' y='0' height='1' width='1'>
+	  <feFlood flood-color='lightgrey' flood-opacity='1' result='grey'/>
+	  <feComposite in='SourceGraphic' in2='grey' operator='atop'/>
+	</filter>
+</defs>
+<g fill="none" color="#FFFFFF" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+	<g id="gnuplot_plot_1"  fill="none"><title>gnuplot_plot_1</title>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(245, 245, 245)' points = '509.07,200.61 508.84,191.93 508.16,183.26 507.02,174.65 505.44,166.10 503.41,157.65 500.94,149.32 497.41,139.50 343.06,200.61 '/>
+	</g>
+	<path stroke='black'  d='M509.07,200.61 L508.84,191.93 L508.16,183.26 L507.02,174.65 L505.44,166.10 L503.41,157.65 L500.94,149.32 L497.41,139.50
+		L343.06,200.61 L509.07,200.61 Z  '/>	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(210, 180, 140)' points = '497.41,139.50 494.00,131.51 490.17,123.70 483.22,111.66 343.06,200.61 '/>
+	</g>
+	<path stroke='black'  d='M497.41,139.50 L494.00,131.51 L490.17,123.70 L483.22,111.66 L343.06,200.61 L497.41,139.50 Z  '/>	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(255, 193, 193)' points = '483.22,111.66 478.37,104.45 473.16,97.50 467.58,90.83 461.66,84.46 455.42,78.42 448.87,72.70 442.03,67.34 434.92,62.34 423.03,55.14 343.06,200.61 '/>
+	</g>
+	<path stroke='black'  d='M483.22,111.66 L478.37,104.45 L473.16,97.50 L467.58,90.83 L461.66,84.46 L455.42,78.42 L448.87,72.70 L442.03,67.34
+		L434.92,62.34 L423.03,55.14 L343.06,200.61 L483.22,111.66 Z  '/>	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(176, 196, 222)' points = '423.03,55.14 415.31,51.15 404.17,46.26 343.06,200.61 '/>
+	</g>
+	<path stroke='black'  d='M423.03,55.14 L415.31,51.15 L404.17,46.26 L343.06,200.61 L423.03,55.14 Z  '/>	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(176, 224, 230)' points = '404.17,46.26 396.01,43.28 387.70,40.72 379.27,38.60 370.74,36.93 362.14,35.71 353.48,34.93 344.79,34.61 336.10,34.75 327.43,35.34 318.80,36.39 310.24,37.88 301.77,39.82 293.41,42.20 285.19,45.02 277.12,48.26
+269.24,51.92 261.56,55.98 254.10,60.45 246.89,65.30 239.94,70.51 233.27,76.09 226.90,82.01 220.86,88.25 215.14,94.80 209.78,101.64 204.78,108.75 200.16,116.11 195.94,123.70 192.11,131.51 188.70,139.50 185.72,147.66
+183.16,155.97 181.04,164.40 179.37,172.93 178.15,181.53 177.37,190.19 177.05,198.88 177.19,207.57 177.78,216.24 178.83,224.87 180.32,233.43 182.26,241.90 184.64,250.26 187.46,258.48 190.70,266.55 194.36,274.43 198.42,282.11
+202.89,289.57 207.74,296.78 212.95,303.73 218.53,310.40 224.45,316.77 230.69,322.81 237.24,328.53 244.08,333.89 251.19,338.89 258.55,343.51 266.14,347.73 273.95,351.56 281.94,354.97 290.10,357.95 298.41,360.51 306.84,362.63
+315.37,364.30 323.97,365.52 332.63,366.30 341.32,366.62 350.01,366.48 358.68,365.89 367.31,364.84 375.87,363.35 384.34,361.41 392.70,359.03 400.92,356.21 408.99,352.97 416.87,349.31 424.55,345.25 432.01,340.78 439.22,335.93
+446.17,330.72 452.84,325.14 459.21,319.22 465.25,312.98 470.97,306.43 476.33,299.59 481.33,292.48 485.95,285.12 490.17,277.53 494.00,269.72 497.41,261.73 500.39,253.57 502.95,245.26 505.07,236.83 507.76,221.42 343.06,200.61
+'/>
+	</g>
+	<path stroke='black'  d='M404.17,46.26 L396.01,43.28 L387.70,40.72 L379.27,38.60 L370.74,36.93 L362.14,35.71 L353.48,34.93 L344.79,34.61
+		L336.10,34.75 L327.43,35.34 L318.80,36.39 L310.24,37.88 L301.77,39.82 L293.41,42.20 L285.19,45.02 L277.12,48.26
+		L269.24,51.92 L261.56,55.98 L254.10,60.45 L246.89,65.30 L239.94,70.51 L233.27,76.09 L226.90,82.01 L220.86,88.25
+		L215.14,94.80 L209.78,101.64 L204.78,108.75 L200.16,116.11 L195.94,123.70 L192.11,131.51 L188.70,139.50 L185.72,147.66
+		L183.16,155.97 L181.04,164.40 L179.37,172.93 L178.15,181.53 L177.37,190.19 L177.05,198.88 L177.19,207.57 L177.78,216.24
+		L178.83,224.87 L180.32,233.43 L182.26,241.90 L184.64,250.26 L187.46,258.48 L190.70,266.55 L194.36,274.43 L198.42,282.11
+		L202.89,289.57 L207.74,296.78 L212.95,303.73 L218.53,310.40 L224.45,316.77 L230.69,322.81 L237.24,328.53 L244.08,333.89
+		L251.19,338.89 L258.55,343.51 L266.14,347.73 L273.95,351.56 L281.94,354.97 L290.10,357.95 L298.41,360.51 L306.84,362.63
+		L315.37,364.30 L323.97,365.52 L332.63,366.30 L341.32,366.62 L350.01,366.48 L358.68,365.89 L367.31,364.84 L375.87,363.35
+		L384.34,361.41 L392.70,359.03 L400.92,356.21 L408.99,352.97 L416.87,349.31 L424.55,345.25 L432.01,340.78 L439.22,335.93
+		L446.17,330.72 L452.84,325.14 L459.21,319.22 L465.25,312.98 L470.97,306.43 L476.33,299.59 L481.33,292.48 L485.95,285.12
+		L490.17,277.53 L494.00,269.72 L497.41,261.73 L500.39,253.57 L502.95,245.26 L505.07,236.83 L507.76,221.42 L343.06,200.61
+		L404.17,46.26 Z  '/>	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(205, 155, 155)' points = '507.76,221.42 508.62,212.77 509.07,200.62 343.06,200.61 '/>
+	</g>
+	<path stroke='black'  d='M507.76,221.42 L508.62,212.77 L509.07,200.62 L343.06,200.61 L507.76,221.42 Z  '/></g>
+	</g>
+	<g id="gnuplot_plot_2" ><title>READY</title>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g transform="translate(732.26,270.12)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" >READY</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(245, 245, 245)' points = '740.65,270.72 783.21,270.72 783.21,261.72 740.65,261.72 '/>
+	</g>
+	<path stroke='black'  d='M740.65,270.72 L783.21,270.72 L783.21,261.72 L740.65,261.72 L740.65,270.72 Z  '/></g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+	</g>
+	<g id="gnuplot_plot_3" ><title>BLOCK</title>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g transform="translate(732.26,288.12)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" >BLOCK</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(210, 180, 140)' points = '740.65,288.72 783.21,288.72 783.21,279.72 740.65,279.72 '/>
+	</g>
+	<path stroke='black'  d='M740.65,288.72 L783.21,288.72 L783.21,279.72 L740.65,279.72 L740.65,288.72 Z  '/></g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+	</g>
+	<g id="gnuplot_plot_4" ><title>OTHER</title>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g transform="translate(732.26,306.12)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" >OTHER</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(238, 238, 209)' points = '740.65,306.72 783.21,306.72 783.21,297.72 740.65,297.72 '/>
+	</g>
+	<path stroke='black'  d='M740.65,306.72 L783.21,306.72 L783.21,297.72 L740.65,297.72 L740.65,306.72 Z  '/></g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+	</g>
+	<g id="gnuplot_plot_5" ><title>FAIL</title>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g transform="translate(732.26,324.12)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" >FAIL</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(255, 193, 193)' points = '740.65,324.72 783.21,324.72 783.21,315.72 740.65,315.72 '/>
+	</g>
+	<path stroke='black'  d='M740.65,324.72 L783.21,324.72 L783.21,315.72 L740.65,315.72 L740.65,324.72 Z  '/></g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+	</g>
+	<g id="gnuplot_plot_6" ><title>RUN</title>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g transform="translate(732.26,342.12)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" >RUN</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(176, 196, 222)' points = '740.65,342.72 783.21,342.72 783.21,333.72 740.65,333.72 '/>
+	</g>
+	<path stroke='black'  d='M740.65,342.72 L783.21,342.72 L783.21,333.72 L740.65,333.72 L740.65,342.72 Z  '/></g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+	</g>
+	<g id="gnuplot_plot_7" ><title>PASS</title>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g transform="translate(732.26,360.12)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" >PASS</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(176, 224, 230)' points = '740.65,360.72 783.21,360.72 783.21,351.72 740.65,351.72 '/>
+	</g>
+	<path stroke='black'  d='M740.65,360.72 L783.21,360.72 L783.21,351.72 L740.65,351.72 L740.65,360.72 Z  '/></g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+	</g>
+	<g id="gnuplot_plot_8" ><title>REJECT</title>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g transform="translate(732.26,378.12)" stroke="none" fill="black" font-family="Arial" font-size="12.00"  text-anchor="end">
+		<text><tspan font-family="Arial" >REJECT</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g stroke='none' shape-rendering='crispEdges'>
+		<polygon fill = 'rgb(205, 155, 155)' points = '740.65,378.72 783.21,378.72 783.21,369.72 740.65,369.72 '/>
+	</g>
+	<path stroke='black'  d='M740.65,378.72 L783.21,378.72 L783.21,369.72 L740.65,369.72 L740.65,378.72 Z  '/></g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+	</g>
+	<g id="gnuplot_plot_9"  fill="none"><title>gnuplot_plot_9</title>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g transform="translate(457.20,182.74)" stroke="none" fill="rgb(0,0,0)" font-family="Arial" font-size="12.00"  text-anchor="middle">
+		<text><tspan font-family="Arial" >6</tspan></text>
+	</g>
+	<g transform="translate(446.59,151.76)" stroke="none" fill="rgb(0,0,0)" font-family="Arial" font-size="12.00"  text-anchor="middle">
+		<text><tspan font-family="Arial" >3</tspan></text>
+	</g>
+	<g transform="translate(422.60,119.81)" stroke="none" fill="rgb(0,0,0)" font-family="Arial" font-size="12.00"  text-anchor="middle">
+		<text><tspan font-family="Arial" >8</tspan></text>
+	</g>
+	<g transform="translate(392.53,99.37)" stroke="none" fill="rgb(0,0,0)" font-family="Arial" font-size="12.00"  text-anchor="middle">
+		<text><tspan font-family="Arial" >2</tspan></text>
+	</g>
+	<g transform="translate(243.03,263.67)" stroke="none" fill="rgb(0,0,0)" font-family="Arial" font-size="12.00"  text-anchor="middle">
+		<text><tspan font-family="Arial" >79</tspan></text>
+	</g>
+	<g transform="translate(459.03,211.81)" stroke="none" fill="rgb(0,0,0)" font-family="Arial" font-size="12.00"  text-anchor="middle">
+		<text><tspan font-family="Arial" >2</tspan></text>
+	</g>
+</g>
+	</g>
+<g fill="none" color="#FFFFFF" stroke="rgb(  0,   0,   0)" stroke-width="2.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="2.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+</g>
+</svg>
+
 <p>　以下の設定変数が関与しています。</p>
 <table align='center'>
 <tr><th>設定変数</th><th>説明</th></tr>
@@ -641,30 +1233,33 @@ $
 <h2><a name='7zBGcRx06tJ'></a>6 起動オプション</h2>
 <h3><a name='6RK38KzDT9g'></a>6.1 --addcase オプション</h3>
 <p>　カレントディレクトリにテストケースを追加します。個数を指定することも可能です。</p>
-<pre>
- probo --addcase [COUNT]
+<pre style="font-size: 13;">
+ probo --addcase [-t TIMESTAMP] [COUNT]
 </pre>
+<ul>
+<li><code>-t</code> オプションでタイムスタンプを明示的に指定可能（省略した場合はシステム日時）</li>
+</ul>
 <h3><a name='aqrF7Ohm9qI'></a>6.2 --addgrp オプション</h3>
 <p>　指定した名前でグループを作成します。複数のグループを一度に指定できます。</p>
-<pre>
+<pre style="font-size: 13;">
  probo --addgrp GROUP...
 </pre>
 <p>　<code>.group.readme.template</code> ファイルが存在すると、その内容を使ってグループディレクトリの配下に <code>README.md</code> ファイルを作成します。このとき、 <code>.group.readme.template</code> 内部の文字列 <code>%GROUP%</code> はグループ名に置き換えられます。</p>
 <h3><a name='kO1Toy1HeKM'></a>6.3 --edit オプション</h3>
 <p>　カレントディレクトリにある指定した run file または case file をエディタで開きます。</p>
-<pre>
+<pre style="font-size: 13;">
  probo --edit [-c] TEST
 </pre>
 <p>　<code>TEST</code> が４桁以下の数字列だった場合、 <code>-c</code> の有無に従って run file 名または case file 名に補完されます。つまり、 <code>--edit 12</code> は <code>--edit ./0012.testrun.md</code> と同じであり、 <code>--edit -c 8</code> は <code>--edit ./0008.testcase.md</code> と同じです。</p>
 <p>　エディタの指定は <a class='autolink' href='#0XW1Xqn36Zs'>PROBO_EDITOR</a> 変数に従います。</p>
 <h3><a name='4saVmSQErTb'></a>6.4 --help オプション</h3>
 <p>　標準出力に command usage を出力します。</p>
-<pre>
+<pre style="font-size: 13;">
  probo --help
 </pre>
 <h3><a name='c09k6WLIoEN'></a>6.5 --init オプション</h3>
 <p>　カレントディレクトリを probo のテスト環境として初期化します。</p>
-<pre>
+<pre style="font-size: 13;">
  probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE [CASE_PER_DAY]]]
 </pre>
 <p>　probo <a class='autolink' href='#c09k6WLIoEN'>--init</a> は、以下のことを行ないます。</p>
@@ -695,7 +1290,7 @@ $
 </ul>
 <h3><a name='fy8CiK2yYNr'></a>6.6 --log オプション</h3>
 <p>　指定された run file のログを出力します。</p>
-<pre>
+<pre style="font-size: 13;">
  probo --log RUNFILE...
 </pre>
 <ul>
@@ -704,23 +1299,23 @@ $
 </ul>
 <h3><a name='ibqo8Q1548Y'></a>6.7 --ls オプション</h3>
 <p>　カレントディレクトリの run file の現在のステータスを一覧します。カレントディレクトリに run file が存在しない場合、グループディレクトリ群のひとつ上のディレクトリにいるものとして、配下グループ全体の run file のステータスを一覧します。</p>
-<pre>
+<pre style="font-size: 13;">
  probo --ls
 </pre>
 <h3><a name='iLGxvGNVVb2'></a>6.8 --report オプション</h3>
 <p>　レポートを生成します。</p>
-<pre>
+<pre style="font-size: 13;">
  probo --report [-q] [-c CONF_FILE]
 </pre>
 <h3><a name='feNsJ4OPnXg'></a>6.9 --run オプション</h3>
 <p>　テストケースを実行します。</p>
-<pre>
+<pre style="font-size: 13;">
  probo --run [NUMBER...]
 </pre>
 <p>　特定のテストケースを実行したい場合、 <code>probo --run 4 5 8 9 10</code> のようにテスト ID を明示的にパラメータとして指定してください。この場合、カレントディレクトリにある指定されたテスト ID のテストケースを実行します。</p>
 <p>　<code>probo --run</code> のようにパラメータ指定なしの場合、カレントディレクトリにあるすべてのテストケースが対象となります。カレントディレクトリにテストケースが存在しない場合、配下ディレクトリがグループであるとみなしてすべてのグループを処理します。</p>
 <p>　いずれの場合でも、この機能で実行されるのは READY 状態のテストケースだけです。また、この機能での実行には case file に実行スクリプトの埋め込みをしておく必要があります。以下に例を示します。</p>
-<pre>
+<pre style="font-size: 13;">
 &lt;!-- probo test script : begin --&gt;
 ```sh
 # test script here...
@@ -730,7 +1325,7 @@ $
 <p>　<code># test script here...</code> の部分にテストを実行するスクリプトを記述してください。このスクリプトは成功すれば exit 0 で、失敗の場合は exit 1 で終了するようにしてください。 <code>probo</code> はその値で成否を判定して <a class='autolink' href='#2D7rbHQtrFj'>--track</a> 相当の処理を実行して run file に記録します。また、スクリプトが標準出力に書き出した内容も run file に転記されます。</p>
 <h3><a name='2D7rbHQtrFj'></a>6.10 --track オプション</h3>
 <p>　実行時点のタイムスタンプで、指定されたファイルにステータスを記録します。</p>
-<pre>
+<pre style="font-size: 13;">
  probo --track [-f] [-e] [-d DESCRIPTION] [-t TIMESTAMP] STATUS RUNFILE...
  STATUS := READY|BLOCK|PASS|FAIL|RUN|REJECT
 </pre>
@@ -747,65 +1342,65 @@ $
 <h3><a name='7IfXyHeT29Z'></a>7.1 conf ファイルの設定項目</h3>
 <h4><a name='3eKuVc17H8q'></a>7.1.1 PROBO_BDDAT_FILENAME</h4>
 <p>　Burndown chart のデータを生成する場合に、その出力ファイル名を以下の要領で指定します。生成を行なわない場合は設定自体を省略するか、空文字列を設定してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_BDDAT_FILENAME="burndown.txt"
 </pre>
 <p>　これは通常、gnuplot が使用できない環境において、表計算ソフトなどを使用して Burndown chart を作成する場合に使用します。出力形式は <a class='autolink' href='#1AeGc59P6uD'>PROBO_REPORT_TYPE</a> の値に関わらず、常にタブ区切りテキストになります。</p>
 <h4><a name='9A99cIbdWn7'></a>7.1.2 PROBO_BDIMG_BGCLR</h4>
 <p>　gnuplot を使用して Burndown chart を生成する場合に、背景色として使用する色を指定します。省略した場合のデフォルトは <code>"white"</code> です。</p>
 <p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_BDIMG_BGCLR="#F0F8FF"
 </pre>
 <h4><a name='cKVexCSejOY'></a>7.1.3 PROBO_BDIMG_CLR_FAILBOX</h4>
 <p>　gnuplot を使用して Burndown chart を生成する場合に、Fail 棒グラフの描画に使用する色を指定します。省略した場合のデフォルトは <code>"red"</code> です。</p>
 <p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_BDIMG_CLR_FAILBOX="brown"
 </pre>
 <h4><a name='iyu30TWG4ct'></a>7.1.4 PROBO_BDIMG_CLR_GUIDE</h4>
 <p>　gnuplot を使用して Burndown chart を生成する場合に、基準線の描画に使用する色を指定します。省略した場合のデフォルトは <code>"gray"</code> です。</p>
 <p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_BDIMG_CLR_GUIDE="light-gray"
 </pre>
 <h4><a name='0iebzJNNFix'></a>7.1.5 PROBO_BDIMG_CLR_PASSLINE</h4>
 <p>　gnuplot を使用して Burndown chart を生成する場合に、Pass 折線グラフの描画に使用する色を指定します。省略した場合のデフォルトは <code>"blue"</code> です。</p>
 <p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_BDIMG_CLR_PASSLINE="navy"
 </pre>
 <h4><a name='k8UKuspsWDk'></a>7.1.6 PROBO_BDIMG_FILENAME</h4>
 <p>　gnuplot を使用して Burndown chart を生成する場合に、その出力ファイル名を以下の要領で指定します。生成を行なわない場合は設定自体を省略するか、空文字列を設定してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_BDIMG_FILENAME="burndown.png"
 </pre>
 <p>　出力する画像形式はファイル名の拡張子から判断します。probo が認識するのは <code>gif jpeg jpg png svg</code> のいずれかです。</p>
 <h4><a name='9s2REPu6fCL'></a>7.1.7 PROBO_BDIMG_HEIGHT</h4>
 <p>　gnuplot を使用して butn-down chart を生成する場合に、生成画像の高さをピクセル単位で指定します。省略した場合のデフォルト値は 400 です。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_BDIMG_HEIGHT=500
 </pre>
 <h4><a name='bn87bikg4Vt'></a>7.1.8 PROBO_BDIMG_WIDTH</h4>
 <p>　gnuplot を使用して butn-down chart を生成する場合に、生成画像の幅をピクセル単位で指定します。省略した場合のデフォルト値は 800 です。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_BDIMG_WIDTH=700
 </pre>
 <h4><a name='brnwLk3TtYO'></a>7.1.9 PROBO_BD_ENDDAY</h4>
 <p>　Burndown chart を生成する場合に、X 軸の終了日付を <code>YYYY-MM-DD</code> 形式で指定します。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_BD_ENDDAY="2026-07-31"
 </pre>
 <p>　<a class='autolink' href='#6wawBRhl1ZX'>PROBO_BD_SCHEDULE</a> が指定されている場合にはそちらが優先されるため、この設定値は使用されません。<a class='autolink' href='#6wawBRhl1ZX'>PROBO_BD_SCHEDULE</a> が省略された場合、この設定は必ず指定する必要があり、これを省略した場合はエラーになります。</p>
 <h4><a name='jwVotybPXTo'></a>7.1.10 PROBO_BD_EXEC_PER_DAY</h4>
 <p>　Burndown chart を生成する場合に、一日あたりのテスト消化予定数を数値で指定します。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_BD_EXEC_PER_DAY=10
 </pre>
 <p>　<a class='autolink' href='#6wawBRhl1ZX'>PROBO_BD_SCHEDULE</a> が指定されている場合にはそちらが優先されるため、この設定値は使用されません。<a class='autolink' href='#6wawBRhl1ZX'>PROBO_BD_SCHEDULE</a> が省略された場合、この設定は必ず指定する必要があり、これを省略した場合はエラーになります。</p>
 <h4><a name='6wawBRhl1ZX'></a>7.1.11 PROBO_BD_SCHEDULE</h4>
 <p>　Burndown chart を生成する場合に、テスト開始日から終了日までの日毎のテスト消化予定数を以下の要領で指定します。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_BD_SCHEDULE="
 2026-07-01,5
 2026-07-02,5
@@ -826,7 +1421,7 @@ PROBO_BD_SCHEDULE="
 </ul>
 <h4><a name='8vPNaDNlb6N'></a>7.1.12 PROBO_BD_STARTDAY</h4>
 <p>　Burndown chart を生成する場合に、X 軸の開始日付を <code>YYYY-MM-DD</code> 形式で指定します。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_BD_STARTDAY="2026-07-01"
 </pre>
 <p>　<a class='autolink' href='#6wawBRhl1ZX'>PROBO_BD_SCHEDULE</a> が指定されている場合にはそちらが優先されるため、この設定値は使用されません。<a class='autolink' href='#6wawBRhl1ZX'>PROBO_BD_SCHEDULE</a> が省略された場合、この設定は必ず指定する必要があり、これを省略した場合はエラーになります。</p>
@@ -856,7 +1451,7 @@ PROBO_BD_STARTDAY="2026-07-01"
 </ul>
 <h4><a name='5jGHa99Ylxb'></a>7.1.19 PROBO_GRP_SUMIMG_FILENAME</h4>
 <p>　gnuplot を使用してグループ別の summary graph を生成する場合に、その出力ファイル名を以下の要領で指定します。生成を行なわない場合は設定自体を省略するか、空文字列を設定してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_GRU_SUMIMG_FILENAME="summary.png"
 </pre>
 <p>　グループ別の summary graph は、各グループのディレクトリ直下に作成されます。出力する画像形式はファイル名の拡張子から判断します。probo が認識するのは <code>gif jpeg jpg png svg</code> のいずれかです。</p>
@@ -870,7 +1465,7 @@ PROBO_GRU_SUMIMG_FILENAME="summary.png"
 </ul>
 <h4><a name='1AeGc59P6uD'></a>7.1.22 PROBO_REPORT_TYPE</h4>
 <p>　<a class='autolink' href='#iLGxvGNVVb2'>--report</a> で生成するレポートの種類を以下の要領で指定します。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_REPORT_TYPE="markdown"
 </pre>
 <p>　現在サポートされているレポートの種類は以下になります。</p>
@@ -899,65 +1494,65 @@ PROBO_REPORT_TYPE="markdown"
 <h4><a name='7mSWAYWJpqL'></a>7.1.25 PROBO_SUMIMG_BGCLR</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、背景色として使用する色を指定します。省略した場合のデフォルトは <code>"white"</code> です。</p>
 <p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_SUMIMG_BGCLR="#F0F8FF"
 </pre>
 <h4><a name='44W7otCg1vr'></a>7.1.26 PROBO_SUMIMG_CLR_BLOCK</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、BLOCK 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"purple"</code> です。</p>
 <p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_SUMIMG_CLR_BLOCK="#D2B48C"
 </pre>
 <h4><a name='5zGWX5XIBRZ'></a>7.1.27 PROBO_SUMIMG_CLR_FAIL</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、FAIL 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"pink"</code> です。</p>
 <p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_SUMIMG_CLR_FAIL="#FFC1C1"
 </pre>
 <h4><a name='0RrTNbuRFxh'></a>7.1.28 PROBO_SUMIMG_CLR_OTHER</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、OTHER 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"#98FB98"</code> です。</p>
 <p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_SUMIMG_CLR_OTHER="#EEEED1"
 </pre>
 <h4><a name='kxCt5dVra62'></a>7.1.29 PROBO_SUMIMG_CLR_PASS</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、PASS 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"cyan"</code> です。</p>
 <p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_SUMIMG_CLR_PASS="#B0E0E6"
 </pre>
 <h4><a name='aDCj6nYSVlN'></a>7.1.30 PROBO_SUMIMG_CLR_READY</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、READY 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"gray"</code> です。</p>
 <p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_SUMIMG_CLR_READY="#F5F5F5"
 </pre>
 <h4><a name='e8z2cG3B3Gw'></a>7.1.31 PROBO_SUMIMG_CLR_REJECT</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、REJECT 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"#CD9B9B"</code> です。</p>
 <p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_SUMIMG_CLR_REJECT="#CD9B9B"
 </pre>
 <h4><a name='lsqeSiSrRyv'></a>7.1.32 PROBO_SUMIMG_CLR_RUN</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、RUN 部分の描画に使用する色を指定します。省略した場合のデフォルトは <code>"blue"</code> です。</p>
 <p>　この設定を変更する場合、以下の要領で色名を指定してください。ここで指定する値は gnuplot が認識する色名または <code>#RRGGBB</code> 形式の色コードでなければなりません。詳細は gnuplot のマニュアルを参照してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_SUMIMG_CLR_RUN="#B0C4DE"
 </pre>
 <h4><a name='5RDs28HXOMm'></a>7.1.33 PROBO_SUMIMG_FILENAME</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、その出力ファイル名を以下の要領で指定します。生成を行なわない場合は設定自体を省略するか、空文字列を設定してください。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_SUMIMG_FILENAME="summary.png"
 </pre>
 <p>　出力する画像形式はファイル名の拡張子から判断します。probo が認識するのは <code>gif jpeg jpg png svg</code> のいずれかです。</p>
 <h4><a name='boKdBFjMP2k'></a>7.1.34 PROBO_SUMIMG_HEIGHT</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、生成画像の高さをピクセル単位で指定します。省略した場合のデフォルト値は 400 です。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_SUMIMG_HEIGHT=500
 </pre>
 <h4><a name='gkr4OjhwGxf'></a>7.1.35 PROBO_SUMIMG_WIDTH</h4>
 <p>　gnuplot を使用して summary graph を生成する場合に、生成画像の幅をピクセル単位で指定します。省略した場合のデフォルト値は 500 です。</p>
-<pre>
+<pre style="font-size: 13;">
 PROBO_SUMIMG_WIDTH=700
 </pre>
 <p>　　</p>
@@ -965,11 +1560,11 @@ PROBO_SUMIMG_WIDTH=700
 <h4><a name='0XW1Xqn36Zs'></a>7.2.1 PROBO_EDITOR</h4>
 <p>　probo からエディタを起動する時のコマンドを格納する変数です。<a class='autolink' href='#kO1Toy1HeKM'>--edit</a> および <a class='autolink' href='#2D7rbHQtrFj'>--track</a> -e から使用されます。これらは conf ファイルに依存しない仕様のため、 <code>.bashrc</code> などで環境変数として設定することが想定されています。</p>
 <p>　例を示します。エディタとして <code>nano</code> を使用する場合は以下のようになります。<code>~1</code> という部分がファイルで置き換えられます。</p>
-<pre>
+<pre style="font-size: 13;">
 export PROBO_EDITOR="nano ~1"
 </pre>
 <p>　Emacs 内部の shell-mode からシェルをブロックせずに使いたい場合は以下のようになるでしょう。</p>
-<pre>
+<pre style="font-size: 13;">
 export PROBO_EDITOR="emacsclient ~1 &amp;"
 </pre>
 <p>　この変数が設定されていない場合、probo はデフォルト値として <code>"vi ~1"</code> を使用します。</p>
