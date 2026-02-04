@@ -627,7 +627,7 @@ function probo-track-runfile {
         if [ ! -e "$RUN_FILE" ]; then
             echo "ERROR : runfile $RUN_FILE is not found."
         else
-            probo-track-runfile-impl "$RUN_FILE" "${TIMESTAMP}" "${STATUS}" "${DESCRIPTION}" 1
+            probo-track-runfile-impl "$RUN_FILE" "${TIMESTAMP}" "${STATUS}" "${DESCRIPTION}" $EDITFILE
             FILE_COUNT=$((FILE_COUNT + 1))
             LAST_FILENAME="$RUN_FILE"
         fi

@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [53/57]
+* tasks [54/57]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -217,7 +217,7 @@ cat: 50541.list.tmp: そのようなファイルやディレクトリはあり�
 	* probo --addcase [-t TIMESTAMP] [COUNT]
 
 ** DONE --addcase に -q オプションを追加する
-** TODO --track で -e を指定した場合のみ <!-- edit here --> 的なコメントを入れる
+** DONE --track で <!-- edit here --> 的なコメントを入れるのは -e を指定した場合のみにする
 ** TODO --report でグループ配下に必要な README.md がなかった場合の挙動を確認し、修正する
 ** TODO --report で生成するレポートの「報告日」を指定可能にする
 
