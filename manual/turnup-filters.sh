@@ -40,7 +40,7 @@ function filter-kaavio {
     kaavio ${IN} > ./${CACHE}/${OUT}.${SUFFIX}
 }
 function filter-plantuml {
-    local JAR=C:\\Users\\JXAOY32C\\bin\\plantuml-1.2025.4.jar
+    local JAR=/usr/loca/bin/plantuml-1.2025.4.jar
     local OPT=-Dfile.encoding=UTF-8
     local CFG=
     #local CFG=-config uml.theme

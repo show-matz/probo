@@ -1143,13 +1143,15 @@ function probo-list-status {
 
 function probo-start-edit-impl {
     local TARGET="$1"
-    local EDITCMD=""
-    if [ -z "$PROBO_EDITOR" ]; then
-        EDITCMD="vi ~1"
-    else
-        EDITCMD="$PROBO_EDITOR"
+    local EDITCMD="$EDITOR"
+    local ASYNC=""
+    if [ -z "$EDITCMD" ]; then
+        EDITCMD="vi"
     fi
-    eval "${EDITCMD/~1/$TARGET}"  2> /dev/null
+    if [ "$PROBO_EDIT_ASYNC" == "1" ]; then
+        ASYNC=" &"
+    fi
+    eval "${EDITCMD} \"$TARGET\"${ASYNC}"  2> /dev/null
 }
 
 function probo-start-edit {

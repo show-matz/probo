@@ -21,10 +21,12 @@
 
 　この文書は、 **probo** のマニュアル文書です。
 
-## Table of contents
-
+<!-- anchor: toc-link-target -->
+```raw
+<h2>Table of contents</h2>
+```
 <!-- embed:toc-x 2 4 -->
-<!-- toc-link: top 'Table of contents' -->
+<!-- toc-link: top 'A#toc-link-target' -->
 
 ${BLANK_PARAGRAPH}
 
@@ -59,13 +61,19 @@ alias probo='/PATH/TO/probo'
 ${BLANK_PARAGRAPH}
 
 　そしてこれは必須ではありませんが、probo からエディタを起動してファイルを
-編集する機能を利用したい場合、シェル変数 `PROBO_EDITOR` を設定しておくと良い
-でしょう。以下の要領で指定してください（ `~1` という部分が編集ファイル名で
-置き換えられます）。
+編集する機能を利用したい場合、 `EDITOR` 環境変数が設定されていることを確認
+しておいてください。probo は `EDITOR` 環境変数が空の場合、 `vi` を使用します。
+また、環境によってはエディタを非同期で実行したい
+{{fn:作者は Emacs 上の shell mode から probo を使用し、ファイル編集も Emacs で行なうため非同期編集が \
+好都合です。}}
+かもしれません。そのような場合は `PROBO_EDIT_ASYNC` に 1 を設定しましょう。
 
 ```
-export PROBO_EDITOR="vim ~1"
+export EDITOR="emacsclient"
+export PROBO_EDIT_ASYNC=1
 ```
+
+　これらは後述する設定ファイルではなく、 `.bashrc` などに記述することになります。
 
 ### --init でテストディレクトリを初期化
 
@@ -82,10 +90,11 @@ $
 
 　上記では、 `probo --init` のパラメータとして `gitlab` を指定しています。これは
 初期化の方法を指定するもので、ここでは GitLab 向けの設定で初期化することを指示して
-います。詳細は --init オプションの項を参照してください。
+います。詳細は [--init オプションの説明](#--init オプション)を参照してください。
 
 　`probo --init` の実行によって、実行ディレクトリ配下には以下のようなファイルが
-生成されます。これらのファイルは今は気にする必要はありません（後で説明します）。
+生成されます。これらのファイルは必要に応じて修正することになりますが、今は気に
+する必要はありません（たぶん後で説明します）。
 
 ```
 $ ls -la
@@ -122,9 +131,10 @@ drwxrwxr-x 2 user42 user42 4096  2月  2 17:37 group2
 $ 
 ```
 
-　`mkdir` でいいじゃんと思われるかもしれませんが、設定によっては作成した
-ディレクトリ配下に必要なファイルが作成される場合があります。なので、
-グループは `probo --addgrp` で作成するようにしましょう。
+　`mkdir` でいいじゃんと思われるかもしれませんが、設定によってはグループ
+ディレクトリの配下に必要なファイルが作成される場合があります。なので、グループ
+は [--addgrp オプション](#--addgrp オプション)を使って作成するようにしましょう
+{{fn:もちろん、わかった上で `mkdir` を使う分にはご自由に。}}。
 
 ### --addcase でテストケースを作成
 
@@ -166,28 +176,35 @@ $ ls -l 0001*
 $ 
 ```
 
-　４桁の番号が **テスト ID** で、それに `.testcase.md` が続くファイルが
-**ケースファイル** 、 `.testrun.md` が続くファイルが **ランファイル** です。
-ケースファイルはテストの仕様を記述するもので、ランファイルはテストの実施結果
-を記録するものです。
+　４桁の番号が **テスト ID** で、それに `.testcase.md` が続くのが
+**ケースファイル** 、 `.testrun.md` が続くのが **ランファイル** です。
+ケースファイルはテストの仕様を記述するもので、ランファイルはテストの
+実施結果を記録するものです。
+
+　一度にテストケースを作成するのでなく、複数回にわけて `probo --addcase` する
+ことももちろん可能です。その場合、既存のテストケースの数などを考慮して新しく
+テスト ID を付与してくれます。詳細は [--addcase オプション](#--addcase オプション)の
+説明を参照してください。
 
 ### --edit で編集
 
 　前のステップで作成したテストケースは（当然ですが）実質的に空っぽです。テストを
 するためには、テストの仕様を記述しなければなりません。probo では、テストの仕様は
-ケースファイルに記述します。これはテキストファイルなので好きな方法で編集すること
-ができますが、[最初のステップ](#インストールと設定)で変数 PROBO_EDITOR を設定して
-いれば、 `probo --edit` コマンドで編集を開始することができます。以下では、 `group1` で
-番号 1 のテストケースの編集を開始しています。
+ケースファイルに記述します。これは markdown 形式のテキストファイルなので好きな
+方法で編集することができますが、[最初のステップ](#インストールと設定)で変数 
+PROBO_EDITOR を設定していれば、 `probo --edit` コマンドで編集を開始することが
+できます。以下では、 `group1` でテスト ID が 1 のテストケースの編集を開始して
+います。
 
 ```
 $ cd group1
 $ probo --edit -c 1
 ```
 
-　`probo --edit` は通常ランファイルの編集をします。ここでは `-c` オプションを指定
-することでケースファイルの編集を指示しています。開いたファイルの内容は以下のような
-ものでした。これは --init で作成された .case.template ファイルからきています。
+　--edit は通常ランファイルの編集をします。ここでは `-c` オプションを指定する
+ことでケースファイルの編集を指示しています。開いたファイルの内容は以下のような
+ものでした。これは[初期化時](#--init でテストディレクトリを初期化)に生成された 
+.case.template ファイルを元に作成されています。
 
 ```
 ## group1/0001
@@ -199,13 +216,14 @@ $ probo --edit -c 1
 ```
 
 　このファイルの内容は （今は）あまり重要ではないので、テスト仕様を記述したことに
-してファイルを閉じてしまいましょう。
+してファイルを閉じてしまいましょう（もちろん何か適当な編集をしてもかまいません）。
 
 ### --track でステータスを変更
 
 　前のステップで `group1` の最初のテストの仕様を記述したので、テストケースとして
-実行可能になりました。そこで、 `probo --track` コマンドでステータスを変更しましょう。
-以下のように、ステータスとして `ready` を、テストID として 1 を指定して実行します。
+実行可能になりました。そこで、 `probo --track` コマンドでステータスを「テスト実施
+可能」に変更しましょう。以下のように、ステータスとして `ready` を、テストID として 
+1 を指定して実行します。
 
 ```
 $ probo --track ready 1
@@ -213,8 +231,52 @@ $ probo --track ready 1
 $ 
 ```
 
-　これでランファイルが変更されました。続いて、テストのステータスを確認する方法を見て
-いきましょう。
+　これでランファイルが変更され、このテストのステータスが `RUN` から `READY` に
+なりました。この時点で、 `group1/0001.testrun.md` の内容は以下のようになります。
+ステータスの変更がタイムスタンプと共に記録されているのがわかると思います。
+
+```
+## 2026-02-04-15-19.NEW
+
+## 2026-02-04-15-59.READY
+
+```
+
+　今後、このテストを実際に実施する時には `RUN` に、テストが正常終了すれば `PASS` に、
+といった具合で記録がつけられていくことになります。以下に、テストの基本的なステータス
+遷移を示します。
+
+```kaavio
+(diagram (620 260)
+; (grid)
+  (with-theme (:uml-statemachine-default)
+    (with-options (:font '(:width-spice 0.8))
+      (uml-state-begin (xy+ canvas.tl 20 40) :id :start)
+      (uml-state (x+ $1.cc  140) "new"    :id :new   :width 80)
+      (uml-state (x+ $1.cc  170) "ready"  :id :ready :width 80)
+      (uml-state (y+ $1.cc   90) "run"    :id :run   :width 80)
+      (uml-state (y+ $1.cc   90) "pass"   :id :pass  :width 80)
+      (uml-state (x+ $2.cc  170) "fail"   :id :fail  :width 80)
+      (uml-state (y+ $1.cc  -90) "block"  :id :block :width 80)
+      (uml-state-end   (x+ $3.cc 160)    :id :end)
+      (uml-transition :start :new   :spec "新規作成")
+      (uml-transition :new   :ready :spec "仕様記述")
+      (uml-transition :ready :run   :spec '(:trigger "テスト開始" :offset (15 0)))
+      (uml-transition :run   :pass  :spec '(:trigger "成功" :offset (10 0)))
+      (uml-transition :run   :fail  :spec "失敗")
+      (uml-transition :fail  :block :spec '(:trigger "調査・修正開始" :offset (80 0)))
+      (uml-transition :block :ready :spec '(:trigger "作業完了"      :offset (5 -24)))
+      (uml-transition :pass  :end))))
+```
+Figure. テストの基本的なステータス遷移
+
+${BLANK_PARAGRAPH}
+
+　この --track はテストのステータス変更で頻繁に使用することになるコマンドです。
+ステータス変更と同時にエディタで開くなど指定も可能です。詳細は 
+[--track オプションの説明](#--track オプション)を参照してください。
+
+　続いて、テストのステータスを確認する方法を見ていきましょう。
 
 ### --ls で一覧表示
 
@@ -263,19 +325,49 @@ $
 
 ### --log でステータス変更履歴を表示
 
-　テストのステータスを参照する別の方法として `probo --log` があります。これは、
-指定したテストのステータス変化の履歴を見るものです。
+　テストのステータスを参照する別の方法として `probo --log` があります。
+これは、指定したテストのステータス変化の履歴を見るものです。以下では、 
+`group1` のテスト ID 1 の履歴を参照しています。
 
 ```
 $ cd group1
 $ probo --log 1
-0001	2026-02-04-15-19	NEW	
-0001	2026-02-04-15-59	READY	
+0001	2026/02/04 15:19	NEW	
+0001	2026/02/04 15:59	READY	
 $
 ```
 
-
 ### --report でレポートを作成
+
+　ここまでで、テスト環境を初期化し、グループやテストを追加し、ステータスを変更
+できるようになりました。これでテストを進めていくことができると思います。
+
+```
+$ probo --report
+preparing status list...
+preparing burndown data...
+generating status data...
+generating group status data...
+generating summary data...
+generating burndown image...
+generating summary image...
+generating group summary image...
+$ 
+```
+
+```
+$ ls -l
+合計 72
+-rw-rw-r-- 1 user42 user42  6270  2月  5 11:04 README.md
+-rw-rw-r-- 1 user42 user42 26074  2月  5 11:04 burndown.svg
+drwxrwxr-x 2 user42 user42  4096  2月  5 11:04 group1
+drwxrwxr-x 2 user42 user42  4096  2月  5 11:04 group2
+-rw-rw-r-- 1 user42 user42  1070  2月  5 11:04 probo.conf
+-rw-rw-r-- 1 user42 user42 15471  2月  5 11:04 summary.svg
+$ 
+```
+
+
 ### --run でテストの自動実行
 
 ## 構成
@@ -340,32 +432,6 @@ $
 * `FAIL   :` 実施し、Fail
 * `PASS   :` 実施し、Pass
 * `REJECT :` 実施対象外に変更
-
-${BLANK_PARAGRAPH}
-
-```kaavio
-(diagram (620 260)
-; (grid)
-  (with-theme (:uml-statemachine-default)
-    (with-options (:font '(:width-spice 0.8))
-      (uml-state-begin (xy+ canvas.tl 20 40) :id :start)
-      (uml-state (x+ $1.cc  140) "new"    :id :new   :width 80)
-      (uml-state (x+ $1.cc  170) "ready"  :id :ready :width 80)
-      (uml-state (y+ $1.cc   90) "run"    :id :run   :width 80)
-      (uml-state (y+ $1.cc   90) "pass"   :id :pass  :width 80)
-      (uml-state (x+ $2.cc  170) "fail"   :id :fail  :width 80)
-      (uml-state (y+ $1.cc  -90) "block"  :id :block :width 80)
-      (uml-state-end   (x+ $3.cc 160)    :id :end)
-      (uml-transition :start :new   :spec "新規作成")
-      (uml-transition :new   :ready :spec "仕様記述")
-      (uml-transition :ready :run   :spec '(:trigger "テスト開始" :offset (15 0)))
-      (uml-transition :run   :pass  :spec '(:trigger "成功" :offset (10 0)))
-      (uml-transition :run   :fail  :spec "失敗")
-      (uml-transition :fail  :block :spec '(:trigger "調査・修正開始" :offset (80 0)))
-      (uml-transition :block :ready :spec '(:trigger "作業完了"      :offset (5 -24)))
-      (uml-transition :pass  :end))))
-```
-Figure. テストの基本的なステータス遷移
 
 ${BLANK_PARAGRAPH}
 
@@ -443,25 +509,27 @@ ${BLANK_PARAGRAPH}
  probo --addgrp GROUP...
 ```
 
-　`.group.readme.template` ファイルが存在すると、その内容を使ってグループディレ
-クトリの配下に `README.md` ファイルを作成します。このとき、 `.group.readme.template` 
+　.group.readme.template ファイルが存在すると、その内容を使ってグループディレ
+クトリの配下に `README.md` ファイルを作成します。このとき、.group.readme.template 
 内部の文字列 `%GROUP%` はグループ名に置き換えられます。
 
 ### --edit オプション
 <!-- autolink: [--edit](#--edit オプション) -->
 
 　カレントディレクトリにある指定した run file または case file をエディタで
-開きます。
+開きます。エディタの指定は PROBO_EDITOR 変数に従います。
 
 ```
- probo --edit [-c] TEST
+ probo --edit [-c] TARGET
 ```
 
-　`TEST` が４桁以下の数字列だった場合、 `-c` の有無に従って run file 名または 
+　`TARGET` が４桁以下の数字列だった場合、 `-c` の有無に従って run file 名または 
 case file 名に補完されます。つまり、 `--edit 12` は `--edit ./0012.testrun.md` と
 同じであり、 `--edit -c 8` は `--edit ./0008.testcase.md` と同じです。
 
-　エディタの指定は PROBO_EDITOR 変数に従います。
+　なお、 `TARGET` が上記の条件を満たさない場合、ファイル名を直接指定したものとして
+そのまま使用されます。つまり、ケースファイルでもランファイルでもないファイルの編集
+に使用することも可能です。
 
 ### --help オプション
 <!-- autolink: [--help](#--help オプション) -->
@@ -491,9 +559,9 @@ case file 名に補完されます。つまり、 `--edit 12` は `--edit ./0012
   `END_DATE` で指定します。省略した場合、開始日は現在日付に、終了日は開始日の
   １ヶ月後になります。また、Burndown chart が想定する「１日あたりのテストケース
   消化想定数」を `CASE_PER_DAY` で与えることができます。デフォルト値は 10 です。
-* `.case.template` ファイルを生成します。これは probo --addcase でテスト
+* .case.template ファイルを生成します。これは probo --addcase でテスト
   ケースファイルを作成する時のテンプレートとなるファイルです。
-* `REPORT_TYPE` が `gitlab` または `github` の場合に限り、 `group.readme.template` 
+* `REPORT_TYPE` が `gitlab` または `github` の場合に限り、 .group.readme.template 
   ファイルを生成します。これは probo --addgrp でグループを作成する際、
   配下の README.md 作成のテンプレートとなるファイルです。
 
@@ -1013,6 +1081,7 @@ export PROBO_EDITOR="emacsclient ~1 &"
 　この変数が設定されていない場合、probo はデフォルト値として `"vi ~1"` を使用します。
 
 ### .case.template ファイル
+<!-- autolink: [.case.template](#.case.template ファイル) -->
 
 * ${{TODO}{--addcase オプションで使用されるテストケースのテンプレートファイル}}
 * ${{TODO}{以下のプレースホルダが展開される}}
@@ -1020,6 +1089,7 @@ export PROBO_EDITOR="emacsclient ~1 &"
     * `%GROUP%` : グループ名に展開される
 
 ### .group.readme.template ファイル
+<!-- autolink: [.group.readme.template](#.group.readme.template ファイル) -->
 
 * ${{TODO}{--addgrp オプションで使用されるグループ README.md のテンプレートファイル}}
 * ${{TODO}{以下のプレースホルダが展開される}}
@@ -1040,6 +1110,15 @@ ${BLANK_PARAGRAPH}
 
 
 ${BLANK_PARAGRAPH}
+
+## 図表一覧
+<!-- embed:figure-list -->
+
+　　
+
+<!-- embed:table-list -->
+
+　　
 
 ## 索引
 

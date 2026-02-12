@@ -2,7 +2,7 @@
 # +STARTUP: showeverything
 #+STARTUP: content
 
-* tasks [55/58]
+* tasks [56/59]
 ** DONE conf file が存在しない場合のエラー処理を追加
 ** DONE probo.sh --track   でケースファイルに新規情報追加
 
@@ -219,7 +219,11 @@ cat: 50541.list.tmp: そのようなファイルやディレクトリはあり�
 ** DONE --addcase に -q オプションを追加する
 ** DONE --track で <!-- edit here --> 的なコメントを入れるのは -e を指定した場合のみにする
 ** DONE --log の出力におけるタイムスタンプが --ls と違って %Y-%m-%d-%H-%M 形式になっている
+** DONE --edit で EDITOR 環境変数を使用するように変更し、非同期編集のために PROBO_EDIT_ASYNC を新設する
 ** TODO --report でグループ配下に必要な README.md がなかった場合の挙動を確認し、修正する
+
+	* --addgrp せずに mkdir した場合に起きる事象なので塞ぎたい
+
 ** TODO --report で生成するレポートの「報告日」を指定可能にする
 
 	* 過去日でも未来日でも指定できるようにしたい（当日縛りからの奪却）
