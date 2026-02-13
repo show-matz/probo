@@ -382,7 +382,7 @@ body{font-size:16px;}
 </blockquote>
 </details>
 <li class='tocx'><a href='#b6CghwSHfuk'>6.3 .case.template ファイル</a></li>
-<li class='tocx'><a href='#3oevMyLJR3M'>6.4 .group.readme.template ファイル</a></li>
+<li class='tocx'><a href='#fgIHMAhw6nD'>6.4 .group.README.md.template ファイル</a></li>
 </blockquote>
 </details>
 <li class='tocx'><a href='#8tTIqHSNoTg'>7 既知の問題点</a></li>
@@ -423,7 +423,7 @@ $ ls -la
 drwxrwxr-x 2 user42 user42 4096  2月  2 17:29 .
 drwxrwxr-x 6 user42 user42 4096  2月  2 17:29 ..
 -rw-rw-r-- 1 user42 user42   69  2月  2 17:29 .case.template
--rw-rw-r-- 1 user42 user42  260  2月  2 17:29 .group.readme.template
+-rw-rw-r-- 1 user42 user42  260  2月  2 17:29 .group.README.md.template
 -rw-rw-r-- 1 user42 user42  348  2月  2 17:29 README.md
 -rw-rw-r-- 1 user42 user42 1071  2月  2 17:29 probo.conf
 $ 
@@ -1366,7 +1366,7 @@ $
 <pre style="font-size: 13;">
  probo --addgrp GROUP...
 </pre>
-<p>　<a class='autolink' href='#3oevMyLJR3M'>.group.readme.template</a> ファイルが存在すると、その内容を使ってグループディレクトリの配下に <code>README.md</code> ファイルを作成します。このとき、<a class='autolink' href='#3oevMyLJR3M'>.group.readme.template</a> 内部の文字列 <code>%GROUP%</code> はグループ名に置き換えられます。</p>
+<p>　.group.*.template にマッチするファイルが存在すると、それをテンプレートとしてグループディレクトリの配下にファイルを作成します。ファイル名は <code>.group.</code> と <code>.template</code> に挟まれた部分文字列が使用されます。また、ファイルの内容のうち、字列 <code>%GROUP%</code> はグループ名に置き換えられます。</p>
 <h3><a name='kO1Toy1HeKM'></a>5.3 --edit オプション</h3>
 <p>　カレントディレクトリにある指定した run file または case file をエディタで開きます。エディタの指定は EDITOR 環境変数に従います（ <a class='autolink' href='#9IsuHJYHkMV'>PROBO_EDIT_ASYNC</a> 設定も参照してください ）。</p>
 <pre style="font-size: 13;">
@@ -1404,7 +1404,7 @@ $
 ケースファイルを作成する時のテンプレートとなるファイルです。
 </p>
 </li>
-<li><p><code>REPORT_TYPE</code> が <code>gitlab</code> または <code>github</code> の場合に限り、 <a class='autolink' href='#3oevMyLJR3M'>.group.readme.template</a> 
+<li><p><code>REPORT_TYPE</code> が <code>gitlab</code> または <code>github</code> の場合に限り、 <a class='autolink' href='#fgIHMAhw6nD'>.group.README.md.template</a> 
 ファイルを生成します。これは probo <a class='autolink' href='#aqrF7Ohm9qI'>--addgrp</a> でグループを作成する際、
 配下の README.md 作成のテンプレートとなるファイルです。
 </p>
@@ -1694,7 +1694,7 @@ export PROBO_EDIT_ASYNC=1
 </ul>
 </li>
 </ul>
-<h3><a name='3oevMyLJR3M'></a>6.4 .group.readme.template ファイル</h3>
+<h3><a name='fgIHMAhw6nD'></a>6.4 .group.README.md.template ファイル</h3>
 <ul>
 <li><span style='background:red; color:white;'>--addgrp オプションで使用されるグループ README.md のテンプレートファイル</span></li>
 <li><span style='background:red; color:white;'>以下のプレースホルダが展開される</span>
@@ -1740,7 +1740,7 @@ export PROBO_EDIT_ASYNC=1
 <li class='idx_x'><a class='autolink' href='#feNsJ4OPnXg'>--run</a></li>
 <li class='idx_x'><a class='autolink' href='#2D7rbHQtrFj'>--track</a></li>
 <li class='idx_x'><a class='autolink' href='#b6CghwSHfuk'>.case.template</a></li>
-<li class='idx_x'><a class='autolink' href='#3oevMyLJR3M'>.group.readme.template</a></li>
+<li class='idx_x'><a class='autolink' href='#fgIHMAhw6nD'>.group.README.md.template</a></li>
 </blockquote>
 </details>
 <details class='idx_x' open>

@@ -894,7 +894,7 @@ EOF
 }
 
 function probo-make-group-readme-template-file {
-    cat <<EOF > "./.group.readme.template"
+    cat <<EOF > "./.group.README.md.template"
 # %GROUP%
 
 ## summary
@@ -1002,26 +1002,23 @@ function probo-initialize {
 }
 
 function probo-add-group {
-
-    local README_FILE="README.md"
-    local TMPL_FILE="./.group.readme.template"
-    if [ ! -e "$TMPL_FILE" ]; then
-        TMPL_FILE=""
-    fi
-
     local GROUP_NAME="$1"
     while [ ! -z "$GROUP_NAME" ]; do
         if [ ! -d "$GROUP_NAME" ]; then
             mkdir "./$GROUP_NAME"
         fi
-        if [ -d "$GROUP_NAME" ] && [ ! -z "$TMPL_FILE" ]; then
-            cat "$TMPL_FILE" | perl -pe "s/%GROUP%/${GROUP_NAME}/g" \
-                                              > "./${GROUP_NAME}/${README_FILE}"
+        if [ -d "$GROUP_NAME" ]; then
+            for TMPL_FILE in $(ls .group.*.template)
+            do
+                local TARGET_FILE=${TMPL_FILE:7}
+                TARGET_FILE=${TARGET_FILE%.*}
+                cat "$TMPL_FILE" | perl -pe "s/%GROUP%/${GROUP_NAME}/g" \
+                                                  > "./${GROUP_NAME}/${TARGET_FILE}"
+            done
         fi
         shift 1
         GROUP_NAME="$1"
     done
-    
 }
 
 function probo-add-case-impl {

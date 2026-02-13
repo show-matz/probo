@@ -102,7 +102,7 @@ $ ls -la
 drwxrwxr-x 2 user42 user42 4096  2月  2 17:29 .
 drwxrwxr-x 6 user42 user42 4096  2月  2 17:29 ..
 -rw-rw-r-- 1 user42 user42   69  2月  2 17:29 .case.template
--rw-rw-r-- 1 user42 user42  260  2月  2 17:29 .group.readme.template
+-rw-rw-r-- 1 user42 user42  260  2月  2 17:29 .group.README.md.template
 -rw-rw-r-- 1 user42 user42  348  2月  2 17:29 README.md
 -rw-rw-r-- 1 user42 user42 1071  2月  2 17:29 probo.conf
 $ 
@@ -552,9 +552,10 @@ ${BLANK_PARAGRAPH}
  probo --addgrp GROUP...
 ```
 
-　.group.readme.template ファイルが存在すると、その内容を使ってグループディレ
-クトリの配下に `README.md` ファイルを作成します。このとき、.group.readme.template 
-内部の文字列 `%GROUP%` はグループ名に置き換えられます。
+　.group.*.template にマッチするファイルが存在すると、それをテンプレートとして
+グループディレクトリの配下にファイルを作成します。ファイル名は `.group.` と 
+`.template` に挟まれた部分文字列が使用されます。また、ファイルの内容のうち、
+字列 `%GROUP%` はグループ名に置き換えられます。
 
 ### --edit オプション
 <!-- autolink: [--edit](#--edit オプション) -->
@@ -605,7 +606,7 @@ case file 名に補完されます。つまり、 `--edit 12` は `--edit ./0012
   消化想定数」を `CASE_PER_DAY` で与えることができます。デフォルト値は 10 です。
 * .case.template ファイルを生成します。これは probo --addcase でテスト
   ケースファイルを作成する時のテンプレートとなるファイルです。
-* `REPORT_TYPE` が `gitlab` または `github` の場合に限り、 .group.readme.template 
+* `REPORT_TYPE` が `gitlab` または `github` の場合に限り、 .group.README.md.template 
   ファイルを生成します。これは probo --addgrp でグループを作成する際、
   配下の README.md 作成のテンプレートとなるファイルです。
 
@@ -1121,8 +1122,8 @@ export PROBO_EDIT_ASYNC=1
     * `%CASEID%` : `0014` などのテストケース ID に展開される
     * `%GROUP%` : グループ名に展開される
 
-### .group.readme.template ファイル
-<!-- autolink: [.group.readme.template](#.group.readme.template ファイル) -->
+### .group.README.md.template ファイル
+<!-- autolink: [.group.README.md.template](#.group.README.md.template ファイル) -->
 
 * ${{TODO}{--addgrp オプションで使用されるグループ README.md のテンプレートファイル}}
 * ${{TODO}{以下のプレースホルダが展開される}}
