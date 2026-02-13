@@ -111,8 +111,9 @@ $
 ### --addgrp でグループを作成
 
 　続いて、グループを作成しましょう。probo ではテストケースを複数のグループに
-わけて管理します。これには、以下のように `probo --addgrp` に続けてグループ名を
-並べます。
+わけて管理します
+{{fn:グループ分けが不要な場合でも、現状ではグループをひとつは作成する必要があります。}}。
+これには、以下のように `probo --addgrp` に続けてグループ名を並べます。
 
 ```
 $ probo --addgrp  group1 group2
@@ -191,8 +192,8 @@ $
 　前のステップで作成したテストケースは（当然ですが）実質的に空っぽです。テストを
 するためには、テストの仕様を記述しなければなりません。probo では、テストの仕様は
 ケースファイルに記述します。これは markdown 形式のテキストファイルなので好きな
-方法で編集することができますが、[最初のステップ](#インストールと設定)で変数 
-PROBO_EDITOR を設定していれば、 `probo --edit` コマンドで編集を開始することが
+方法で編集することができますが、[最初のステップ](#インストールと設定)で `EDITOR` 
+環境変数などを適切に設定していれば `probo --edit` コマンドで編集を開始することが
 できます。以下では、 `group1` でテスト ID が 1 のテストケースの編集を開始して
 います。
 
@@ -201,10 +202,11 @@ $ cd group1
 $ probo --edit -c 1
 ```
 
-　--edit は通常ランファイルの編集をします。ここでは `-c` オプションを指定する
-ことでケースファイルの編集を指示しています。開いたファイルの内容は以下のような
-ものでした。これは[初期化時](#--init でテストディレクトリを初期化)に生成された 
-.case.template ファイルを元に作成されています。
+　--edit でパラメータにテスト ID を指定した場合、デフォルトではランファイルの編集
+を行ないます。ここでは `-c` オプションを指定することでケースファイルの編集を指示
+しています。開いたファイルの内容は以下のようなものでした。これは
+[初期化時](#--init でテストディレクトリを初期化)に生成された .case.template ファイル
+を元に作成されています。
 
 ```
 ## group1/0001
@@ -342,6 +344,9 @@ $
 　ここまでで、テスト環境を初期化し、グループやテストを追加し、ステータスを変更
 できるようになりました。これでテストを進めていくことができると思います。
 
+　テストの進み具合に関するレポートを生成するには、 `probo --report` を実行します。
+これは --init を実行したのと同じディレクトリで行なってください。
+
 ```
 $ probo --report
 preparing status list...
@@ -354,6 +359,9 @@ generating summary image...
 generating group summary image...
 $ 
 ```
+
+　実行が完了すると、SVG 形式の画像ファイルが作成（更新）され、 `README.md` も
+更新されます。各グループのディレクトリ配下も同様です。
 
 ```
 $ ls -l
@@ -368,7 +376,50 @@ $
 ```
 
 
+　生成されるレポート情報の種類は設定によって異なりますが、--init gitlab で
+初期化した今回の場合は以下が生成されます。このテストディレクトリ全体を GitLab の
+リポジトリにコミットすれば、GitLab 上でレポートを参照できます。
+
+* Burndown チャート（burndown.svg）
+* サマリ円グラフ（summary.svg）
+* テスト別のステータス一覧（README.md 内に埋め込み）
+
+${BLANK_PARAGRAPH}
+
+
+　Burndown チャートの例を以下に示します。
+
+```raw
+<!-- include: sample-burndown.svg -->
+```
+Figure. Burndown チャートの例
+
+${BLANK_PARAGRAPH}
+
+
+　サマリ円グラフの例を以下に示します。
+
+
+```raw
+<!-- include: sample-summary.svg -->
+```
+Figure. サマリ円グラフの例
+
+
 ### --run でテストの自動実行
+
+* ${{TODO}{イマココ}}
+
+* `probo --run [NUMBER...]`
+    * １つ以上のテストIDが指定されている場合、カレントディレクトリでそのテストを実行
+    * テストID 指定がない場合
+        * カレントディレクトリにランファイルがあればディレクトリ内の ready な全テストを実行
+        * カレントディレクトリにランファイルがなければ配下グループの ready な全テストを実行
+
+~~~
+<!-- probo test script : begin -->
+<!-- probo test script : end -->
+~~~
 
 ## 構成
 
@@ -449,10 +500,6 @@ ${BLANK_PARAGRAPH}
 
 #### burndown-chart 生成
 
-```raw
-<!-- include: sample-burndown.svg -->
-```
-
 　以下の設定変数が関与しています。
 
 | 設定変数             | 説明                            |
@@ -466,10 +513,6 @@ ${BLANK_PARAGRAPH}
 
 
 #### summary-graph 生成
-
-```raw
-<!-- include: sample-summary.svg -->
-```
 
 　以下の設定変数が関与しています。
 
@@ -517,7 +560,8 @@ ${BLANK_PARAGRAPH}
 <!-- autolink: [--edit](#--edit オプション) -->
 
 　カレントディレクトリにある指定した run file または case file をエディタで
-開きます。エディタの指定は PROBO_EDITOR 変数に従います。
+開きます。エディタの指定は EDITOR 環境変数に従います（ PROBO_EDIT_ASYNC 設定も
+参照してください ）。
 
 ```
  probo --edit [-c] TARGET
@@ -1057,28 +1101,17 @@ PROBO_SUMIMG_WIDTH=700
 ${BLANK_PARAGRAPH}
 
 ### その他の設定変数
-#### PROBO_EDITOR
-<!-- autolink: [PROBO_EDITOR](#PROBO_EDITOR) -->
+#### PROBO_EDIT_ASYNC
+<!-- autolink: [PROBO_EDIT_ASYNC](#PROBO_EDIT_ASYNC) -->
 
-　probo からエディタを起動する時のコマンドを格納する変数です。--edit および 
---track -e から使用されます。これらは conf ファイルに依存しない仕様のため、 
-`.bashrc` などで環境変数として設定することが想定されています。
-
-　例を示します。エディタとして `nano` を使用する場合は以下のようになります。
-`~1` という部分がファイルで置き換えられます。
+　probo からエディタを起動する時に非同期実行とするか否かを制御する変数です。
+--edit および --track -e から使用されます。これらは conf ファイルに依存しない
+仕様のため、 `.bashrc` などで環境変数として設定することが想定されています。
+非同期編集をする場合、以下のように 1 を設定してください。
 
 ```
-export PROBO_EDITOR="nano ~1"
+export PROBO_EDIT_ASYNC=1
 ```
-
-　Emacs 内部の shell-mode からシェルをブロックせずに使いたい場合は以下のよう
-になるでしょう。
-
-```
-export PROBO_EDITOR="emacsclient ~1 &"
-```
-
-　この変数が設定されていない場合、probo はデフォルト値として `"vi ~1"` を使用します。
 
 ### .case.template ファイル
 <!-- autolink: [.case.template](#.case.template ファイル) -->

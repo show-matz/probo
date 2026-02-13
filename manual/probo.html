@@ -378,7 +378,7 @@ body{font-size:16px;}
 <details class='tocx' open>
 <summary class='tocx'><a href='#eOMxsXUGejj'>6.2 その他の設定変数</a></summary>
 <blockquote class='tocx'>
-<li class='tocx'><a href='#0XW1Xqn36Zs'>6.2.1 PROBO_EDITOR</a></li>
+<li class='tocx'><a href='#9IsuHJYHkMV'>6.2.1 PROBO_EDIT_ASYNC</a></li>
 </blockquote>
 </details>
 <li class='tocx'><a href='#b6CghwSHfuk'>6.3 .case.template ファイル</a></li>
@@ -429,7 +429,7 @@ drwxrwxr-x 6 user42 user42 4096  2月  2 17:29 ..
 $ 
 </pre>
 <h3><a name='42myJ9K2rbD'></a>2.3 --addgrp でグループを作成</h3>
-<p>　続いて、グループを作成しましょう。probo ではテストケースを複数のグループにわけて管理します。これには、以下のように <code>probo --addgrp</code> に続けてグループ名を並べます。</p>
+<p>　続いて、グループを作成しましょう。probo ではテストケースを複数のグループにわけて管理します<sup><a name='footnote_ref4' href='#footnote4'>4</a></sup>。これには、以下のように <code>probo --addgrp</code> に続けてグループ名を並べます。</p>
 <pre style="font-size: 13;">
 $ probo --addgrp  group1 group2
 $ 
@@ -444,7 +444,7 @@ drwxrwxr-x 2 user42 user42 4096  2月  2 17:37 group2
 -rw-rw-r-- 1 user42 user42 1071  2月  2 17:29 probo.conf
 $ 
 </pre>
-<p>　<code>mkdir</code> でいいじゃんと思われるかもしれませんが、設定によってはグループディレクトリの配下に必要なファイルが作成される場合があります。なので、グループは <a href='#aqrF7Ohm9qI'>--addgrp オプション</a>を使って作成するようにしましょう<sup><a name='footnote_ref4' href='#footnote4'>4</a></sup>。</p>
+<p>　<code>mkdir</code> でいいじゃんと思われるかもしれませんが、設定によってはグループディレクトリの配下に必要なファイルが作成される場合があります。なので、グループは <a href='#aqrF7Ohm9qI'>--addgrp オプション</a>を使って作成するようにしましょう<sup><a name='footnote_ref5' href='#footnote5'>5</a></sup>。</p>
 <h3><a name='beW2k1q1HaA'></a>2.4 --addcase でテストケースを作成</h3>
 <p>　では、作成したグループにテストケースを追加しましょう。以下のように、グループのディレクトリに移動し、 <code>probo --addcase</code> と言います。パラメータとして追加するテストケースの数を指定します。</p>
 <pre style="font-size: 13;">
@@ -480,12 +480,12 @@ $
 <p>　４桁の番号が <strong>テスト ID</strong> で、それに <code>.testcase.md</code> が続くのが<strong>ケースファイル</strong> 、 <code>.testrun.md</code> が続くのが <strong>ランファイル</strong> です。ケースファイルはテストの仕様を記述するもので、ランファイルはテストの実施結果を記録するものです。</p>
 <p>　一度にテストケースを作成するのでなく、複数回にわけて <code>probo --addcase</code> することももちろん可能です。その場合、既存のテストケースの数などを考慮して新しくテスト ID を付与してくれます。詳細は <a href='#6RK38KzDT9g'>--addcase オプション</a>の説明を参照してください。</p>
 <h3><a name='7YNhKZnOqE7'></a>2.5 --edit で編集</h3>
-<p>　前のステップで作成したテストケースは（当然ですが）実質的に空っぽです。テストをするためには、テストの仕様を記述しなければなりません。probo では、テストの仕様はケースファイルに記述します。これは markdown 形式のテキストファイルなので好きな方法で編集することができますが、<a href='#6NkcypzVVgW'>最初のステップ</a>で変数 <a class='autolink' href='#0XW1Xqn36Zs'>PROBO_EDITOR</a> を設定していれば、 <code>probo --edit</code> コマンドで編集を開始することができます。以下では、 <code>group1</code> でテスト ID が 1 のテストケースの編集を開始しています。</p>
+<p>　前のステップで作成したテストケースは（当然ですが）実質的に空っぽです。テストをするためには、テストの仕様を記述しなければなりません。probo では、テストの仕様はケースファイルに記述します。これは markdown 形式のテキストファイルなので好きな方法で編集することができますが、<a href='#6NkcypzVVgW'>最初のステップ</a>で <code>EDITOR</code> 環境変数などを適切に設定していれば <code>probo --edit</code> コマンドで編集を開始することができます。以下では、 <code>group1</code> でテスト ID が 1 のテストケースの編集を開始しています。</p>
 <pre style="font-size: 13;">
 $ cd group1
 $ probo --edit -c 1
 </pre>
-<p>　<a class='autolink' href='#kO1Toy1HeKM'>--edit</a> は通常ランファイルの編集をします。ここでは <code>-c</code> オプションを指定することでケースファイルの編集を指示しています。開いたファイルの内容は以下のようなものでした。これは<a href='#60ixnGE0YTK'>初期化時</a>に生成された <a class='autolink' href='#b6CghwSHfuk'>.case.template</a> ファイルを元に作成されています。</p>
+<p>　<a class='autolink' href='#kO1Toy1HeKM'>--edit</a> でパラメータにテスト ID を指定した場合、デフォルトではランファイルの編集を行ないます。ここでは <code>-c</code> オプションを指定することでケースファイルの編集を指示しています。開いたファイルの内容は以下のようなものでした。これは<a href='#60ixnGE0YTK'>初期化時</a>に生成された <a class='autolink' href='#b6CghwSHfuk'>.case.template</a> ファイルを元に作成されています。</p>
 <pre style="font-size: 13;">
 ## group1/0001
 
@@ -647,6 +647,7 @@ $
 </pre>
 <h3><a name='6EH69Orov9X'></a>2.9 --report でレポートを作成</h3>
 <p>　ここまでで、テスト環境を初期化し、グループやテストを追加し、ステータスを変更できるようになりました。これでテストを進めていくことができると思います。</p>
+<p>　テストの進み具合に関するレポートを生成するには、 <code>probo --report</code> を実行します。これは <a class='autolink' href='#c09k6WLIoEN'>--init</a> を実行したのと同じディレクトリで行なってください。</p>
 <pre style="font-size: 13;">
 $ probo --report
 preparing status list...
@@ -659,6 +660,7 @@ generating summary image...
 generating group summary image...
 $ 
 </pre>
+<p>　実行が完了すると、SVG 形式の画像ファイルが作成（更新）され、 <code>README.md</code> も更新されます。各グループのディレクトリ配下も同様です。</p>
 <pre style="font-size: 13;">
 $ ls -l
 合計 72
@@ -670,66 +672,14 @@ drwxrwxr-x 2 user42 user42  4096  2月  5 11:04 group2
 -rw-rw-r-- 1 user42 user42 15471  2月  5 11:04 summary.svg
 $ 
 </pre>
-<h3><a name='i4V5jiuhcYw'></a>2.10 --run でテストの自動実行</h3>
-<h2><a name='jjjXfFtPMKV'></a>3 構成</h2>
-<p>　probo では、ひとつ以上の <strong>グループ</strong> を作成してそれぞれの配下で複数の <strong>テスト</strong> を管理します。テストはグループ内で <strong>テスト ID</strong> で識別され、 <strong>テストケース</strong> と <strong>テストラン</strong> がそれぞれ別のファイルに保存されます。</p>
+<p>　生成されるレポート情報の種類は設定によって異なりますが、<a class='autolink' href='#c09k6WLIoEN'>--init</a> gitlab で初期化した今回の場合は以下が生成されます。このテストディレクトリ全体を GitLab のリポジトリにコミットすれば、GitLab 上でレポートを参照できます。</p>
 <ul>
-<li><strong>テスト ID</strong> : テストを識別するための４桁の数字列です。</li>
-<li><strong>テストケース</strong> : テストの仕様や実施方法の記述です</li>
-<li><strong>テストラン</strong> : テストの実施履歴や結果の記録です</li>
-</ul>
-<p>　テスト ID は通常は番号として扱うため、 <code>0001</code> からの連番になります。</p>
-<p>　テストケースとテストランは、テスト ID の後ろにそれぞれ <code>.testcase.md</code> および <code>.testrun.md</code> をつけた名前のマークダウン形式のテキストファイルで管理されます。つまり、以下のような名前の２ファイルがセットになります。</p>
-<ul>
-<li><code>0001.testcase.md</code></li>
-<li><code>0001.testrun.md</code></li>
-</ul>
-<p>　続いて <strong>グループ</strong> について。グループはテストを分類するためのもので、その名前でディレクトリを作成し、配下にケースファイルやランファイルを配置します。以下のように。</p>
-<ul>
-<li><code>group1/</code>
-<ul>
-<li><code>0001.testcase.md</code></li>
-<li><code>0001.testrun.md</code></li>
-<li><code>0002.testcase.md</code></li>
-<li><code>0002.testrun.md</code></li>
-<li>　:</li>
-<li>　:</li>
-</ul>
-</li>
-<li><code>group2/</code>
-<ul>
-<li><code>0001.testcase.md</code></li>
-<li><code>0001.testrun.md</code></li>
-<li><code>0002.testcase.md</code></li>
-<li><code>0002.testrun.md</code></li>
-<li>　:</li>
-<li>　:</li>
-</ul>
-</li>
-</ul>
-<p>　グループには自由に名前をつけられますが、 <code>.git</code> のようにドットで始まる名前だけは対象外になります。また、配下に <code>*.testcase.md</code> ファイルが存在しないディレクトリもグループとはみなされません。</p>
-<ul>
-<li><code>.case.template</code></li>
-<li><code>probo.conf</code></li>
-</ul>
-<p>　test-run ファイルは、テストに実施履歴を記録するためのファイルです。基本的には markdown 形式で自由に記述可能ですが、ひとつだけルールがあります。以下の形式の見出し行が、後述する<a class='autolink' href='#ddPuOYtb1Nh'>レポート生成</a>のスクリプトにより参照されます。</p>
-<pre style="font-size: 13;">
- ## YYYY-MM-DD-hh-mm.STATUS[.DESCRIPTION]
-</pre>
-<p>　ここで、上記における <code>YYYY-MM-DD-hh-mm</code> はタイムスタンプ（年月日時分）、<code>STATUS</code> は基本的に <code>READY|BLOCK|RUN|FAIL|PASS|REJECT</code> のいずれか、 <code>[.DESCRIPTION]</code> は任意で追加情報を記述できます。 <code>STATUS</code> の使い方は以下の通り。</p>
-<ul>
-<li><code>READY  :</code> 実施可能</li>
-<li><code>BLOCK  :</code> なんらかの理由で実施（再開）できない</li>
-<li><code>RUN    :</code> 実施中</li>
-<li><code>FAIL   :</code> 実施し、Fail</li>
-<li><code>PASS   :</code> 実施し、Pass</li>
-<li><code>REJECT :</code> 実施対象外に変更</li>
+<li>Burndown チャート（burndown.svg）</li>
+<li>サマリ円グラフ（summary.svg）</li>
+<li>テスト別のステータス一覧（README.md 内に埋め込み）</li>
 </ul>
 <p>　　</p>
-<p>　後述するレポートの生成では、スクリプトが各 test-run ファイルにおける上記形式の行を全て抽出し、最後の行をそのテストケースの「現在のステータス」として認識します。また、 <code>FAIL</code> に関しては古い情報もカウントの対象となります。詳細はこのディレクトリにあるスクリプトファイルを参照してください。</p>
-<h2><a name='1k2s83jlT9a'></a>4 機能</h2>
-<h3><a name='ddPuOYtb1Nh'></a>4.1 レポート生成</h3>
-<h4><a name='i7AphzYnVLt'></a>4.1.1 burndown-chart 生成</h4>
+<p>　Burndown チャートの例を以下に示します。</p>
 <?xml version="1.0" encoding="utf-8"  standalone="no"?>
 <svg 
  width="800" height="400"
@@ -1072,17 +1022,9 @@ $
 </g>
 </svg>
 
-<p>　以下の設定変数が関与しています。</p>
-<table align='center'>
-<tr><th>設定変数</th><th>説明</th></tr>
-<tr><td align='left'><a class='autolink' href='#k8UKuspsWDk'>PROBO_BDIMG_FILENAME</a></td><td align='left'>出力ファイル名を指定します。</td></tr>
-<tr><td align='left'><a class='autolink' href='#bn87bikg4Vt'>PROBO_BDIMG_WIDTH</a></td><td align='left'>生成画像の幅を指定します。</td></tr>
-<tr><td align='left'><a class='autolink' href='#9s2REPu6fCL'>PROBO_BDIMG_HEIGHT</a></td><td align='left'>生成画像の高さ指定します。</td></tr>
-<tr><td align='left'><a class='autolink' href='#iyu30TWG4ct'>PROBO_BDIMG_CLR_GUIDE</a></td><td align='left'>基準線の色を指定します。</td></tr>
-<tr><td align='left'><a class='autolink' href='#0iebzJNNFix'>PROBO_BDIMG_CLR_PASSLINE</a></td><td align='left'>Pass 線の色を指定します。</td></tr>
-<tr><td align='left'><a class='autolink' href='#cKVexCSejOY'>PROBO_BDIMG_CLR_FAILBOX</a></td><td align='left'>Fail 棒グラフの色を指定します。</td></tr>
-</table>
-<h4><a name='0mVxd9E6hjH'></a>4.1.2 summary-graph 生成</h4>
+<p class='fig_title'><a name='gnsDgfEES8K'></a>Figure.2 Burndown チャートの例</p>
+<p>　　</p>
+<p>　サマリ円グラフの例を以下に示します。</p>
 <?xml version="1.0" encoding="utf-8"  standalone="no"?>
 <svg 
  width="800" height="400"
@@ -1303,6 +1245,98 @@ $
 </g>
 </svg>
 
+<p class='fig_title'><a name='aDeAXKFkiAo'></a>Figure.3 サマリ円グラフの例</p>
+<h3><a name='i4V5jiuhcYw'></a>2.10 --run でテストの自動実行</h3>
+<ul>
+<li><span style='background:red; color:white;'>イマココ</span></li>
+</ul>
+<ul>
+<li><code>probo --run [NUMBER...]</code>
+<ul>
+<li>１つ以上のテストIDが指定されている場合、カレントディレクトリでそのテストを実行</li>
+<li>テストID 指定がない場合
+<ul>
+<li>カレントディレクトリにランファイルがあればディレクトリ内の ready な全テストを実行</li>
+<li>カレントディレクトリにランファイルがなければ配下グループの ready な全テストを実行</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre style="font-size: 13;">
+&lt;!-- probo test script : begin --&gt;
+&lt;!-- probo test script : end --&gt;
+</pre>
+<h2><a name='jjjXfFtPMKV'></a>3 構成</h2>
+<p>　probo では、ひとつ以上の <strong>グループ</strong> を作成してそれぞれの配下で複数の <strong>テスト</strong> を管理します。テストはグループ内で <strong>テスト ID</strong> で識別され、 <strong>テストケース</strong> と <strong>テストラン</strong> がそれぞれ別のファイルに保存されます。</p>
+<ul>
+<li><strong>テスト ID</strong> : テストを識別するための４桁の数字列です。</li>
+<li><strong>テストケース</strong> : テストの仕様や実施方法の記述です</li>
+<li><strong>テストラン</strong> : テストの実施履歴や結果の記録です</li>
+</ul>
+<p>　テスト ID は通常は番号として扱うため、 <code>0001</code> からの連番になります。</p>
+<p>　テストケースとテストランは、テスト ID の後ろにそれぞれ <code>.testcase.md</code> および <code>.testrun.md</code> をつけた名前のマークダウン形式のテキストファイルで管理されます。つまり、以下のような名前の２ファイルがセットになります。</p>
+<ul>
+<li><code>0001.testcase.md</code></li>
+<li><code>0001.testrun.md</code></li>
+</ul>
+<p>　続いて <strong>グループ</strong> について。グループはテストを分類するためのもので、その名前でディレクトリを作成し、配下にケースファイルやランファイルを配置します。以下のように。</p>
+<ul>
+<li><code>group1/</code>
+<ul>
+<li><code>0001.testcase.md</code></li>
+<li><code>0001.testrun.md</code></li>
+<li><code>0002.testcase.md</code></li>
+<li><code>0002.testrun.md</code></li>
+<li>　:</li>
+<li>　:</li>
+</ul>
+</li>
+<li><code>group2/</code>
+<ul>
+<li><code>0001.testcase.md</code></li>
+<li><code>0001.testrun.md</code></li>
+<li><code>0002.testcase.md</code></li>
+<li><code>0002.testrun.md</code></li>
+<li>　:</li>
+<li>　:</li>
+</ul>
+</li>
+</ul>
+<p>　グループには自由に名前をつけられますが、 <code>.git</code> のようにドットで始まる名前だけは対象外になります。また、配下に <code>*.testcase.md</code> ファイルが存在しないディレクトリもグループとはみなされません。</p>
+<ul>
+<li><code>.case.template</code></li>
+<li><code>probo.conf</code></li>
+</ul>
+<p>　test-run ファイルは、テストに実施履歴を記録するためのファイルです。基本的には markdown 形式で自由に記述可能ですが、ひとつだけルールがあります。以下の形式の見出し行が、後述する<a class='autolink' href='#ddPuOYtb1Nh'>レポート生成</a>のスクリプトにより参照されます。</p>
+<pre style="font-size: 13;">
+ ## YYYY-MM-DD-hh-mm.STATUS[.DESCRIPTION]
+</pre>
+<p>　ここで、上記における <code>YYYY-MM-DD-hh-mm</code> はタイムスタンプ（年月日時分）、<code>STATUS</code> は基本的に <code>READY|BLOCK|RUN|FAIL|PASS|REJECT</code> のいずれか、 <code>[.DESCRIPTION]</code> は任意で追加情報を記述できます。 <code>STATUS</code> の使い方は以下の通り。</p>
+<ul>
+<li><code>READY  :</code> 実施可能</li>
+<li><code>BLOCK  :</code> なんらかの理由で実施（再開）できない</li>
+<li><code>RUN    :</code> 実施中</li>
+<li><code>FAIL   :</code> 実施し、Fail</li>
+<li><code>PASS   :</code> 実施し、Pass</li>
+<li><code>REJECT :</code> 実施対象外に変更</li>
+</ul>
+<p>　　</p>
+<p>　後述するレポートの生成では、スクリプトが各 test-run ファイルにおける上記形式の行を全て抽出し、最後の行をそのテストケースの「現在のステータス」として認識します。また、 <code>FAIL</code> に関しては古い情報もカウントの対象となります。詳細はこのディレクトリにあるスクリプトファイルを参照してください。</p>
+<h2><a name='1k2s83jlT9a'></a>4 機能</h2>
+<h3><a name='ddPuOYtb1Nh'></a>4.1 レポート生成</h3>
+<h4><a name='i7AphzYnVLt'></a>4.1.1 burndown-chart 生成</h4>
+<p>　以下の設定変数が関与しています。</p>
+<table align='center'>
+<tr><th>設定変数</th><th>説明</th></tr>
+<tr><td align='left'><a class='autolink' href='#k8UKuspsWDk'>PROBO_BDIMG_FILENAME</a></td><td align='left'>出力ファイル名を指定します。</td></tr>
+<tr><td align='left'><a class='autolink' href='#bn87bikg4Vt'>PROBO_BDIMG_WIDTH</a></td><td align='left'>生成画像の幅を指定します。</td></tr>
+<tr><td align='left'><a class='autolink' href='#9s2REPu6fCL'>PROBO_BDIMG_HEIGHT</a></td><td align='left'>生成画像の高さ指定します。</td></tr>
+<tr><td align='left'><a class='autolink' href='#iyu30TWG4ct'>PROBO_BDIMG_CLR_GUIDE</a></td><td align='left'>基準線の色を指定します。</td></tr>
+<tr><td align='left'><a class='autolink' href='#0iebzJNNFix'>PROBO_BDIMG_CLR_PASSLINE</a></td><td align='left'>Pass 線の色を指定します。</td></tr>
+<tr><td align='left'><a class='autolink' href='#cKVexCSejOY'>PROBO_BDIMG_CLR_FAILBOX</a></td><td align='left'>Fail 棒グラフの色を指定します。</td></tr>
+</table>
+<h4><a name='0mVxd9E6hjH'></a>4.1.2 summary-graph 生成</h4>
 <p>　以下の設定変数が関与しています。</p>
 <table align='center'>
 <tr><th>設定変数</th><th>説明</th></tr>
@@ -1334,7 +1368,7 @@ $
 </pre>
 <p>　<a class='autolink' href='#3oevMyLJR3M'>.group.readme.template</a> ファイルが存在すると、その内容を使ってグループディレクトリの配下に <code>README.md</code> ファイルを作成します。このとき、<a class='autolink' href='#3oevMyLJR3M'>.group.readme.template</a> 内部の文字列 <code>%GROUP%</code> はグループ名に置き換えられます。</p>
 <h3><a name='kO1Toy1HeKM'></a>5.3 --edit オプション</h3>
-<p>　カレントディレクトリにある指定した run file または case file をエディタで開きます。エディタの指定は <a class='autolink' href='#0XW1Xqn36Zs'>PROBO_EDITOR</a> 変数に従います。</p>
+<p>　カレントディレクトリにある指定した run file または case file をエディタで開きます。エディタの指定は EDITOR 環境変数に従います（ <a class='autolink' href='#9IsuHJYHkMV'>PROBO_EDIT_ASYNC</a> 設定も参照してください ）。</p>
 <pre style="font-size: 13;">
  probo --edit [-c] TARGET
 </pre>
@@ -1645,17 +1679,11 @@ PROBO_SUMIMG_WIDTH=700
 </pre>
 <p>　　</p>
 <h3><a name='eOMxsXUGejj'></a>6.2 その他の設定変数</h3>
-<h4><a name='0XW1Xqn36Zs'></a>6.2.1 PROBO_EDITOR</h4>
-<p>　probo からエディタを起動する時のコマンドを格納する変数です。<a class='autolink' href='#kO1Toy1HeKM'>--edit</a> および <a class='autolink' href='#2D7rbHQtrFj'>--track</a> -e から使用されます。これらは conf ファイルに依存しない仕様のため、 <code>.bashrc</code> などで環境変数として設定することが想定されています。</p>
-<p>　例を示します。エディタとして <code>nano</code> を使用する場合は以下のようになります。<code>~1</code> という部分がファイルで置き換えられます。</p>
+<h4><a name='9IsuHJYHkMV'></a>6.2.1 PROBO_EDIT_ASYNC</h4>
+<p>　probo からエディタを起動する時に非同期実行とするか否かを制御する変数です。<a class='autolink' href='#kO1Toy1HeKM'>--edit</a> および <a class='autolink' href='#2D7rbHQtrFj'>--track</a> -e から使用されます。これらは conf ファイルに依存しない仕様のため、 <code>.bashrc</code> などで環境変数として設定することが想定されています。非同期編集をする場合、以下のように 1 を設定してください。</p>
 <pre style="font-size: 13;">
-export PROBO_EDITOR="nano ~1"
+export PROBO_EDIT_ASYNC=1
 </pre>
-<p>　Emacs 内部の shell-mode からシェルをブロックせずに使いたい場合は以下のようになるでしょう。</p>
-<pre style="font-size: 13;">
-export PROBO_EDITOR="emacsclient ~1 &amp;"
-</pre>
-<p>　この変数が設定されていない場合、probo はデフォルト値として <code>"vi ~1"</code> を使用します。</p>
 <h3><a name='b6CghwSHfuk'></a>6.3 .case.template ファイル</h3>
 <ul>
 <li><span style='background:red; color:white;'>--addcase オプションで使用されるテストケースのテンプレートファイル</span></li>
@@ -1690,6 +1718,8 @@ export PROBO_EDITOR="emacsclient ~1 &amp;"
 <h2><a name='1iQ3KRF8uJQ'></a>9 図表一覧</h2>
 <ul>
 <li><a href='#a3gJ4oqwroF'>Figure.1 テストの基本的なステータス遷移</a></li>
+<li><a href='#gnsDgfEES8K'>Figure.2 Burndown チャートの例</a></li>
+<li><a href='#aDeAXKFkiAo'>Figure.3 サマリ円グラフの例</a></li>
 </ul>
 <p>　　</p>
 <ul>
@@ -1728,7 +1758,7 @@ export PROBO_EDITOR="emacsclient ~1 &amp;"
 <li class='idx_x'><a class='autolink' href='#jwVotybPXTo'>PROBO_BD_EXEC_PER_DAY</a></li>
 <li class='idx_x'><a class='autolink' href='#6wawBRhl1ZX'>PROBO_BD_SCHEDULE</a></li>
 <li class='idx_x'><a class='autolink' href='#8vPNaDNlb6N'>PROBO_BD_STARTDAY</a></li>
-<li class='idx_x'><a class='autolink' href='#0XW1Xqn36Zs'>PROBO_EDITOR</a></li>
+<li class='idx_x'><a class='autolink' href='#9IsuHJYHkMV'>PROBO_EDIT_ASYNC</a></li>
 <li class='idx_x'><a class='autolink' href='#eBzEmtOlmaK'>PROBO_FULLSTAT_FILENAME</a></li>
 <li class='idx_x'><a class='autolink' href='#ftnun6HtIn8'>PROBO_FULLSTAT_INSERTION</a></li>
 <li class='idx_x'><a class='autolink' href='#knAWU3im4Hr'>PROBO_GRP_FULLSTAT_FILENAME</a></li>
@@ -1767,6 +1797,7 @@ export PROBO_EDITOR="emacsclient ~1 &amp;"
 <p class='footnote'><a name='footnote1' href='#footnote_ref1'>1</a> : これを書いている時点でざっと調べた限り、probo スクリプトが内部で使用しているコマンドは次の通りです。一般的な Linux 環境であれば、 <code>gnuplot</code> 以外は大体最初から使えるはず。 <code>cat cut date echo find gnuplot grep head ls mv perl pwd rm sort tail touch wc which</code> </p>
 <p class='footnote'><a name='footnote2' href='#footnote_ref2'>2</a> : エイリアスの場合、シェルスクリプトから利用できないなどの問題があります。完全にコマンドとして利用したい場合、パスの通ったディレクトリに置く方が良いでしょう。</p>
 <p class='footnote'><a name='footnote3' href='#footnote_ref3'>3</a> : 作者は Emacs 上の shell mode から probo を使用し、ファイル編集も Emacs で行なうため非同期編集が好都合です。</p>
-<p class='footnote'><a name='footnote4' href='#footnote_ref4'>4</a> : もちろん、わかった上で <code>mkdir</code> を使う分にはご自由に。</p>
+<p class='footnote'><a name='footnote4' href='#footnote_ref4'>4</a> : グループ分けが不要な場合でも、現状ではグループをひとつは作成する必要があります。</p>
+<p class='footnote'><a name='footnote5' href='#footnote_ref5'>5</a> : もちろん、わかった上で <code>mkdir</code> を使う分にはご自由に。</p>
 </body>
 </html>
