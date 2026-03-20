@@ -1,5 +1,4 @@
 
-
-probo.html: probo.md default.css
+probo.html: probo.md
 	turnup ./probo.md > ./probo.html
 

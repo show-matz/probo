@@ -1,14 +1,17 @@
+<!-- This manual is using https://github.com/show-matz/turnup-docker -->
+
 <!-- title:probo readme -->
-<!-- style:./default.css -->
+<!-- style:/opt/turnup/default.css -->
 
 <!-- config:embed-stylesheet -->
 <!-- config:header-numbering 2 4 -->
 
-<!-- filter:attach   = bash ./turnup-filters.sh attach    %in %out dat -->
-<!-- filter:embed    = bash ./turnup-filters.sh embed_img %in %out dat -->
-<!-- filter:gnuplot  = bash ./turnup-filters.sh gnuplot   %in %out svg -->
-<!-- filter:kaavio   = bash ./turnup-filters.sh kaavio    %in %out svg -->
-<!-- filter:plantuml = bash ./turnup-filters.sh plantuml  %in %out svg -->
+<!-- filter:gnuplot  = bash /opt/turnup/filters.sh   gnuplot   %in %out -->
+<!-- filter:kaavio   = bash /opt/turnup/filters.sh   kaavio    %in %out -->
+<!-- filter:plantuml = bash /opt/turnup/filters.sh   plantuml  %in %out -->
+<!-- filter:mermaid  = bash /opt/turnup/filters.sh   mermaid   %in %out -->
+<!-- filter:sh       = bash /opt/turnup/highlight.sh %in %out  sh       -->
+<!-- filter-default:        /opt/turnup/highlight.sh %in %out  %type    -->
 
 <!-- define: DOLLER = $ -->
 <!-- define: BLANK_PARAGRAPH = '　　' -->
@@ -55,7 +58,7 @@ ${BLANK_PARAGRAPH}
 {{fn:エイリアスの場合、シェルスクリプトから利用できないなどの問題があります。完全にコマンドとして \
 利用したい場合、パスの通ったディレクトリに置く方が良いでしょう。}}。
 
-```
+```sh
 alias probo='/PATH/TO/probo'
 ```
 
@@ -69,7 +72,7 @@ ${BLANK_PARAGRAPH}
 好都合です。}}
 かもしれません。そのような場合は `PROBO_EDIT_ASYNC` に 1 を設定しましょう。
 
-```
+```sh
 export EDITOR="emacsclient"
 export PROBO_EDIT_ASYNC=1
 ```
@@ -81,7 +84,7 @@ export PROBO_EDIT_ASYNC=1
 　probo でのテスト管理を始めるには、ディレクトリを作成してその中で `probo --init` を
 実行します。
 
-```
+```sh
 $ mkdir sample-test
 $ cd sample-test
 $ 
@@ -97,7 +100,7 @@ $
 生成されます。これらのファイルは必要に応じて修正することになりますが、今は気に
 する必要はありません（たぶん後で説明します）。
 
-```
+```sh
 $ ls -la
 合計 24
 drwxrwxr-x 2 user42 user42 4096  2月  2 17:29 .
@@ -116,14 +119,14 @@ $
 {{fn:グループ分けが不要な場合でも、現状ではグループをひとつは作成する必要があります。}}。
 これには、以下のように `probo --addgrp` に続けてグループ名を並べます。
 
-```
+```sh
 $ probo --addgrp  group1 group2
 $ 
 ```
 
 　これによって、以下のようにグループのためのディレクトリ作成されます。
 
-```
+```sh
 $ ls -l
 合計 20
 -rw-rw-r-- 1 user42 user42  348  2月  2 17:29 README.md
@@ -144,7 +147,7 @@ $
 グループのディレクトリに移動し、 `probo --addcase` と言います。パラメータ
 として追加するテストケースの数を指定します。
 
-```
+```sh
 $ cd group1
 $ probo --addcase 10
 Adding test case 0001...
@@ -170,7 +173,7 @@ $
 　これによって、指定した数のテストケースに対応するファイル（の雛型）が作成
 されます。ここでは、 `group1` の最初のテストケースだけを見てみましょう。
 
-```
+```sh
 $ cd group1
 $ ls -l 0001*
 -rw-rw-r-- 1 user42 user42 59  2月  2 17:40 0001.testcase.md
@@ -198,7 +201,7 @@ $
 できます。以下では、 `group1` でテスト ID が 1 のテストケースの編集を開始して
 います。
 
-```
+```sh
 $ cd group1
 $ probo --edit -c 1
 ```
@@ -209,7 +212,7 @@ $ probo --edit -c 1
 [初期化時](#--init でテストディレクトリを初期化)に生成された .case.template ファイル
 を元に作成されています。
 
-```
+```markdown
 ## group1/0001
 
 * GROUP: group1
@@ -228,7 +231,7 @@ $ probo --edit -c 1
 可能」に変更しましょう。以下のように、ステータスとして `ready` を、テストID として 
 1 を指定して実行します。
 
-```
+```sh
 $ probo --track ready 1
 1 file(s) updated.
 $ 
@@ -238,7 +241,7 @@ $
 なりました。この時点で、 `group1/0001.testrun.md` の内容は以下のようになります。
 ステータスの変更がタイムスタンプと共に記録されているのがわかると思います。
 
-```
+```markdown
 ## 2026-02-04-15-19.NEW
 
 ## 2026-02-04-15-59.READY
@@ -287,7 +290,7 @@ ${BLANK_PARAGRAPH}
 これは、現在のグループにあるすべてのテストの「現在のステータス」を一覧表示
 するものです。
 
-```
+```sh
 $ probo --ls
 CASE	TIMESTAMP	STATUS	DESCRIPTION
 0001	2026/02/04 15:59	READY	
@@ -307,7 +310,7 @@ $
 場合、すべてのグループ配下のテストを一覧します。これはテスト全体の規模によっては
 少し時間がかかるかもしれません。
 
-```
+```sh
 $ cd ..
 $ probo --ls
 GROUP	CASE	TIMESTAMP	STATUS	DESCRIPTION
@@ -332,7 +335,7 @@ $
 これは、指定したテストのステータス変化の履歴を見るものです。以下では、 
 `group1` のテスト ID 1 の履歴を参照しています。
 
-```
+```sh
 $ cd group1
 $ probo --log 1
 0001	2026/02/04 15:19	NEW	
@@ -348,7 +351,7 @@ $
 　テストの進み具合に関するレポートを生成するには、 `probo --report` を実行します。
 これは --init を実行したのと同じディレクトリで行なってください。
 
-```
+```sh
 $ probo --report
 preparing status list...
 preparing burndown data...
@@ -364,7 +367,7 @@ $
 　実行が完了すると、SVG 形式の画像ファイルが作成（更新）され、 `README.md` も
 更新されます。各グループのディレクトリ配下も同様です。
 
-```
+```sh
 $ ls -l
 合計 72
 -rw-rw-r-- 1 user42 user42  6270  2月  5 11:04 README.md
@@ -413,7 +416,7 @@ Figure. サマリ円グラフの例
 テストスクリプトを埋め込んでおき、テストを自動実行できるようにするという
 ものです。ケースファイルへの埋め込みは、以下のようにします。
 
-~~~
+~~~markdown
 <!-- probo test script : begin -->
 ```sh
 # ここにテストを実行するスクリプトを記述する
@@ -502,7 +505,7 @@ gnuplot による画像生成が不要な場合、出力画像ファイル名を
 
 　カレントディレクトリにテストを追加します。個数を指定することも可能です。
 
-```
+```sh
  probo --addcase [-q] [-t TIMESTAMP] [COUNT]
 ```
 
@@ -525,7 +528,7 @@ gnuplot による画像生成が不要な場合、出力画像ファイル名を
 　指定した名前でグループを作成します。複数のグループを一度に指定できますが、
 グループ名はディレクトリとして有効な名前である必要があります。
 
-```
+```sh
  probo --addgrp GROUP...
 ```
 
@@ -542,7 +545,7 @@ gnuplot による画像生成が不要な場合、出力画像ファイル名を
 エディタで開きます。エディタの指定は EDITOR 環境変数に従います（ PROBO_EDIT_ASYNC 
 設定も参照してください ）。
 
-```
+```sh
  probo --edit [-c] TESTID
 ```
 
@@ -559,7 +562,7 @@ gnuplot による画像生成が不要な場合、出力画像ファイル名を
 
 　標準出力に command usage を出力します。
 
-```
+```sh
  probo --help
 ```
 
@@ -568,7 +571,7 @@ gnuplot による画像生成が不要な場合、出力画像ファイル名を
 
 　カレントディレクトリを probo のテスト環境として初期化します。
 
-```
+```sh
  probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE [CASE_PER_DAY]]]
 ```
 
@@ -596,7 +599,7 @@ gnuplot による画像生成が不要な場合、出力画像ファイル名を
 
 　指定されたランファイルのステータス遷移の履歴を出力します。
 
-```
+```sh
  probo --log TESTID...
 ```
 
@@ -611,7 +614,7 @@ gnuplot による画像生成が不要な場合、出力画像ファイル名を
 群のひとつ上のディレクトリにいるものとして、配下グループ全体のテスト
 のステータスを一覧します。
 
-```
+```sh
  probo --ls
 ```
 
@@ -620,7 +623,7 @@ gnuplot による画像生成が不要な場合、出力画像ファイル名を
 
 　conf ファイルの設定に従ってレポートを生成します。
 
-```
+```sh
  probo --report [-q] [-c CONF_FILE]
 ```
 
@@ -637,7 +640,7 @@ gnuplot による画像生成が不要な場合、出力画像ファイル名を
 
 　テストケースを実行します。
 
-```
+```sh
  probo --run [NUMBER...]
 ```
 
@@ -654,7 +657,7 @@ ID を明示的にパラメータとして指定してください。この場�
 また、この機能での実行には case file に実行スクリプトの埋め込みをしておく必要が
 あります。以下に例を示します。
 
-~~~
+~~~markdown
 <!-- probo test script : begin -->
 ```sh
 # test script here...
@@ -672,7 +675,7 @@ ID を明示的にパラメータとして指定してください。この場�
 
 　指定されたテストのステータスを更新します。
 
-```
+```sh
  probo --track [-f] [-e] [-d DESCRIPTION] [-t TIMESTAMP] STATUS TESTID...
 ```
 
@@ -692,7 +695,7 @@ ID を明示的にパラメータとして指定してください。この場�
 
 　標準出力にバージョン情報を出力します。
 
-```
+```sh
  probo --version
 ```
 
@@ -809,7 +812,7 @@ Table. テスト一覧生成に関する設定項目
 　Burndown chart のデータを生成する場合に、その出力ファイル名を以下の要領で指定
 します。生成を行なわない場合は設定自体を省略するか、空文字列を設定してください。
 
-```
+```sh
 PROBO_BDDAT_FILENAME="burndown.txt"
 ```
 
@@ -827,7 +830,7 @@ Burndown chart を作成する場合に使用します。出力形式は PROBO_R
 値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
 ん。詳細は gnuplot のマニュアルを参照してください。
 
-```
+```sh
 PROBO_BDIMG_BGCLR="#F0F8FF"
 ```
 
@@ -841,7 +844,7 @@ PROBO_BDIMG_BGCLR="#F0F8FF"
 値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
 ん。詳細は gnuplot のマニュアルを参照してください。
 
-```
+```sh
 PROBO_BDIMG_CLR_FAILBOX="brown"
 ```
 
@@ -855,7 +858,7 @@ PROBO_BDIMG_CLR_FAILBOX="brown"
 値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
 ん。詳細は gnuplot のマニュアルを参照してください。
 
-```
+```sh
 PROBO_BDIMG_CLR_GUIDE="light-gray"
 ```
 
@@ -869,7 +872,7 @@ PROBO_BDIMG_CLR_GUIDE="light-gray"
 値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
 ん。詳細は gnuplot のマニュアルを参照してください。
 
-```
+```sh
 PROBO_BDIMG_CLR_PASSLINE="navy"
 ```
 
@@ -880,7 +883,7 @@ PROBO_BDIMG_CLR_PASSLINE="navy"
 以下の要領で指定します。生成を行なわない場合は設定自体を省略するか、空文字列
 を設定してください。
 
-```
+```sh
 PROBO_BDIMG_FILENAME="burndown.png"
 ```
 
@@ -893,7 +896,7 @@ PROBO_BDIMG_FILENAME="burndown.png"
 　gnuplot を使用して butn-down chart を生成する場合に、生成画像の高さをピクセル
 単位で指定します。省略した場合のデフォルト値は 400 です。
 
-```
+```sh
 PROBO_BDIMG_HEIGHT=500
 ```
 
@@ -903,7 +906,7 @@ PROBO_BDIMG_HEIGHT=500
 　gnuplot を使用して butn-down chart を生成する場合に、生成画像の幅をピクセル
 単位で指定します。省略した場合のデフォルト値は 800 です。
 
-```
+```sh
 PROBO_BDIMG_WIDTH=700
 ```
 
@@ -912,7 +915,7 @@ PROBO_BDIMG_WIDTH=700
 
 　Burndown chart を生成する場合に、X 軸の終了日付を `YYYY-MM-DD` 形式で指定します。
 
-```
+```sh
 PROBO_BD_ENDDAY="2026-07-31"
 ```
 
@@ -925,7 +928,7 @@ PROBO_BD_ENDDAY="2026-07-31"
 
 　Burndown chart を生成する場合に、一日あたりのテスト消化予定数を数値で指定します。
 
-```
+```sh
 PROBO_BD_EXEC_PER_DAY=10
 ```
 
@@ -939,7 +942,7 @@ PROBO_BD_EXEC_PER_DAY=10
 　Burndown chart を生成する場合に、テスト開始日から終了日までの日毎のテスト消化
 予定数を以下の要領で指定します。
 
-```
+```sh
 PROBO_BD_SCHEDULE="
 2026-07-01,5
 2026-07-02,5
@@ -967,7 +970,7 @@ PROBO_BD_SCHEDULE="
 
 　Burndown chart を生成する場合に、X 軸の開始日付を `YYYY-MM-DD` 形式で指定します。
 
-```
+```sh
 PROBO_BD_STARTDAY="2026-07-01"
 ```
 
@@ -1012,7 +1015,7 @@ PROBO_BD_STARTDAY="2026-07-01"
 ファイル名を以下の要領で指定します。生成を行なわない場合は設定自体を省略
 するか、空文字列を設定してください。
 
-```
+```sh
 PROBO_GRU_SUMIMG_FILENAME="summary.png"
 ```
 
@@ -1035,7 +1038,7 @@ PROBO_GRU_SUMIMG_FILENAME="summary.png"
 
 　--report で生成するレポートの種類を以下の要領で指定します。
 
-```
+```sh
 PROBO_REPORT_TYPE="markdown"
 ```
 
@@ -1068,7 +1071,7 @@ PROBO_REPORT_TYPE="markdown"
 値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
 ん。詳細は gnuplot のマニュアルを参照してください。
 
-```
+```sh
 PROBO_SUMIMG_BGCLR="#F0F8FF"
 ```
 
@@ -1082,7 +1085,7 @@ PROBO_SUMIMG_BGCLR="#F0F8FF"
 値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
 ん。詳細は gnuplot のマニュアルを参照してください。
 
-```
+```sh
 PROBO_SUMIMG_CLR_BLOCK="#D2B48C"
 ```
 
@@ -1096,7 +1099,7 @@ PROBO_SUMIMG_CLR_BLOCK="#D2B48C"
 値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
 ん。詳細は gnuplot のマニュアルを参照してください。
 
-```
+```sh
 PROBO_SUMIMG_CLR_FAIL="#FFC1C1"
 ```
 
@@ -1110,7 +1113,7 @@ PROBO_SUMIMG_CLR_FAIL="#FFC1C1"
 値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
 ん。詳細は gnuplot のマニュアルを参照してください。
 
-```
+```sh
 PROBO_SUMIMG_CLR_OTHER="#EEEED1"
 ```
 
@@ -1124,7 +1127,7 @@ PROBO_SUMIMG_CLR_OTHER="#EEEED1"
 値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
 ん。詳細は gnuplot のマニュアルを参照してください。
 
-```
+```sh
 PROBO_SUMIMG_CLR_PASS="#B0E0E6"
 ```
 
@@ -1138,7 +1141,7 @@ PROBO_SUMIMG_CLR_PASS="#B0E0E6"
 値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
 ん。詳細は gnuplot のマニュアルを参照してください。
 
-```
+```sh
 PROBO_SUMIMG_CLR_READY="#F5F5F5"
 ```
 
@@ -1152,7 +1155,7 @@ PROBO_SUMIMG_CLR_READY="#F5F5F5"
 値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
 ん。詳細は gnuplot のマニュアルを参照してください。
 
-```
+```sh
 PROBO_SUMIMG_CLR_REJECT="#CD9B9B"
 ```
 
@@ -1166,7 +1169,7 @@ PROBO_SUMIMG_CLR_REJECT="#CD9B9B"
 値は gnuplot が認識する色名または `#RRGGBB` 形式の色コードでなければなりませ
 ん。詳細は gnuplot のマニュアルを参照してください。
 
-```
+```sh
 PROBO_SUMIMG_CLR_RUN="#B0C4DE"
 ```
 
@@ -1177,7 +1180,7 @@ PROBO_SUMIMG_CLR_RUN="#B0C4DE"
 以下の要領で指定します。生成を行なわない場合は設定自体を省略するか、空文字列
 を設定してください。
 
-```
+```sh
 PROBO_SUMIMG_FILENAME="summary.png"
 ```
 
@@ -1190,7 +1193,7 @@ PROBO_SUMIMG_FILENAME="summary.png"
 　gnuplot を使用して summary graph を生成する場合に、生成画像の高さをピクセル
 単位で指定します。省略した場合のデフォルト値は 400 です。
 
-```
+```sh
 PROBO_SUMIMG_HEIGHT=500
 ```
 
@@ -1200,7 +1203,7 @@ PROBO_SUMIMG_HEIGHT=500
 　gnuplot を使用して summary graph を生成する場合に、生成画像の幅をピクセル
 単位で指定します。省略した場合のデフォルト値は 500 です。
 
-```
+```sh
 PROBO_SUMIMG_WIDTH=700
 ```
 
@@ -1215,7 +1218,7 @@ ${BLANK_PARAGRAPH}
 仕様のため、 `.bashrc` などで環境変数として設定することが想定されています。
 非同期編集をする場合、以下のように 1 を設定してください。
 
-```
+```sh
 export PROBO_EDIT_ASYNC=1
 ```
 
@@ -1284,7 +1287,7 @@ export PROBO_EDIT_ASYNC=1
 には markdown 形式で自由に記述可能ですが、ひとつだけルールがあります。以下
 の形式の見出し行が、後述するレポート生成のスクリプトにより参照されます。
 
-```
+```markdown
  ## YYYY-MM-DD-hh-mm.STATUS[.DESCRIPTION]
 ```
 
