@@ -1,16 +1,25 @@
 #!/usr/bin/bash
 
+function probo-show-version {
+    echo "probo version 0.800"
+}
+
 function probo-show-usage {
+    probo-show-version
+    echo ""
     echo "USAGE:"
     echo "    probo --init [-c CONF_FILE] REPORT_TYPE [START_DATE [END_DATE [CASE_PER_DAY]]]"
     echo "    probo --ls"
-    echo "    probo --log RUNFILE..."
+    echo "    probo --log TESTID..."
     echo "    probo --addgrp GROUP..."
     echo "    probo --addcase [-q] [-t TIMESTAMP] [COUNT]"
-    echo "    probo --edit [-c] NUMBER"
+    echo "    probo --edit [-c] TESTID"
     echo "    probo --run [NUMBER...]"
     echo "    probo --report [-q] [-c CONF_FILE]"
-    echo "    probo --track [-f] [-e] [-d DESCRIPTION] [-t TIMESTAMP] STATUS RUNFILE..."
+    echo "    probo --track [-f] [-e] [-d DESCRIPTION] [-t TIMESTAMP] STATUS TESTID..."
+    echo "    probo --version"
+    echo "    probo --help"
+    echo ""
 }
 
 # 不定数のパラメータを取り、最初の存在するファイルを返す関数
@@ -1449,6 +1458,8 @@ case "$MODE" in
     --run )     probo-run-test "$@"
                 exit 0;;
     --report )  probo-make-reports "$@"
+                exit 0;;
+    --version ) probo-show-version
                 exit 0;;
     * )         echo "ERROR: Invalid option \"$MODE\"."
                 echo ""
